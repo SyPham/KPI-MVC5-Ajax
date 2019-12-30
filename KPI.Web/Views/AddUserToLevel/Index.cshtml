@@ -1,0 +1,299 @@
+﻿@using MvcBreadCrumbs;
+@{
+    ViewBag.Title = "Admin Add User To Level";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@Html.Raw(BreadCrumb.Display())
+@section Scripts{
+    <script>
+        var CLIPBOARD = null;
+        var glyph_opts = {
+            preset: "bootstrap3",
+            map: {
+            }
+        };
+        $.ui.fancytree.debugLevel = 3; // silence debug output
+
+        function logEvent(event, data, msg) {
+            //        var args = $.isArray(args) ? args.join(", ") :
+            msg = msg ? ": " + msg : "";
+            $.ui.fancytree.info("Event('" + event.type + "', node=" + data.node + ")" + msg);
+        }
+        $(function () {
+            AddUserToLevelController.init();
+
+            $("#treetable").fancytree({
+                extensions: ["glyph", "table"],
+                checkbox: false,
+                selectMode: 2,
+                dnd5: {
+                    preventVoidMoves: true,
+                    preventRecursion: true,
+                    autoExpandMS: 400,
+                    dragStart: function (node, data) {
+                        return true;
+                    },
+                    dragEnter: function (node, data) {
+                        // return ["before", "after"];
+                        return true;
+                    },
+                    dragDrop: function (node, data) {
+                        data.otherNode.moveTo(node, data.hitMode);
+                    }
+                },
+                glyph: glyph_opts,
+                source: { url: "/AdminKPILevel/GetListTree", debugDelay: 1000 },
+                table: {
+                    indentation: 20,
+                    nodeColumnIdx: 1,
+                    //checkboxColumnIdx: 0
+                },
+                gridnav: {
+                    autofocusInput: false,
+                    handleCursorKeys: true
+                },
+                focus: function (event, data) {
+
+                    logEvent(event, data, ", targetType=" + data.targetType);
+
+                    $('#box .kpi-name h3').text('User List - ' + data.node.title);
+                    $('#box .kpi-name .code').text(data.node.key);
+                    //$('#tbluser tr td:nth-child(2)').data('teamid',data.node.title);
+                   
+                    AddUserToLevelController.LoadDataUser(true, "", Number(data.node.key));
+
+
+                    $('html, body').animate({
+                        scrollTop: $("#box").offset().top
+                    }, 500)
+                    // return false to prevent default behavior (i.e. activation, ...)
+                    //return false;
+                },
+                lazyLoad: function (event, data) {
+                    //data.result = { url: "/GetListTree", debugDelay: 1000 };
+                },
+                renderColumns: function (event, data) {
+                    var node = data.node,
+                        $tdList = $(node.tr).find(">td");
+
+                    // (Index #0 is rendered by fancytree by adding the checkbox)
+                    // Set column #1 info from node data:
+                    // (Index #2 is rendered by fancytree)
+                    // Set column #3 info from node data:
+
+                    $tdList.eq(0).addClass('text-bold').text(node.data.levelnumber);
+                    $tdList.eq(1).find('span.fancytree-icon').removeClass('fancytree-icon').addClass('fa fa-book')
+                    $tdList.eq(1).addClass('text-bold');
+                    $tdList.eq(1).addClass('text-bold');
+                    // Static markup (more efficiently defined as html row template):
+                    // $tdList.eq(3).html("<input type='input' value='" + "" + "'>");
+                    // ...
+                }
+            });
+
+            $('.fancy-collapse').off('click').on('click', function () {
+                $("#treetable").fancytree("getTree").expandAll(false);
+            });
+            $('.fancy-expand').off('click').on('click', function () {
+                $("#treetable").fancytree("getTree").expandAll();
+            });
+
+        });
+
+        var config = {
+            pageSize: 10,
+            pageIndex: 1
+        };
+        var AddUserToLevelController = {
+            init: function () {
+                AddUserToLevelController.registerEvent();
+            },
+            registerEvent: function () {
+                $('#box .searchUser').off('keypress').on('keypress', function (e) {
+                    if (e.which === 13) {
+                        var code = $(this).val();
+                        var levelid = Number($('#box .code').text());
+                        AddUserToLevelController.LoadDataUser(true, code,levelid);
+                    }
+                });
+
+                //-----------------------------------------------------------------------------------------------------------------
+                ////show list kpilevel
+                //$('#box select').off('change').on('change', function (e) {
+                //    var code = $(this).parent().children('.code').text();
+                //    AddUserToLevelController.LoadDataUser(true, code);
+                //});
+
+                $('#tbluser tr td:nth-child(2) input').change(function () {
+                    var id = $(this).closest('tr').data('id');
+                    var levelid = Number($('#box .kpi-name .code').text());
+
+                    if (levelid === 0) {
+                        Toast.fire({
+                                type: 'error',
+                                title: 'Please choose team!',
+                            });
+                    }
+                    else {
+                        let username = $(this).next().children('label').text();
+                        AddUserToLevelController.updateUser(id, levelid);
+                        AddUserToLevelController.LoadDataUser("",username,levelid);
+                        $('#box .searchUser').val(username)
+                    }
+
+                });
+
+            },
+            updateUser: function (id, levelid) {
+                var mObj = {
+                    id: id,
+                    levelid: levelid,
+                };
+
+                $.ajax({
+                    url: "/AddUserToLevel/AddUserToLevel",
+                    data: JSON.stringify(mObj),
+                    type: "POST",
+                    contentType: "application/json;charset=utf-8",
+                    dataType: "json",
+                    success: function (result) {
+
+                        if (result) {
+                            Toast.fire({
+                                type: 'success',
+                                title: 'Update successfully!',
+                            });
+
+                        }
+                    },
+                    error: function (errormessage) {
+                        console.log(errormessage.responseText);
+                    }
+                });
+            },
+            loadTree: function () {
+                $.ui.fancytree.getTree("#treetable").reload().done();
+            },
+            LoadDataUser: function (changePageSize, code,levelID) {
+                $.ajax({
+                    url: '/AddUserToLevel/LoadDataUser',
+                    type: "GET",
+                    data: {
+                        levelid: levelID,
+                        code: code,
+                        page: config.pageIndex,
+                        pageSize: config.pageSize
+                    },
+                    dataType: "json",
+                    success: function (response) {
+                        console.log(response)
+                        if (response.status) {
+                            var count;
+                            var data = response.data;
+                            var page = response.page;
+                            var pageSize = response.pageSize;
+                            if (page === 1)
+                                count = page;
+                            else count = (page - 1) * pageSize + 1;
+                            var html = '';
+                            var template = $('#tbluser-template').html();
+                            $.each(data, function (i, item) {
+                                html += Mustache.render(template, {
+                                    Color: count % 2 !== 0 ? "class='info'" : "",
+                                    No: count,
+                                    Status: item.Status == true ? "checked" : "",
+                                    ID: item.ID,
+                                    Username: item.Username,
+                                    FullName: item.FullName,
+                                    LevelID: item.LevelID,
+                                    TeamID: item.TeamID
+                                });
+                                count++;
+                            });
+                            $('#tbluser').html(html);
+                            AddUserToLevelController.pagingKPILevel(response.total, function () {
+                                AddUserToLevelController.LoadDataUser("", code, levelID);
+                            }, changePageSize);
+                            AddUserToLevelController.registerEvent();
+                        }
+                    },
+                    error: function (err) {
+                        console.log(err);
+                    }
+                });
+            },
+            pagingKPILevel: function (totalRow, callback, changePageSize) {
+                var totalPage = Math.ceil(totalRow / config.pageSize);
+
+                //Unbind pagination if it existed or click change pagesize
+                if ($('#paginationKPILevel a').length === 0 || changePageSize === true) {
+                    $('#paginationKPILevel').empty();
+                    $('#paginationKPILevel').removeData("twbs-pagination");
+                    $('#paginationKPILevel').unbind("page");
+                }
+
+                $('#paginationKPILevel').twbsPagination({
+                    totalPages: totalPage === 0 ? 1 : totalPage,
+                    first: "First",
+                    next: "Next",
+                    last: "Last",
+                    prev: "Previous",
+                    visiblePages: 10,
+                    onPageClick: function (event, page) {
+                        config.pageIndex = page;
+                        setTimeout(callback, 500);
+                    }
+                });
+            }
+        }
+    </script>
+}
+
+<div class="row">
+    <div class="col-md-4">
+        <div class="box box-widget">
+            <div class="box-header">
+                <span style="font-size:18px;font-weight:bold">Organization Chart</span>
+
+                <div class="pull-right box-tools">
+                    <!-- button with a dropdown -->
+                    <button type="button" class="btn btn-warning btn-sm fancy-collapse">
+                        <i class="fa fa-compress"></i> Collapse
+                    </button>
+                    <button type="button" class="btn btn-info btn-sm fancy-expand">
+                        <i class="fa fa-expand"></i> Expand
+                    </button>
+                </div>
+            </div>
+            <div class="box-body">
+                <table id="treetable" class="table table-condensed table-hover table-striped fancytree-fade-expander fancytree-colorize-selected">
+                    <colgroup>
+                        <col width="30px"></col>
+                        <col width="*"></col>
+                    </colgroup>
+                    <thead>
+                        <tr>
+                            <th>Level Number</th>
+                            <th class="text-right">Name</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="text-center"></td>
+                            <td></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+    </div>
+    <div class="col-md-8">
+        @RenderPage("_ListKPILevel.cshtml")
+        @RenderPage("_Modal.cshtml")
+    </div>
+
+</div>
+
+
+

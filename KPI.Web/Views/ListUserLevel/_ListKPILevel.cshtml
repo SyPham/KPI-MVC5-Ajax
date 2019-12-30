@@ -1,0 +1,45 @@
+﻿<div class="box box-widget" id="box">
+    <div class="box-header with-border kpi-name">
+        <h3 class="box-title pull-left">User List </h3> <span class="id" style="display:none"></span> <span class="code" style="display:none"></span><span class="level" style="display:none"></span>
+        <input class="form-control pull-right" autocomplete="off" placeholder="search here..." style="width:50%" />
+
+    </div>
+    <div class="box-body">
+
+        <div class="box-body">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Username</th>
+                        <th>FullName</th>
+                        <th>Level</th>
+                        <th>Team</th>
+                    </tr>
+                </thead>
+                <tbody class="tbody" id="tbluser">
+
+                </tbody>
+            </table>
+            <script id='tbluser-template' type="text/template">
+                <tr>
+                    <td class="text-center">{{No}}</td>
+                    <td class="text-center">{{Username}}</td>
+                    <td class="text-center">{{FullName}}</td>
+                    <td class="text-center">{{LevelID}}</td>
+                    <td class="text-center">{{TeamID}}</td>]
+                </tr>
+            </script>
+        </div>
+        <!-- /.box-body -->
+    </div>
+    <div class="box-footer clearfix" >
+        <ul id="paginationKPILevel" class="pagination pagination-sm no-margin pull-right">
+            <li><a href="#">«</a></li>
+            <li><a href="#">1</a></li>
+            <li><a href="#">2</a></li>
+            <li><a href="#">3</a></li>
+            <li><a href="#">»</a></li>
+        </ul>
+    </div>
+</div>

@@ -1,0 +1,287 @@
+﻿<div class="modal fade" id="modal-group" style="display: none">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+                <h4 class="modal-title">Add User </h4>
+            </div>
+            <div class="modal-body">
+                <div>
+                    <div class="box-body" id="addKPI">
+                        <div class="form-group" style="display:none">
+                            <label for="Name">ID </label>
+                            <input type="text" class="form-control ID" id="ID" placeholder="ID" disabled>
+                        </div>
+                        <div class="form-group">
+                            <label for="Name">Username </label>
+                            <input type="text" class="form-control Name" id="Name" placeholder="Enter Name">
+                        </div>
+                        <div class="form-group">
+                            <label for="Passwrod">Passwrod </label>
+                            <input type="password" class="form-control Passwrod" id="Passwrod" placeholder="Enter Passwrod">
+                        </div>
+                        <div class="form-group">
+                            <label for="Code">Code </label>
+                            <input type="text" class="form-control Code" id="Code" placeholder="Enter Code">
+                        </div>
+                        <div class="form-group">
+                            <label for="Code">Level </label>
+                            <input type="text" class="form-control LevelID" id="LevelID" placeholder="Enter Level">
+                        </div>
+                    </div>
+                    <!-- /.box-body -->
+
+                    <div class="box-footer">
+                        <button id="btnAdd" class="btn btn-primary">Add</button>
+                        <button type="button" class="btn btn-default pull-right" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+@* update *@
+<div class="modal fade" id="modal-group2" style="display: none">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+                <h4 class="modal-title">Update User </h4>
+            </div>
+            <div class="modal-body">
+                <div>
+                    <div class="box-body" id="updateKpi">
+                        <div class="form-group" style="display:none">
+                            <label for="Name">ID </label>
+                            <input type="text" class="form-control ID" id="ID" placeholder="ID" disabled>
+                        </div>
+                        <div class="form-group">
+                            <label for="Name">Name </label>
+                            <input type="text" class="form-control Name" id="Name" placeholder="Enter Name">
+                        </div>
+                        <div class="form-group">
+                            <label for="Code">Code </label>
+                            <input type="text" class="form-control Code" id="Code" placeholder="Enter Code">
+                        </div>
+                        <div class="form-group">
+                            <label for="Code">Level </label>
+                            <input type="text" class="form-control LevelID" id="LevelID" placeholder="Enter Level">
+                        </div>
+                    </div>
+                    <!-- /.box-body -->
+
+                    <div class="box-footer">
+
+                        <button type="button" class="btn btn-primary" id="btnSaveUpdateModal">Update</button>
+                        <button type="button" class="btn btn-default pull-right" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+@* weekly madal *@
+<div class="modal fade" id="modal-group-weekly" style="display: none">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+                <h4 class="modal-title">Weekly </h4>
+            </div>
+            <div class="modal-body">
+                <div>
+                    <div class="box-body">
+                        <div class="form-group">
+                            <label for="weekly" >Day of the week </label>
+                            <select class="form-control weekly" data-id="" id="weekly">
+                                <option value="">Choose day of the week</option>
+                                <option value="MON">Monday</option>
+                                <option value="TUE">Tuesday</option>
+                                <option value="WED">Wednesday</option>
+                                <option value="THU">Thursday</option>
+                                <option value="FRI">Friday</option>
+                                <option value="SAT">Saturday</option>
+                            </select>
+                        </div>
+                    </div>
+                    <!-- /.box-body -->
+
+                    <div class="box-footer">
+                        <button type="button" class="btn btn-primary btnsaveweekly" id="btnsaveweekly">Save</button>
+                        <button type="button" class="btn btn-default pull-right" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+@* monthly modal *@
+<div class="modal fade" id="modal-group-monthly" style="display: none">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+                <h4 class="modal-title">Monthly</h4>
+            </div>
+            <div class="modal-body">
+                <div class="box-body">
+                    <div class='form-group'>
+                        <label for="monthly">Monthly</label>
+                        <div class='input-group date monthly'>
+                            <input type='text' data-id="" class="form-control date monthly" />
+                            <span class="input-group-addon">
+                                <span class="glyphicon glyphicon-calendar"></span>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                <!-- /.box-body -->
+
+                <div class="box-footer">
+                    <a href="#" class="btn btn-primary" id="btnsavemonthlymodal">Save</a>
+                    <button type="button" class="btn btn-default pull-right" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+@* Quaterly Modal *@
+<div class="modal fade" id="modal-group-quaterly" style="display: none">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+                <h4 class="modal-title">Quaterly </h4>
+            </div>
+            <div class="modal-body">
+                <div class="box-body">
+                    <div class='form-group'>
+                        <label for="quaterly">Quaterly</label>
+                        <div class='input-group date quaterly'>
+                            <input type='text' data-id="" class="form-control date quaterly" />
+                            <span class="input-group-addon">
+                                <span class="glyphicon glyphicon-calendar"></span>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                <!-- /.box-body -->
+
+                <div class="box-footer">
+
+                    <a href="#" class="btn btn-primary" id="btnsavequaterlymodal">Save</a>
+                    <button type="button" class="btn btn-default pull-right" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+@* Yearly Modal *@
+<div class="modal fade" id="modal-group-yearly" style="display: none">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+                <h4 class="modal-title">Yearly</h4>
+            </div>
+            <div class="modal-body">
+                <div class="box-body">
+                    <div class='form-group'>
+                        <label for="yearly">Yearly</label>
+                        <div class='input-group date yearly'>
+                            <input type='text' data-id="" class="form-control date yearly" />
+                            <span class="input-group-addon">
+                                <span class="glyphicon glyphicon-calendar"></span>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                <!-- /.box-body -->
+
+                <div class="box-footer">
+
+                    <button type="button" class="btn btn-primary" id="btnsaveyearly">Update</button>
+                    <button type="button" class="btn btn-default pull-right" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+@* get kpi code *@
+<div class="modal fade" id="modal-group3" style="display: none">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+                <h4 class="modal-title">Get KPI Code </h4>
+            </div>
+            <div class="modal-body">
+                <div>
+                    <div class="box-body" id="updateKpi">
+                        <div class="form-group" style="display:none">
+                            <label for="Name">Get KPI Code </label>
+                            <input type="text" class="form-control ID" id="ID" placeholder="Get KPI Code">
+                        </div>
+                        <div class="form-group">
+                            <label for="Name">Get KPI Code Weekly</label>
+                            <input type="text" class="form-control Weekly" id="Weekly" placeholder="Get KPI Code Weekly">
+                        </div>
+                        <div class="form-group">
+                            <label for="Name">Get KPI Code Monthly</label>
+                            <input type="text" class="form-control Monthly" id="Monthly" placeholder="Get KPI Code Monthly">
+                        </div>
+                        <div class="form-group">
+                            <label for="Name">Get KPI Code Quaterly</label>
+                            <input type="text" class="form-control Quaterly" id="Quaterly" placeholder="Get KPI Code Quaterly">
+                        </div>
+                        <div class="form-group">
+                            <label for="Name">Get KPI Code Yearly</label>
+                            <input type="text" class="form-control Yearly" id="Yearly" placeholder="Get KPI Code Yearly">
+                        </div>
+                    </div>
+                    <!-- /.box-body -->
+                    <div class="box-footer">
+
+                        @*<button type="button" class="btn btn-primary" onclick="Update();">Update</button>
+                            <button type="button" class="btn btn-default pull-right" data-dismiss="modal">Close</button>*@
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>

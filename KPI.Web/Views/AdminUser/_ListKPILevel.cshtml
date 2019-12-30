@@ -1,0 +1,87 @@
+﻿<div class="box" style="display:none" id="box">
+    <div class="box-header with-border kpi-name">
+        <h3 class="box-title pull-left">KPI </h3> <span class="id" style="display:none"></span> <span class="code" style="display:none"></span><span class="level" style="display:none"></span>
+        <select class="form-control pull-right" style="width:50%">
+          
+        </select>
+    </div>
+    <div class="box-body">
+
+        <div class="box-body">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>KPILevel Name</th>
+                        <th>Get Code</th>
+                        <th>Period</th>
+                    </tr>
+                </thead>
+                <tbody class="tbody" id="tblkpilevel">
+                    <tr>
+                        <th scope="row">1</th>
+                        <td>Mark</td>
+                        <td>Otto</td>
+                        <td>Otto</td>
+                    </tr>
+
+                </tbody>
+            </table>
+            <script id='tblkpilevel-template' type="text/template">
+                <tr href="/KPI/Detail">
+                    <td>{{No}}</td>
+                    <td>
+                        <div class="pretty p-icon p-rotate">
+                            {{{Checked}}}
+                            <div class="state p-success">
+                                <i class="icon fa fa-check"></i>
+                                <label class="black">{{Name}}</label>
+                            </div>
+                        </div>
+                    </td>
+                    <td><button data-toggle="modal" data-target="#modal-group3" class="btn btn-xs btn-success get-kpi-code"> Get KPI Code </button></td>
+                    <td>
+                        <div class="pretty p-icon p-rotate">
+                            {{{WeeklyChecked}}}
+                            <div class="state p-success">
+                                <i class="icon fa fa-check"></i>
+                                <label class="black">Weekly</label>
+                            </div>
+                        </div>
+                        <div class="pretty p-icon p-rotate">
+                            {{{MonthlyChecked}}}
+                            <div class="state p-success">
+                                <i class="icon fa fa-check"></i>
+                                <label class="black">Monthly</label>
+                            </div>
+                        </div>
+                        <div class="pretty p-icon p-rotate">
+                            {{{QuaterlyChecked}}}
+                            <div class="state p-success">
+                                <i class="icon fa fa-check"></i>
+                                <label class="black">Quaterly</label>
+                            </div>
+                        </div>
+                        <div class="pretty p-icon p-rotate">
+                            {{{YearlyChecked}}}
+                            <div class="state p-success">
+                                <i class="icon fa fa-check"></i>
+                                <label class="black">Yearly</label>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+            </script>
+        </div>
+        <!-- /.box-body -->
+    </div>
+    <div class="box-footer clearfix" >
+        <ul id="paginationKPILevel" class="pagination pagination-sm no-margin pull-right">
+            <li><a href="#">«</a></li>
+            <li><a href="#">1</a></li>
+            <li><a href="#">2</a></li>
+            <li><a href="#">3</a></li>
+            <li><a href="#">»</a></li>
+        </ul>
+    </div>
+</div>

@@ -1,0 +1,118 @@
+﻿@model IEnumerable<KPI.Model.ViewModel.NotificationViewModel>
+@using KPI.Model.ViewModel
+@{
+    ViewBag.Title = "ListHistoryNotification";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var userProfile = Session["UserProfile"] as UserProfileVM;
+    const string COMMENT = "Comment";
+    const string TASK = "Task";
+    const string DONE = "Done";
+    const string APPROVAL = "Approval";
+    const string UPLOAD = "Upload";
+
+}
+
+<div class="row">
+    <div class="col-xs-12">
+        <div class="box  box-primary">
+            <div class="box-header">
+                <h3 class="box-title">List Histories Notifications</h3>
+                @*<div class="container">
+                    <h1>CSS Directional c-tooltips</h1>
+                    <div class="demo">
+                        <p><code>data-c-tooltip</code> <a href="#" data-c-tooltip="I’m the c-tooltip text.">Hover me!</a></p>
+                        <p><code>[tooltip-position='top'] </code> <a href="#" tooltip-position="top" data-c-tooltip="I’m the c-tooltip text.">Hover me!</a></p>
+                        <p><code>[tooltip-position='right'] </code> <a href="#" tooltip-position='right' data-c-tooltip="I’m the c-tooltip text.">Hover me!</a></p>
+                        <p><code>[tooltip-position='bottom'] </code> <a href="#" tooltip-position='bottom' data-c-tooltip="I’m the c-tooltip text.">Hover me!</a></p>
+                        <p><a href="#" tooltip-position='left' data-c-tooltip="I’m the c-tooltip text.">Hover me!</a> <code>[tooltip-position='left'] </code></p>
+                    </div>
+                </div>*@
+
+            </div>
+            <!-- /.box-header -->
+            <div class="box-body table-responsive table-bordered">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th width="10">No.</th>
+                            <th>Notification</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @{
+                            var i = 1;
+
+                            foreach (var item in Model)
+                            {
+                                switch (item.Action)
+                                {
+                                    case COMMENT:
+                                        <tr>
+                                            <td>@(i++)</td>
+                                            <td>
+                                                <p> <i class="fa fa-check-circle-o"></i> @(item.SenderID == userProfile.User.ID ? "You" : item.Sender) mentioned @(item.RecipientID == userProfile.User.ID ? "You" : item.Recipient) in @item.Title</p>
+                                                <p>
+                                                    <b>Content: </b>
+                                                    <ul class="chart-legend clearfix">
+                                                        <li><i class="fa fa-check-circle-o text-green"></i> @item.Content</li>
+                                                    </ul>
+                                                </p>
+                                                <p><i class="fa fa-clock-o"></i> @item.CreateTime.ToString("MM/dd/yyyy HH:mm:ss")</p>
+
+                                            </td>
+                                        </tr>
+                                        break;
+                                    case TASK:
+                                        <tr>
+                                            <td>@(i++)</td>
+                                            <td>
+                                                <p> <i class="fa fa-check-circle-o"></i> @(item.SenderID == userProfile.User.ID ? "You" : item.Sender) mentioned @(item.RecipientID == userProfile.User.ID ? "You" : item.Recipient) in @item.Title</p>
+                                               
+                                                <p>
+                                                    <b>Content: </b>
+                                                    <ul class="chart-legend clearfix">
+                                                        <li><i class="fa fa-check-circle-o text-green"></i> @item.Content</li>
+                                                    </ul>
+                                                </p>
+                                                <p><b>Due Date: </b>@item.Deadline.ToString("MM/dd/yyyy")</p>
+                                                <p><i class="fa fa-clock-o"></i> @item.CreateTime.ToString("MM/dd/yyyy HH:mm:ss")</p>
+
+                                            </td>
+                                        </tr>
+                                        break;
+                                    case DONE:
+                                        <tr>
+                                            <td>@(i++)</td>
+                                            <td>
+                                                <p><i class="fa fa-check-circle-o"></i> @(item.SenderID == userProfile.User.ID ? "You" : item.Sender) updated the status in @item.Title</p>
+                                                <p><i class="fa fa-clock-o"></i> @item.CreateTime.ToString("MM/dd/yyyy HH:mm:ss")</p>
+                                            </td>
+                                        </tr>
+                                        break;
+                                    case APPROVAL:
+                                        <tr>
+                                            <td>@(i++)</td>
+                                            <td>
+                                                <p><i class="fa fa-check-circle-o"></i> @(item.SenderID == userProfile.User.ID ? "You" : item.Sender) approved in @item.Title</p>
+                                                <p><i class="fa fa-clock-o"></i> @item.CreateTime.ToString("MM/dd/yyyy HH:mm:ss")</p>
+                                            </td>
+                                        </tr>
+                                        break;
+                                  
+                                    default:
+                                        break;
+                                }
+                              
+
+                            }
+                        }
+
+                    </tbody>
+                </table>
+            </div>
+            <!-- /.box-body -->
+        </div>
+        <!-- /.box -->
+    </div>
+</div>
+

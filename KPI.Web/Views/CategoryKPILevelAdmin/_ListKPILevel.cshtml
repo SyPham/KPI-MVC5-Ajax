@@ -1,0 +1,59 @@
+﻿<div class="box box-widget" id="box" style="display:none">
+    <div class="box-header with-border kpi-name">
+        <h3 class="box-title pull-left">KPI OC </h3>
+        <span class="id" style="display:none"></span>
+        <span class="code" style="display:none"></span>
+        <span class="level" style="display:none"></span>
+        <input type="text" class="form-control catid" value="" style="display:none" />
+        <input type="text" class="form-control levelid" value="" style="display:none" />
+    </div>
+    <div class="box-body">
+
+        <div class="box-body">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>KPI Organization Chart</th>
+                        <th>Period</th>
+                    </tr>
+                </thead>
+                <tbody class="tbody" id="tblkpilevel"></tbody>
+            </table>
+            <script id='tblkpilevel-template' type="text/template">
+                <tr data-id="{{ID}}" {{{Color}}}>
+                    <td>{{No}}</td>
+                    <td>
+                        <div class="tooltip-css ">
+                            <div class="pretty p-icon p-rotate ">
+                                <input type="checkbox" {{CheckCategory}} class="checkbox kpilevelID" name="checkbox" />
+                                <div class="state p-success textOverflow">
+                                    <i class="icon fa fa-check"></i>
+                                    <label class="black labelOverflow">{{KPIName}}</label>
+                                </div>
+                            </div>
+                            <div class="top">{{KPIName}} <i></i></div>
+                        </div>
+                    </td>
+                    <td>
+                        <button data-kpilevelcode="{{KPILevelCode}}" data-period="W" {{WeeklyCheckedAttr}} class="btn btn-sm {{WeeklyChecked}} week"><i class="fa fa-bar-chart" aria-hidden="true"></i> Weekly</button>
+                        <button data-kpilevelcode="{{KPILevelCode}}" data-period="M" {{MonthlyCheckedAttr}} class="btn btn-sm {{MonthlyChecked}} month"><i class="fa fa-bar-chart" aria-hidden="true"></i> Monthly</button>
+                        <button data-kpilevelcode="{{KPILevelCode}}" data-period="Q" {{QuarterlyCheckedAttr}} class="btn btn-sm {{QuarterlyChecked}} quarter"><i class="fa fa-bar-chart" aria-hidden="true"></i> Quarterly</button>
+                        <button data-kpilevelcode="{{KPILevelCode}}" data-period="Y" {{YearlyCheckedAttr}} class="btn btn-sm  {{YearlyChecked}} year"><i class="fa fa-bar-chart" aria-hidden="true"></i> Yearly</button>
+                       
+                    </td>
+                </tr>
+            </script>
+        </div>
+        <!-- /.box-body -->
+    </div>
+    <div class="box-footer clearfix">
+        <ul id="paginationKPILevel" class="pagination pagination-sm no-margin pull-right">
+            <li><a href="#">«</a></li>
+            <li><a href="#">1</a></li>
+            <li><a href="#">2</a></li>
+            <li><a href="#">3</a></li>
+            <li><a href="#">»</a></li>
+        </ul>
+    </div>
+</div>

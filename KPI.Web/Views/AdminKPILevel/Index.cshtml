@@ -1,0 +1,676 @@
+﻿@using MvcBreadCrumbs;
+@{
+    ViewBag.Title = "Admin KPI OC";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@Html.Raw(BreadCrumb.Display())
+@section Scripts{
+    <script>
+        var CLIPBOARD = null;
+        var glyph_opts = {
+            preset: "bootstrap3",
+            map: {
+            }
+        };
+        $.ui.fancytree.debugLevel = 3; // silence debug output
+
+        function logEvent(event, data, msg) {
+            //        var args = $.isArray(args) ? args.join(", ") :
+            msg = msg ? ": " + msg : "";
+            $.ui.fancytree.info("Event('" + event.type + "', node=" + data.node + ")" + msg);
+        }
+        $(function () {
+
+            kpiController.init();
+
+            $("#treetable").fancytree({
+                extensions: ["glyph", "table"],
+                checkbox: false,
+                selectMode: 2,
+                dnd5: {
+                    preventVoidMoves: true,
+                    preventRecursion: true,
+                    autoExpandMS: 400,
+                    dragStart: function (node, data) {
+                        return true;
+                    },
+                    dragEnter: function (node, data) {
+                        // return ["before", "after"];
+                        return true;
+                    },
+                    dragDrop: function (node, data) {
+                        data.otherNode.moveTo(node, data.hitMode);
+                    }
+                },
+                glyph: glyph_opts,
+                source: { url: "/AdminKPILevel/GetListTree", debugDelay: 1000 },
+                table: {
+                    indentation: 20,
+                    nodeColumnIdx: 1,
+                    //checkboxColumnIdx: 0
+                },
+                gridnav: {
+                    autofocusInput: false,
+                    handleCursorKeys: true
+                },
+                focus: function (event, data) {
+                    event.preventDefault();
+                    logEvent(event, data, ", targetType=" + data.targetType);
+
+                    $('#box .kpi-name h3').text('KPI - ' + data.node.title);
+                    $('#box .kpi-name .code').text(data.node.key);
+                    kpiController.loadDataCategory();
+                    kpiController.loadDataKPILevel(true, data.node.key)
+
+                    $('html, body').animate({
+                        scrollTop: $("#box").offset().top
+                    }, 500)
+                    // return false to prevent default behavior (i.e. activation, ...)
+                    //return false;
+                },
+                lazyLoad: function (event, data) {
+                    data.result = { url: "/GetListTree", debugDelay: 1000 };
+                },
+                renderColumns: function (event, data) {
+                    var node = data.node,
+                        $tdList = $(node.tr).find(">td");
+
+                    // (Index #0 is rendered by fancytree by adding the checkbox)
+                    // Set column #1 info from node data:
+                    // (Index #2 is rendered by fancytree)
+                    // Set column #3 info from node data:
+
+                    $tdList.eq(0).addClass('text-bold').text(node.data.levelnumber);
+                    $tdList.eq(1).find('span.fancytree-icon').removeClass('fancytree-icon').addClass('fa fa-book')
+                    $tdList.eq(1).addClass('text-bold');
+                    // Static markup (more efficiently defined as html row template):
+                    // $tdList.eq(3).html("<input type='input' value='" + "" + "'>");
+                    // ...
+                }
+            });
+
+            $('.fancy-collapse').off('click').on('click', function () {
+                $("#treetable").fancytree("getTree").expandAll(false);
+            });
+            $('.fancy-expand').off('click').on('click', function () {
+                $("#treetable").fancytree("getTree").expandAll();
+            });
+
+        });
+
+        var kpiLevelConfig = {
+            pageSize: 20,
+            pageIndex: 1
+        };
+        var kpiController = {
+            init: function () {
+                kpiController.registerEvent();
+            },
+            registerEvent: function () {
+
+                $('#box select').off('change').on('change', function (e) {
+                    var code = $(this).parent().children('.code').text();
+                    kpiController.loadDataKPILevel(true, code);
+                });
+               
+                //-----------------------------------------------------------------------------------------------------------------
+                //show list kpilevel
+                $('#box select').off('change').on('change', function (e) {
+                    var code = $(this).parent().children('.code').text();
+                    kpiController.loadDataKPILevel(true, code);
+                });
+
+                $('#tblkpilevel tr td:nth-child(2) input').change(function () {
+                     var ID = $(this).closest('tr').data("id");
+                    var KPIID = $(this).val();
+                    var LevelID = $('#box .kpi-name .code').text();
+                    var TimeCheck = new Date();
+                    var KPILevelCode = "";
+                    var Checked = $(this).is(':checked');
+                    var UserCheck = $('#user').data('userid');
+                    var Weekly = null;
+                    var Monthly = null;
+                    var Quarterly = null;
+                    var Yearly = null;
+                    var WeeklyChecked = null;
+                    var MonthlyChecked = null;
+                    var QuarterlyChecked = null;
+                    var YearlyChecked = null;
+                    var WeeklyPublic = null;
+                    var MonthlyPublic = null;
+                    var QuarterlyPublic = null;
+                    var YearlyPublic = null;
+
+                    kpiController.updateKPILevel(ID, KPIID, KPILevelCode, UserCheck, Checked, WeeklyChecked, MonthlyChecked, QuarterlyChecked, YearlyChecked, Weekly, Monthly, Quarterly, Yearly, TimeCheck, LevelID, WeeklyPublic, MonthlyPublic, QuarterlyPublic, YearlyPublic);
+                });
+
+                //----------------------------------------------------------------------------------------------
+
+                //update weeklychecked kpilevel
+                $('#tblkpilevel .weekly').off('click').on('click', function () {
+
+                    kpiController.getAllUser();
+                    var ID = $(this).closest('tr').data("id");
+
+                    var KPIID = $(this).closest('tr').find('td:nth-child(2) input').val();
+
+                    var LevelID = $('#box .kpi-name .code').text();
+                    var TimeCheck = new Date();
+                    var KPILevelCode = "";
+                    var Checked = null;
+                    var UserCheck = $('#user').data('userid');
+                    var Weekly = null;
+                    var Monthly = null;
+                    var Quarterly = null;
+                    var Yearly = null;
+                    var WeeklyChecked = $(this).is(':checked');
+                    var MonthlyChecked = null;
+                    var QuarterlyChecked = null;
+                    var YearlyChecked = null;
+                    var WeeklyPublic = null;
+                    var MonthlyPublic = null;
+                    var QuarterlyPublic = null;
+                    var YearlyPublic = null;
+                    kpiController.loadDetail(ID);
+                    kpiController.updateKPILevel(ID, KPIID, KPILevelCode, UserCheck, Checked, WeeklyChecked, MonthlyChecked, QuarterlyChecked, YearlyChecked, Weekly, Monthly, Quarterly, Yearly, TimeCheck, LevelID, WeeklyPublic, MonthlyPublic, QuarterlyPublic, YearlyPublic);
+                    if ($(this).is(':checked')) {
+                        $('#modal-group-weekly').modal('show').fadeIn(1000);
+                        $('#modal-group-weekly .KPILevelID').val(ID);
+                    }
+                    var unit = $(this).closest('tr').find('td:nth-child(2)').data("unit");
+                    if (unit === "Numeric") {
+                        $('#modal-group-weekly .containStandard').hide();
+                    } else {
+                        $('#modal-group-weekly .containStandard').show();
+                    }
+                });
+                //update monthly checked kpilevel
+                $('#tblkpilevel .monthly').off('click').on('click', function () {
+                    kpiController.getAllUser();
+                    var ID = $(this).closest('tr').data("id");
+                    var KPIID = $(this).closest('tr').find('td:nth-child(2) input').val();
+                    var LevelID = $('#box .kpi-name .code').text();
+                    var TimeCheck = new Date();
+                    var KPILevelCode = "";
+                    var Checked = null;
+                    var UserCheck = $('#user').data('userid');
+                    var Weekly = null;
+                    var Monthly = null;
+                    var Quarterly = null;
+                    var Yearly = null;
+                    var WeeklyChecked = null;
+                    var MonthlyChecked = $(this).is(':checked');
+                    var QuarterlyChecked = null;
+                    var YearlyChecked = null;
+                    var WeeklyPublic = null;
+                    var MonthlyPublic = null;
+                    var QuarterlyPublic = null;
+                    var YearlyPublic = null;
+                    kpiController.loadDetail(ID);
+                    kpiController.updateKPILevel(ID, KPIID, KPILevelCode, UserCheck, Checked, WeeklyChecked, MonthlyChecked, QuarterlyChecked, YearlyChecked, Weekly, Monthly, Quarterly, Yearly, TimeCheck, LevelID, WeeklyPublic, MonthlyPublic, QuarterlyPublic, YearlyPublic);
+                    if ($(this).is(':checked')) {
+                        $('#modal-group-monthly').modal('show').fadeIn(1000);
+                        $('#modal-group-monthly .KPILevelID').val(ID);
+                    }
+                    var unit = $(this).closest('tr').find('td:nth-child(2)').data("unit");
+                    if (unit === "Numeric") {
+                        $('#modal-group-monthly .containStandard').hide();
+                    } else {
+                        $('#modal-group-monthly .containStandard').show();
+                    }
+                });
+                //update quaterly checked kpilevel
+                $('#tblkpilevel .quaterly').off('click').on('click', function () {
+                    kpiController.getAllUser();
+
+                    var ID = $(this).closest('tr').data("id");
+                    var KPIID = $(this).closest('tr').find('td:nth-child(2) input').val();
+                    var LevelID = $('#box .kpi-name .code').text();
+                    var TimeCheck = new Date();
+                    var KPILevelCode = "";
+                    var Checked = null;
+                    var UserCheck = $('#user').data('userid');
+                    var Weekly = null;
+                    var Monthly = null;
+                    var Quarterly = null;
+                    var Yearly = null;
+                    var WeeklyChecked = null;
+                    var MonthlyChecked = null;
+                    var QuarterlyChecked = $(this).is(':checked');
+                    var YearlyChecked = null;
+                    var WeeklyPublic = null;
+                    var MonthlyPublic = null;
+                    var QuarterlyPublic = null;
+                    var YearlyPublic = null;
+                    kpiController.loadDetail(ID);
+                    kpiController.updateKPILevel(ID, KPIID, KPILevelCode, UserCheck, Checked, WeeklyChecked, MonthlyChecked, QuarterlyChecked, YearlyChecked, Weekly, Monthly, Quarterly, Yearly, TimeCheck, LevelID, WeeklyPublic, MonthlyPublic, QuarterlyPublic, YearlyPublic);
+                    if ($(this).is(':checked')) {
+                        $('#modal-group-quarterly').modal('show').fadeIn(1000);
+                        $('#modal-group-quarterly .KPILevelID').val(ID);
+                    }
+                    var unit = $(this).closest('tr').find('td:nth-child(2)').data("unit");
+                    if (unit === "Numeric") {
+                        $('#modal-group-quarterly .containStandard').hide();
+                    } else {
+                        $('#modal-group-quartly .containStandard').show();
+                    }
+                });
+                //update yearly checked kpilevel
+                $('#tblkpilevel .yearly').off('click').on('click', function () {
+                    kpiController.getAllUser();
+
+                    var ID = $(this).closest('tr').data("id");
+                    var KPIID = $(this).closest('tr').find('td:nth-child(2) input').val();
+                    var LevelID = $('#box .kpi-name .code').text();
+                    var TimeCheck = new Date();
+                    var KPILevelCode = "";
+                    var Checked = null;
+                    var UserCheck = $('#user').data('userid');
+                    var Weekly = null;
+                    var Monthly = null;
+                    var Quarterly = null;
+                    var Yearly = null;
+                    var WeeklyChecked = null;
+                    var MonthlyChecked = null;
+                    var QuarterlyChecked = null;
+                    var YearlyChecked = $(this).is(':checked');
+                    var WeeklyPublic = null;
+                    var MonthlyPublic = null;
+                    var QuarterlyPublic = null;
+                    var YearlyPublic = null;
+                    kpiController.loadDetail(ID);
+                    kpiController.updateKPILevel(ID, KPIID, KPILevelCode, UserCheck, Checked, WeeklyChecked, MonthlyChecked, QuarterlyChecked, YearlyChecked, Weekly, Monthly, Quarterly, Yearly, TimeCheck, LevelID, WeeklyPublic, MonthlyPublic, QuarterlyPublic, YearlyPublic);
+                    if ($(this).is(':checked')) {
+                        $('#modal-group-yearly').modal('show').fadeIn(1000);
+                        $('#modal-group-yearly .KPILevelID').val(ID);
+                    }
+                    var unit = $(this).closest('tr').find('td:nth-child(2)').data("unit");
+                    if (unit === "Numeric") {
+                        $('#modal-group-yearly .containStandard').hide();
+                    } else {
+                        $('#modal-group-yearly .containStandard').show();
+                    }
+                });
+
+                //----------------------------------------------------------------------------------------------
+
+                //update weekly modal
+                $('#btnsaveweekly').off('click').on('click', function () {
+                    var ID = $('#modal-group-weekly .KPILevelID').data('id');
+
+                    var KPIID = $('#modal-group-weekly .weekly').attr('data-id');
+                    var LevelID = $('#box .kpi-name .code').text();
+                    var TimeCheck = new Date();
+                    var KPILevelCode = "";
+                    var Checked = null;
+                    var UserCheck = $('#user').data('userid');
+                    var Weekly = $("#modal-group-weekly .weekly").val();
+                    var Monthly = null;
+                    var Quarterly = null;
+                    var Yearly = null;
+                    var WeeklyChecked = null;
+                    var MonthlyChecked = null;
+                    var QuarterlyChecked = null;
+                    var YearlyChecked = null;
+                    var WeeklyPublic = $('#modal-group-weekly input[type="radio"][name=weekpublic]:checked').val() === "true" ? true : false;
+                    var MonthlyPublic = null;
+                    var QuarterlyPublic = null;
+                    var YearlyPublic = null;
+                    kpiController.updateKPILevel(ID, KPIID, KPILevelCode, UserCheck, Checked, WeeklyChecked, MonthlyChecked, QuarterlyChecked, YearlyChecked, Weekly, Monthly, Quarterly, Yearly, TimeCheck, LevelID, WeeklyPublic, MonthlyPublic, QuarterlyPublic, YearlyPublic);
+
+                    $('#modal-group-weekly').modal('hide');
+
+                });
+                //update monthly modal
+                $("#btnsavemonthlymodal").off('click').on('click', function (e) {
+
+                    e.preventDefault();
+                    var ID = Number($('#modal-group-monthly .KPILevelID').val());
+                    var KPIID = $('#modal-group-monthly .monthly').data('id');
+                    var LevelID = $('#box .kpi-name .code').text();
+                    var TimeCheck = new Date();
+                    var KPILevelCode = "";
+                    var Checked = null;
+                    var UserCheck = $('#user').data('userid');
+                    var Weekly = null;
+                    var Monthly = $("#modal-group-monthly input[name=monthly-datepicker]").val();
+                    var Quarterly = null;
+                    var Yearly = null;
+                    var WeeklyChecked = null;
+                    var MonthlyChecked = null;
+                    var QuarterlyChecked = null;
+                    var YearlyChecked = null;
+                    var WeeklyPublic = null;
+                    var MonthlyPublic = $('#modal-group-monthly input[type="radio"][name=monthlypublic]:checked').val() === "true" ? true : false;
+                    var QuarterlyPublic = null;
+                    var YearlyPublic = null;
+                    kpiController.updateKPILevel(ID, KPIID, KPILevelCode, UserCheck, Checked, WeeklyChecked, MonthlyChecked, QuarterlyChecked, YearlyChecked, Weekly, Monthly, Quarterly, Yearly, TimeCheck, LevelID, WeeklyPublic, MonthlyPublic, QuarterlyPublic, YearlyPublic);
+
+                    $('#modal-group-monthly').modal('hide');
+
+                });
+                //update quaterly modal
+                $("#btnsavequaterlymodal").off('click').on('click', function (e) {
+                    e.preventDefault();
+                    var ID = Number($('#modal-group-quarterly .KPILevelID').val());
+
+                    var KPIID = $('#modal-group-quarterly .quaterly').data('id');
+                    var LevelID = $('#box .kpi-name .code').text();
+                    var TimeCheck = new Date();
+                    var KPILevelCode = "";
+                    var Checked = null;
+                    var UserCheck = $('#user').data('userid');
+                    var Weekly = null;
+                    var Monthly = null;
+                    var Quarterly = $("#modal-group-quarterly input[name=quarterly-datepicker]").val();
+                    var Yearly = null;
+                    var WeeklyChecked = null;
+                    var MonthlyChecked = null;
+                    var QuarterlyChecked = null;
+                    var YearlyChecked = null;
+                    var WeeklyPublic = null;
+                    var MonthlyPublic = null;
+                    var QuarterlyPublic = $('#modal-group-quarterly input[type="radio"][name=quarterlypublic]:checked').val() === "true" ? true : false;
+                    var YearlyPublic = null;
+
+                    kpiController.updateKPILevel(ID, KPIID, KPILevelCode, UserCheck, Checked, WeeklyChecked, MonthlyChecked, QuarterlyChecked, YearlyChecked, Weekly, Monthly, Quarterly, Yearly, TimeCheck, LevelID, WeeklyPublic, MonthlyPublic, QuarterlyPublic, YearlyPublic);
+
+                    $('#modal-group-quarterly').modal('hide');
+                });
+                //update yearly modal
+                $("#btnsaveyearly").off('click').on('click', function () {
+                    var ID = Number($('#modal-group-yearly .KPILevelID').val());
+                    var KPIID = $('#modal-group-yearly .yearly').data('id');
+                    var LevelID = $('#box .kpi-name .code').text();
+                    var TimeCheck = new Date();
+                    var KPILevelCode = "";
+                    var Checked = null;
+                    var UserCheck = $('#user').data('userid');
+                    var Weekly = null;
+                    var Monthly = null;
+                    var Quarterly = null;
+                    var Yearly = $("#modal-group-yearly input[name=yearly-datepicker]").val();
+                    var WeeklyChecked = null;
+                    var MonthlyChecked = null;
+                    var QuarterlyChecked = null;
+                    var YearlyChecked = null;
+                    var WeeklyPublic = null;
+                    var MonthlyPublic = null;
+                    var QuarterlyPublic = null;
+                    var YearlyPublic = $('#modal-group-quarterly input[type="radio"][name=quarterlypublic]:checked').val() === "true" ? true : false;
+
+                    kpiController.updateKPILevel(ID, KPIID, KPILevelCode, UserCheck, Checked, WeeklyChecked, MonthlyChecked, QuarterlyChecked, YearlyChecked, Weekly, Monthly, Quarterly, Yearly, TimeCheck, LevelID, WeeklyPublic, MonthlyPublic, QuarterlyPublic, YearlyPublic);
+
+                    $('#modal-group-yearly').modal('hide');
+
+                });
+            },
+            updateKPILevel: function (ID ,KPIID, KPILevelCode, UserCheck, Checked, WeeklyChecked, MonthlyChecked, QuarterlyChecked, YearlyChecked, Weekly, Monthly, Quarterly, Yearly, TimeCheck, LevelID, WeeklyPublic, MonthlyPublic, QuarterlyPublic, YearlyPublic) {
+                var mObj = {
+                    ID : ID,
+                    KPIID: KPIID,
+                    KPILevelCode: KPILevelCode,
+                    UserCheck: UserCheck,
+                    Checked: Checked,
+                    WeeklyChecked: WeeklyChecked,
+                    MonthlyChecked: MonthlyChecked,
+                    QuarterlyChecked: QuarterlyChecked,
+                    YearlyChecked: YearlyChecked,
+                    Weekly: Weekly,
+                    Monthly: Monthly,
+                    Quarterly: Quarterly,
+                    Yearly: Yearly,
+                    TimeCheck: TimeCheck,
+                    LevelID: LevelID,
+                    WeeklyPublic: WeeklyPublic,
+                    MonthlyPublic: MonthlyPublic,
+                    QuarterlyPublic: QuarterlyPublic,
+                    YearlyPublic: YearlyPublic,
+                };
+
+                $.ajax({
+                    url: "/AdminKPILevel/UpdateKPILevel",
+                    data: JSON.stringify(mObj),
+                    type: "POST",
+                    contentType: "application/json;charset=utf-8",
+                    dataType: "json",
+                    success: function (result) {
+
+                        if (result) {
+                            success('Update successfully!.');
+                        }
+                    },
+                    error: function (errormessage) {
+                        //console.log(errormessage.responseText);
+                    }
+                });
+            },
+            loadDataCategory: function () {
+                $.ajax({
+                    url: '/AdminKPILevel/GetCategoryCode',
+                    type: "GET",
+                    dataType: "json",
+                    success: function (data) {
+                        $("#box select").empty();
+                        $("#box select").append('<option value="">.: Choose Category :.</option>');
+                        //console.log(data);
+                        $.each(data, function (key, item) {
+                            $("#box select").append("<option value=\"" + item.ID + "\">" + item.Name + "</option>");
+                        });
+                    }
+                });
+            },
+            loadDataKPILevel: function (changePageSize, level) {
+                var category = $('#box select').find(':selected').val();
+                if (category === undefined || category === "")
+                    category = 0;
+               
+                $.ajax({
+                    url: '/AdminKPILevel/LoadDataKPILevel',
+                    type: "GET",
+                    data: {
+                        level: level,
+                        category: category,
+                        page: kpiLevelConfig.pageIndex,
+                        pageSize: kpiLevelConfig.pageSize
+                    },
+                    dataType: "json",
+                    success: function (response) {
+                        if (response.status) {
+                            var count,
+                                data = response.data,
+                                page = response.page,
+                                pageSize = response.pageSize;
+
+                            if (page === 1)
+                                count = 1;
+                            else count = (page - 1) * pageSize + 1;
+                            console.log(response);
+                            var html = '',
+                                template = $('#tblkpilevel-template').html();
+                            $.each(data, function (i, item) {
+                                html += Mustache.render(template, {
+                                    Color: count % 2 !== 0 ? "class='info'" : "",
+                                    No: count,
+                                    ID: item.ID,
+                                    Unit: item.Unit,
+                                    LevelNumber: item.LevelNumber,
+                                    LevelCode: item.LevelCode,
+                                    KPIName: item.KPIName,
+                                    Checked: item.Checked === true ? '<input type="checkbox" data-code="' + item.KPICode + '" value="' + item.KPIID + '" checked />' : '<input type="checkbox" data-code="' + item.KPICode + '"  value="' + item.KPIID + '" />',
+                                    WeeklyChecked: item.WeeklyChecked === true ? '<input class="weekly" data-code="' + item.KPICode + '"  value="' + item.KPIID + '" type="checkbox" checked />' : '<input class="weekly" data-code="' + item.KPICode + '"  value="' + item.KPIID + '" type="checkbox" />',
+                                    MonthlyChecked: item.MonthlyChecked === true ? '<input class="monthly" data-code="' + item.KPICode + '"  value="' + item.KPIID + '" type="checkbox" checked />' : '<input class="monthly" data-code="' + item.KPICode + '"  value="' + item.KPIID + '" type="checkbox" />',
+                                    QuarterlyChecked: item.QuarterlyChecked === true ? '<input class="quaterly" data-code="' + item.KPICode + '"  value="' + item.KPIID + '" type="checkbox" checked />' : '<input class="quaterly" data-code="' + item.KPICode + '"  value="' + item.KPIID + '" type="checkbox" />',
+                                    YearlyChecked: item.YearlyChecked === true ? '<input class="yearly" data-code="' + item.KPICode + '"   value="' + item.KPIID + '"type="checkbox" checked />' : '<input class="yearly" data-code="' + item.KPICode + '"  value="' + item.KPIID + '" type="checkbox" />',
+
+                                });
+                                count++;
+                            });
+                            $('#tblkpilevel').html(html);
+                            kpiController.pagingKPILevel(response.total, function () {
+                                console.log("change pageSize")
+                                kpiController.loadDataKPILevel('', level);
+                            }, changePageSize);
+                            kpiController.registerEvent();
+                        }
+                    },
+                    error: function (err) {
+                        console.log(err);
+                    }
+                });
+            },
+            loadDetail: function (id) {
+                $.ajax({
+                    url: "/AdminKPILevel/GetbyID/",
+                    data: { ID: JSON.stringify(id) },
+                    type: "GET",
+                    contentType: "application/json;charset=UTF-8",
+                    dataType: "json",
+                    success: function (res) {
+                        //console.log("show detail KPI")
+                        //console.log(result);
+                        console.log(res)
+                        var result = res.data;
+
+                        $('.KPILevelID').val(id);
+                        $('#modal-group-weekly .weekly').val(result.Weekly);
+                        $('#modal-group-weekly .weekly').val(result.Weekly);
+                        $('#modal-group-weekly input[name=weekpublic]').val(result.WeeklyPublic);
+                        $('#modal-group-weekly .standard').val(result.WeeklyStandard);
+
+                        $('#modal-group-monthly input[name=monthly-datepicker]').val(kpiController.convertDateJson(result.Monthly));
+                        $('#modal-group-monthly input[name=monthpublic]').val(result.MonthlyChecked);
+                        $('#modal-group-monthly .standard').val(result.MonthlyStandard);
+
+                        $('#modal-group-quarterly input[name=quarterly-datepicker]').val(kpiController.convertDateJson(result.Quarterly));
+                        $('#modal-group-quarterly input[name=quarterpublic]').val(result.QuarterlyChecked);
+                        $('#modal-group-quarterly .standard').val(result.QuarterlyStandard);
+
+                        $('#modal-group-yearly  input[name=yearly-datepicker]').val(kpiController.convertDateJson(result.Yearly));
+                        $('#modal-group-yearly input[name=quaterpublic]').val(result.YearlyChecked);
+                        $('#modal-group-yearly .standard').val(result.YearlyStandard);
+                    },
+                    error: function (err) {
+                        //console.log(err);
+                    }
+                });
+            },
+            pagingKPILevel: function (totalRow, callback, changePageSize) {
+                var totalPage = Math.ceil(totalRow / kpiLevelConfig.pageSize);
+
+                //Unbind pagination if it existed or click change pagesize
+                if ($('#paginationKPILevel a').length === 0 || changePageSize === true) {
+                    $('#paginationKPILevel').empty();
+                    $('#paginationKPILevel').removeData("twbs-pagination");
+                    $('#paginationKPILevel').unbind("page");
+                }
+
+                $('#paginationKPILevel').twbsPagination({
+                    totalPages: totalPage === 0 ? 1 : totalPage,
+                    first: "First",
+                    next: "Next",
+                    last: "Last",
+                    prev: "Previous",
+                    visiblePages: 10,
+                    onPageClick: function (event, page) {
+                        kpiLevelConfig.pageIndex = page;
+                        setTimeout(callback, 500);
+                    }
+                });
+            },
+            getAllUser() {
+
+                $.post("/AdminKPILevel/GetListAllUser", function (data) {
+                    var users = [], username, fullname;
+                    var arrays = data;
+                    $.each(arrays, function (i, item) {
+                        users.push({
+                            username: item.Username,
+                            fullname: item.FullName
+                        })
+                    })
+
+                    $('.KPILevelSelect2').suggest('@@', {
+                        data: users,
+                        map: function (user) {
+                            return {
+                                value: user.username + '\f',
+                                text: '<strong>' + user.username + '  </strong> <small>' + user.fullname + '</small>'
+                            }
+                        },
+                        get: function (index) {
+                            console.log(index)
+                        }
+
+                    });
+                });
+            },
+            convertDateJson(d) {
+                if (d === null)
+                    d = "/Date(1000000000000)/";
+
+                let milli = d.replace(/\/Date\((-?\d+)\)\//, '$1');
+                let date = new Date(parseInt(milli));
+                let dd = String(date.getDate()).padStart(2, '0');
+                let mm = String(date.getMonth() + 1).padStart(2, '0'); //January is 0!
+                let yyyy = date.getFullYear();
+                return mm + '/' + dd + '/' + yyyy;
+            }
+        }
+    </script>
+}
+<div class="row">
+    <div class="col-md-12">
+        <div class="callout bg-yellow-gradient" style="border-color:#c57901">
+            <h3>5. OC KPI</h3>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-4">
+        <div class="box  box-info">
+            <div class="box-header">
+                <span style="font-size:18px;font-weight:bold">Organization Chart</span>
+
+                <div class="pull-right box-tools">
+                    <!-- button with a dropdown -->
+                    <button type="button" class="btn btn-warning btn-sm fancy-collapse">
+                        <i class="fa fa-compress"></i> Collapse
+                    </button>
+                    <button type="button" class="btn btn-info btn-sm fancy-expand">
+                        <i class="fa fa-expand"></i> Expand
+                    </button>
+                </div>
+            </div>
+            <div class="box-body">
+                <table id="treetable" class="table table-condensed table-hover table-striped fancytree-fade-expander fancytree-colorize-selected">
+                    <colgroup>
+                        <col width="30px"></col>
+                        <col width="*"></col>
+                    </colgroup>
+                    <thead>
+                        <tr>
+                            <th>Level Number</th>
+                            <th class="text-right">Organization Chart</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="text-center"></td>
+                            <td></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+    </div>
+    <div class="col-md-8">
+        @RenderPage("_ListKPILevel.cshtml")
+        @RenderPage("_Modal.cshtml")
+    </div>
+
+</div>
+
+
+

@@ -1,0 +1,80 @@
+﻿@using MvcBreadCrumbs
+@{
+    ViewBag.Title = "Admin Category";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+}
+@Html.Raw(BreadCrumb.Display())
+<div class="row">
+    <div class="col-md-12">
+        <div class="callout callout-danger">
+            <h3>3. Category</h3>
+        </div>
+    </div>
+</div>
+
+<div class="box  box-info" id="table-group">
+    <div class="box-header with-border">
+        <button id="btnShowModal" class="btn btn-success pull-right" data-toggle="modal" data-target="#modal-group"><i class="fa fa-plus"></i> Add</button>
+        @*<h3 class="box-title pull-left">List Categories</h3>*@
+        <div class="row">
+            <div class="col-md-3">
+
+            </div>
+            <div class="col-md-3">
+            </div>
+            <div class="col-md-3">
+                <input type="text" class="form-control" autocomplete="off" id="search" placeholder="Search name" />
+            </div>
+        </div>
+    </div>
+    <!-- /.box-header -->
+    <div class="box-body table-responsive no-padding">
+
+        <table class="table table-hover table-bordered">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Name</th>
+                    <th>Code</th>
+                    <th>Level</th>
+                    <th>Add/Edit/Delete</th>
+                </tr>
+            </thead>
+            <tbody class="tbody" id="tblkpi"></tbody>
+        </table>
+        <script id='tblkpi-template' type="text/template">
+            <tr {{{Color}}}>
+                <td>{{No}}</td>
+                <td>{{Name}}</td>
+                <td>{{Code}}</td>
+                <td>{{Level}}</td>
+                <td>
+                    <div class="btn-group">
+                        <div class="btn-group">
+                            <button type="button" data-id="{{ID}}" data-toggle="modal" data-target="#modal-group2" class="btn btn-primary btn-sm btnUpdate"><i class="fa fa-edit"></i> Edit</button>
+
+                            <button type="button" data-iddel="{{IDDelete}}" class="btn btn-danger btn-sm btnDelete" id="btnDelete"><i class="fa fa-remove"></i> Delete</button>
+                        </div>
+                    </div>
+                </td>
+            </tr>
+        </script>
+    </div>
+    <!-- /.box-body -->
+    <div class="box-footer clearfix" id="pageds">
+        <ul id="pagination" class="pagination pagination-sm no-margin pull-right">
+            <li><a href="#">«</a></li>
+            <li><a href="#">1</a></li>
+            <li><a href="#">2</a></li>
+            <li><a href="#">3</a></li>
+            <li><a href="#">»</a></li>
+        </ul>
+    </div>
+</div>
+@* Modal *@
+@RenderPage("_Modal.cshtml")
+
+@section Scripts{
+    <script src="~/Scripts/controllers/adminCategoryController.js"></script>
+}

@@ -1,0 +1,146 @@
+﻿<div class="modal fade" id="modal-group" style="display: none">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-green">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+                <h4 class="modal-title"> <i class="fa fa-plus-square"></i> Add User </h4>
+            </div>
+            <div class="modal-body">
+                <div>
+                    <div class="box-body" id="addUser">
+                        <div class="form-group" style="display:none">
+                            <label for="Name">ID </label>
+                            <input type="text" class="form-control ID" placeholder="ID" disabled style="display:none">
+                        </div>
+                        <div class="form-group">
+                            <label for="Username">Username<span style="color:red"> (*)</span> </label>
+                            <input type="text" class="form-control Username" placeholder="Enter Username">
+                        </div>
+                        <div class="form-group">
+                            <label for="Password">Password<span style="color:red"> (*)</span> </label>
+                            <input type="password" class="form-control Password" placeholder="Enter Password">
+                        </div>
+                        <div class="form-group">
+                            <label for="Email">Email<span style="color:red"> (*)</span> </label>
+                            <input type="text" class="form-control Email" placeholder="Enter Email">
+                        </div>
+                        <div class="form-group">
+                            <label for="Alias">Alias<span style="color:red"> (*)</span> </label>
+                            <input type="text" class="form-control Alias" placeholder="Enter Alias">
+                        </div>
+                        <div class="form-group">
+                            <label for="FullName">FullName<span style="color:red"> (*)</span> </label>
+                            <input type="text" class="form-control FullName" placeholder="Enter FullName">
+                        </div>
+                        <div class="form-group">
+                            <label for="Skype">Skype</label>
+                            <input type="text" class="form-control Skype" placeholder="Enter Skype">
+                        </div>
+                        <div class="form-group">
+                            <label for="Code">Code</label>
+                            <input type="text" class="form-control Code" placeholder="Enter Code">
+                        </div>
+                        <div class="form-group permission">
+                        </div>
+                        <div class="form-group">
+                            <small style="color:red;font-weight:bold;text-align:center;display:block">(*) Require fields not to be blank.</small>
+                        </div>
+                    </div>
+                    <!-- /.box-body -->
+
+                    <div class="box-footer">
+                        <button id="btnAdd" class="btn btn-primary">Add</button>
+                        <button type="button" class="btn btn-default pull-right" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+@* update *@
+<div class="modal fade" id="modal-group2" style="display: none">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-green">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+                <h4 class="modal-title"><i class="fa fa-minus-square-o"></i> Update User </h4>
+            </div>
+            <div class="modal-body">
+                <div>
+                    <div class="box-body" id="updateUser">
+                        <div class="form-group" style="display:none">
+                            <label for="ID">ID </label>
+                            <input type="text" class="form-control ID" placeholder="ID" style="display:none">
+                        </div>
+                        <div class="form-group">
+                            <label for="Username">Username </label>
+                            <input type="text" class="form-control Username" placeholder="Enter Name">
+                        </div>
+                        <div class="form-group">
+                            <label for="Email">Email </label>
+                            <input type="text" class="form-control Email" placeholder="Enter Email">
+                        </div>
+                        <div class="form-group">
+                            <label for="Alias">Alias</label>
+                            <input type="text" class="form-control Alias" placeholder="Enter Alias">
+                        </div>
+                        <div class="form-group">
+                            <label for="FullName">FullName </label>
+                            <input type="text" class="form-control FullName" placeholder="Enter FullName">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="Skype">Skype </label>
+                            <input type="text" class="form-control Skype" placeholder="Enter Skype">
+                        </div>
+                        <div class="form-group">
+                            <label for="Code">Code </label>
+                            <input type="text" class="form-control Code" placeholder="Enter Code">
+                        </div>
+                        <div class="form-group permission">
+                        </div>
+                        
+                    </div>
+                    <!-- /.box-body -->
+                    <div class="box-footer">
+                        <button type="button" class="btn btn-primary" id="btnSaveUpdateModal">Update</button>
+                        <button type="button" class="btn btn-default pull-right" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+<div class="modal fade" id="modal-group-permission" style="display: none">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+                <h4 class="modal-title">Permission </h4>
+            </div>
+            <div class="modal-body">
+                <div>
+                    <div class="box-body" id="permission">
+
+                    </div>
+                    <!-- /.box-body -->
+                </div>
+            </div>
+
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>

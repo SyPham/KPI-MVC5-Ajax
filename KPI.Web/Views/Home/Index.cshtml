@@ -1,0 +1,88 @@
+﻿@using MvcBreadCrumbs;
+@using KPI.Model.helpers;
+@using KPI.Model.ViewModel
+@model IEnumerable<KPI.Model.EF.Notification>
+@{
+    ViewBag.Title = "Home";
+}
+@{
+    var userProfile = Session["UserProfile"] as UserProfileVM;
+}
+@Html.Raw(BreadCrumb.Display())
+@if (@userProfile.User.Permission == 1)
+{
+    <div class="row animatedParent" id="home-admin">
+        @foreach (var item in userProfile.Menus)
+        {
+            if (item.Permission == 1)
+            {
+                <a href="@item.Link" class="col-md-3 col-sm-6 col-xs-12">
+                    <div class="info-box">
+                        <span class="info-box-icon @item.BackgroudColor"><i class="@item.FontAwesome"></i></span>
+
+                        <div class="info-box-content">
+                            <span class="info-box-text" style="color:#fff">title</span>
+                            <span class="info-box-number">@item.LangName</span>
+
+                            @*<span class="info-box-number">@ViewBag.TotalLevel<small></small></span>*@
+                        </div>
+                        <!-- /.info-box-content -->
+                    </div>
+                    <!-- /.info-box -->
+                </a>
+            }
+
+        }
+    </div>
+
+    <div class="row animatedParent" id="home-client">
+        @foreach (var item in userProfile.Menus)
+        {
+            if (item.Permission > 1 && item.Permission < 100)
+            {
+                <a href="@item.Link" class="col-md-3 col-sm-6 col-xs-12 animated swing">
+                    <div class="info-box">
+                        <span class="info-box-icon @item.BackgroudColor"><i class="@item.FontAwesome"></i></span>
+
+                        <div class="info-box-content">
+                            <span class="info-box-text" style="color:#fff">title</span>
+                            <span class="info-box-number">@item.LangName</span>
+                            @*<span class="info-box-number">@ViewBag.TotalLevel<small></small></span>*@
+                        </div>
+                        <!-- /.info-box-content -->
+                    </div>
+                    <!-- /.info-box -->
+                </a>
+            }
+
+        }
+    </div>
+}
+else
+{
+    <div class="row animatedParent" id="home-client">
+        @foreach (var item in userProfile.Menus)
+        {
+            if (item.Permission != 1)
+            {
+                <a href="@item.Link" class="col-md-3 col-sm-6 col-xs-12 animated swing" style="color:black!important">
+                    <div class="info-box">
+                        <span class="info-box-icon @item.BackgroudColor"><i class="@item.FontAwesome"></i></span>
+
+                        <div class="info-box-content">
+                            <span class="info-box-text">@item.LangName</span>
+                            @*<span class="info-box-number">@ViewBag.TotalLevel<small></small></span>*@
+                        </div>
+                        <!-- /.info-box-content -->
+                    </div>
+                    <!-- /.info-box -->
+                </a>
+            }
+
+        }
+    </div>
+}
+
+@section Scripts{
+
+}

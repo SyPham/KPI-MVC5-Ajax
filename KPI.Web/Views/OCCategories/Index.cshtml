@@ -1,0 +1,269 @@
+﻿@using MvcBreadCrumbs;
+@{
+    ViewBag.Title = "Category KPI OC";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@Html.Raw(BreadCrumb.Display())
+@section Scripts{
+    <script>
+        var CLIPBOARD = null;
+        var glyph_opts = {
+            preset: "bootstrap3",
+            map: {
+            }
+        };
+        $.ui.fancytree.debugLevel = 3; // silence debug output
+        //$('#box').fadeOut();
+        function logEvent(event, data, msg) {
+            //        var args = $.isArray(args) ? args.join(", ") :
+            msg = msg ? ": " + msg : "";
+            $.ui.fancytree.info("Event('" + event.type + "', node=" + data.node + ")" + msg);
+        }
+        $(function () {
+            ocCategoryAdmin.init();
+
+            $("#treetable").fancytree({
+                extensions: ["glyph", "table"],
+                checkbox: false,
+                selectMode: 2,
+                dnd5: {
+                    preventVoidMoves: true,
+                    preventRecursion: true,
+                    autoExpandMS: 400,
+                    dragStart: function (node, data) {
+                        return true;
+                    },
+                    dragEnter: function (node, data) {
+                        // return ["before", "after"];
+                        return true;
+                    },
+                    dragDrop: function (node, data) {
+                        data.otherNode.moveTo(node, data.hitMode);
+                    }
+                },
+                glyph: glyph_opts,
+                source: { url: "/OCCategories/GetListTree", debugDelay: 1000 },
+                table: {
+                    indentation: 20,
+                    nodeColumnIdx: 1,
+                    //checkboxColumnIdx: 0
+                },
+                gridnav: {
+                    autofocusInput: false,
+                    handleCursorKeys: true
+                },
+                focus: function (event, data) {
+                    $('#boxCategory tr').off('focus').on('focus', function () {
+                        $('#boxCategory tr').removeClass('trfocus');
+                    })
+                    logEvent(event, data, ", targetType=" + data.targetType);
+                    var node = data.node,
+                        $tdList = $(node.tr).find(">td");
+                    var level = $tdList.eq(0).text();
+                    var name = $tdList.eq(1).text();
+                    $('#boxCategory .kpi-name h3').text('Category list - ' + name);
+                    console.log(data.node.key)
+                    ocCategoryAdmin.getCategoryByOC(true, level,data.node.key)
+                    logEvent(event, data, ", targetType=" + data.targetType);
+                    $('#boxCategory .ocId').val(data.node.key);
+                },
+                lazyLoad: function (event, data) {
+                    data.result = { url: "/GetListTree", debugDelay: 1000 };
+                },
+                renderColumns: function (event, data) {
+                    var node = data.node,
+                        $tdList = $(node.tr).find(">td");
+
+                    // (Index #0 is rendered by fancytree by adding the checkbox)
+                    // Set column #1 info from node data:
+                    // (Index #2 is rendered by fancytree)
+                    // Set column #3 info from node data:
+
+                    $tdList.eq(0).addClass('text-bold').text(node.data.levelnumber);
+                    $tdList.eq(1).find('span.fancytree-icon').removeClass('fancytree-icon').addClass('fa fa-book')
+                    $tdList.eq(1).addClass('text-bold');
+                    $tdList.eq(1).addClass('text-bold');
+                    // Static markup (more efficiently defined as html row template):
+                    // $tdList.eq(3).html("<input type='input' value='" + "" + "'>");
+                    // ...
+                }
+            });
+
+            $('.fancy-collapse').off('click').on('click', function () {
+                $("#treetable").fancytree("getTree").expandAll(false);
+            });
+            $('.fancy-expand').off('click').on('click', function () {
+                $("#treetable").fancytree("getTree").expandAll();
+            });
+
+        });
+
+        var config = {
+            pageSize: 6,
+            pageIndex: 1
+        };
+        var ocCategoryAdmin = {
+            init: function () {
+                ocCategoryAdmin.registerEvent();
+            },
+            registerEvent: function () {
+
+                $('.addOCCategoryCheckbox').off('click').on('click', function () {
+                    var ocId = Number($('#boxCategory .ocId').val());
+                    var catId = Number($(this).closest('tr').data('id'));
+                    ocCategoryAdmin.addOCCategory(ocId,catId);
+                })
+            },
+            addOCCategory: function (ocId, catId) {
+                var mObj = {
+                    OCID: ocId,
+                    CategoryID: catId,
+                };
+                $.ajax({
+                    url: "/OCCategories/AddOCCategory",
+                    data: JSON.stringify(mObj),
+                    type: "POST",
+                    contentType: "application/json;charset=utf-8",
+                    dataType: "json",
+                    success: function (result) {
+
+                        if (result) {
+                            success('Successfully!')
+                        }
+                    },
+                    error: function (errormessage) {
+                        console.log(errormessage.responseText);
+                    }
+                });
+            },
+            loadTree: function () {
+                $.ui.fancytree.getTree("#treetable").reload().done();
+            },
+            getCategoryByOC: function (changePageSize, level, ocID) {
+                console.log("GetCategoryByOC")
+
+                $.ajax({
+                    url: '/OCCategories/GetCategoryByOC',
+                    type: "GET",
+                    data: {
+                        level: level,
+                        ocID: ocID,
+                        page: config.pageIndex,
+                        pageSize: config.pageSize
+                    },
+                    dataType: "json",
+                    success: function (response) {
+                        console.log(response)
+                        if (response.status) {
+                            var count = 1;
+                            var data = response.data;
+                            var page = response.page;
+                            var pageSize = response.pageSize;
+                            if (page === 1)
+                                count = page;
+                            else count = (page - 1) * pageSize + 1;
+                            var html = '';
+                            var template = $('#tblCategory-template').html();
+                            $.each(data, function (i, item) {
+                                html += Mustache.render(template, {
+                                    //Color: count % 2 !== 0 ?"class='info'":"",
+                                    No: count,
+                                    ID: item.ID,
+                                    Name: item.Name,
+                                    LevelID: item.LevelID,
+                                    Status: item.Status == true ? "checked" : ""
+                                });
+                                count++;
+                            });
+                            $('#tblCategory').html(html);
+                            ocCategoryAdmin.pagingCategoryKPILevel(response.total, function () {
+                                ocCategoryAdmin.getCategoryByOC("", level,ocID);
+                            }, changePageSize);
+                            ocCategoryAdmin.registerEvent();
+                        }
+                    },
+                    error: function (err) {
+                        console.log(err);
+                    }
+                });
+            },
+            pagingCategoryKPILevel: function (totalRow, callback, changePageSize) {
+                var totalPage = Math.ceil(totalRow / config.pageSize);
+
+                //Unbind pagination if it existed or click change pagesize
+                if ($('#paginationCategoryKPILevel a').length === 0 || changePageSize === true) {
+                    $('#paginationCategoryKPILevel').empty();
+                    $('#paginationCategoryKPILevel').removeData("twbs-pagination");
+                    $('#paginationCategoryKPILevel').unbind("page");
+                }
+
+                $('#paginationCategoryKPILevel').twbsPagination({
+                    totalPages: totalPage === 0 ? 1 : totalPage,
+                    first: "First",
+                    next: "Next",
+                    last: "Last",
+                    prev: "Previous",
+                    visiblePages: 10,
+                    onPageClick: function (event, page) {
+                        config.pageIndex = page;
+                        setTimeout(callback, 500);
+                    }
+                });
+            },
+        }
+    </script>
+}
+<div class="row">
+    <div class="col-md-12">
+        <div class="callout callout-success">
+            <h3>4. OC Category</h3>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-4">
+        <div class="box  box-info">
+            <div class="box-header">
+                <span style="font-size:18px;font-weight:bold">Organization Chart</span>
+
+                <div class="pull-right box-tools">
+                    <!-- button with a dropdown -->
+                    <button type="button" class="btn btn-warning btn-sm fancy-collapse">
+                        <i class="fa fa-compress"></i> Collapse
+                    </button>
+                    <button type="button" class="btn btn-info btn-sm fancy-expand">
+                        <i class="fa fa-expand"></i> Expand
+                    </button>
+                </div>
+            </div>
+            <div class="box-body">
+                <table id="treetable" class="table table-condensed table-hover table-striped fancytree-fade-expander fancytree-colorize-selected">
+                    <colgroup>
+                        <col width="30px"></col>
+                        <col width="*"></col>
+                    </colgroup>
+                    <thead>
+                        <tr>
+                            <th>Level Number</th>
+                            <th class="text-right">Name</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="text-center"></td>
+                            <td></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+    </div>
+    <div class="col-md-8">
+        @RenderPage("_ListCategoies.cshtml")
+    </div>
+
+</div>
+
+
+

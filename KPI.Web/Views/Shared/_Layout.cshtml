@@ -1,0 +1,440 @@
+﻿@using KPI.Model.helpers
+@using KPI.Model.ViewModel
+
+@{
+    var userProfile = Session["UserProfile"] as UserProfileVM;
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>@ViewBag.Title - KPI System</title>
+    <link rel="shortcut icon" type="image/x-icon" href="~/favicon.ico">
+    @RenderPage("_CSS.cshtml")
+    @RenderSection("Styles", required: false)
+</head>
+<body class="hold-transition skin-blue sidebar-collapse sidebar-mini">
+
+    <!-- Site wrapper -->
+    <div class="wrapper">
+        @Html.Partial("header")
+
+        <!-- =============================================== -->
+        <!-- Left side column. contains the sidebar -->
+        <aside class="main-sidebar">
+            <!-- sidebar: style can be found in sidebar.less -->
+            <section class="sidebar">
+                @if (userProfile != null)
+                {
+                    <ul class="sidebar-menu" data-widget="tree">
+                        <li style="height: auto;">
+                            <a href="/">
+                                <i class="fa fa-dashboard"></i> <span>Home</span>
+                            </a>
+                        </li>
+
+                        @if (userProfile.User.Permission != 1)
+                        {
+                            foreach (var item in userProfile.Menus)
+                            {
+                                if (item.Permission != 1)
+                                {
+                                    <li>
+                                        <a href="@item.Link">
+                                            <i class="@item.FontAwesome"></i> <span>@item.LangName</span>
+                                        </a>
+                                    </li>
+                                }
+                            }
+                        }
+                        @if (userProfile.User.Permission == 1)
+                        {
+                            foreach (var item in userProfile.Menus)
+                            {
+                                if (item.Permission != 1)
+                                {
+                                    <li>
+                                        <a href="@item.Link">
+                                            <i class="@item.FontAwesome"></i> <span>@item.LangName</span>
+                                        </a>
+                                    </li>
+                                }
+                            }
+                            <li class="treeview">
+                                <a href="#">
+                                    <i class="fa fa-table"></i> <span>Admin</span>
+                                    <span class="pull-right-container">
+                                        <i class="fa fa-angle-left pull-right"></i>
+                                    </span>
+                                </a>
+                                <ul class="treeview-menu">
+
+                                    @foreach (var item in userProfile.Menus)
+                                    {
+                                        if (item.Permission == 1)
+                                        {
+                                            <li>
+                                                <a href="@item.Link">
+                                                    <i class="@item.FontAwesome"></i><span>@item.LangName</span>
+                                                </a>
+                                            </li>
+                                        }
+                                    }
+                                </ul>
+                            </li>
+                        }
+
+                    </ul>
+                }
+
+            </section>
+            <!-- /.sidebar -->
+        </aside>
+
+        <!-- =============================================== -->
+        <!-- Content Wrapper. Contains page content -->
+        <div class="content-wrapper">
+            <!-- Content Header (Page header) -->
+            @RenderPage("_PageHeader.cshtml")
+           <div id="InFor"></div>
+            <!-- Main content -->
+            <section id="content" class="content" style="overflow-x: scroll; overflow-x:hidden">
+
+                @RenderBody()
+
+            </section>
+            <!-- /.content -->
+        </div>
+        <!-- /.content-wrapper -->
+
+        <footer class="main-footer">
+            <div class="pull-right hidden-xs">
+                online: <b> @Context.Application["user_online"] </b> <i class="fa fa-user"></i>
+            </div>
+            <strong>Copyright &copy; 2019 <a href="/">By Lab Team.</a></strong>
+        </footer>
+        <!-- Control Sidebar -->
+        <aside class="control-sidebar control-sidebar-dark">
+            <!-- Create the tabs -->
+            <ul class="nav nav-tabs nav-justified control-sidebar-tabs">
+                <li>
+                    <a href="#control-sidebar-home-tab" data-toggle="tab">
+                        <i class="fa fa-home"></i>
+                    </a>
+                </li>
+                <li>
+                    <a href="#control-sidebar-settings-tab" data-toggle="tab">
+                        <i class="fa fa-gears"></i>
+                    </a>
+                </li>
+            </ul>
+            <!-- Tab panes -->
+            <div class="tab-content">
+                <!-- Home tab content -->
+                <div class="tab-pane" id="control-sidebar-home-tab">
+                </div>
+                <!-- /.tab-pane -->
+                <!-- Stats tab content -->
+                <div class="tab-pane" id="control-sidebar-stats-tab">Stats Tab Content</div>
+                <!-- /.tab-pane -->
+                <!-- Settings tab content -->
+                <div class="tab-pane" id="control-sidebar-settings-tab">
+                    <form method="post">
+                        <h3 class="control-sidebar-heading">General Settings</h3>
+
+                        <div class="form-group">
+                            <label class="control-sidebar-subheading">
+                                Report panel usage
+                                <input type="checkbox" class="pull-right" checked>
+                            </label>
+
+                            <p>
+                                Some information about this general settings option
+                            </p>
+                        </div>
+                        <!-- /.form-group -->
+
+                        <div class="form-group">
+                            <label class="control-sidebar-subheading">
+                                Allow mail redirect
+                                <input type="checkbox" class="pull-right" checked>
+                            </label>
+
+                            <p>
+                                Other sets of options are available
+                            </p>
+                        </div>
+                        <!-- /.form-group -->
+
+                        <div class="form-group">
+                            <label class="control-sidebar-subheading">
+                                Expose author name in posts
+                                <input type="checkbox" class="pull-right" checked>
+                            </label>
+
+                            <p>
+                                Allow the user to show his name in blog posts
+                            </p>
+                        </div>
+                        <!-- /.form-group -->
+                    </form>
+                </div>
+                <!-- /.tab-pane -->
+            </div>
+        </aside>
+        <!-- /.control-sidebar -->
+        <div class="control-sidebar-bg"></div>
+        <!--Loading-->
+        <div id="main-loading-delay" style="display:none">
+            <div class="lds-ripple"><div></div><div></div></div>
+        </div>
+    </div>
+    @* ChangePassword *@
+    <div class="modal fade" id="modal-group-change-password" style="display: none">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                    <h4 class="modal-title">Change password </h4>
+                </div>
+                <div class="modal-body">
+                    <div>
+                        <div class="box-body" id="ChangePassword">
+                            <div class="form-group">
+                                <label for="username">Username </label>
+                                <input type="text" class="form-control username disabled" placeholder="username" disabled>
+                            </div>
+                            <div class="form-group">
+                                <label for="password">Password </label>
+                                <input type="password" class="form-control password" placeholder="Enter password">
+                            </div>
+
+                        </div>
+                        <!-- /.box-body -->
+
+                        <div class="box-footer">
+                            <button id="btnChangePassword" class="btn btn-primary">Save</button>
+                            <button type="button" class="btn btn-default pull-right" data-dismiss="modal">Close</button>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <!-- /.modal-content -->
+        </div>
+        <!-- /.modal-dialog -->
+    </div>
+
+    @* Model notification *@
+    <div class="modal fade" id="modal-group-notify" style="display: none">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-green">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                    <h4 class="modal-title"><i class="fa fa-bell-o"></i> Notification Detail</h4>
+                </div>
+                <div class="modal-body">
+                    <div>
+                        <div class="box-body" id="NotificationContent">
+                        </div>
+                        <!-- /.box-body -->
+                    </div>
+                </div>
+
+            </div>
+            <!-- /.modal-content -->
+        </div>
+        <!-- /.modal-dialog -->
+    </div>
+
+    
+    @RenderPage("_Script.cshtml")
+    @RenderSection("Scripts", required: false)
+    <script src="~/Scripts/jquery.signalR-2.4.1.min.js"></script>
+    <script src="~/signalr/hubs"></script>
+    <script>
+        $(function () {
+            $.get("/Settings/ShowInfo", function (res) {
+                console.log(res)
+                if (res.State) {
+                    var html = `<div class="my-marquee">
+                                <h3 class="text-danger">${res.Name}</h3>
+                            </div>`;
+                    $("#InFor").html (html);
+                }
+              
+            })
+            $(".datepicker").datepicker({ dateFormat: 'mm-dd-yy' });
+            //$( "input[name^=datepicker]" ).datepicker({ dateFormat: "mm-dd-yy" });
+            // Declare a proxy to reference the hub.
+            var notifications = $.connection.notificationHub;
+
+            // Create a function that the hub can call to broadcast messages.
+            notifications.client.updateMessages = function () {
+                getAllNotifications();
+            };
+            // Start the connection.
+            $.connection.hub.start().done(function () {
+                console.log("connection started")
+                getAllNotifications();
+            }).fail(function (e) {
+                console.log(e);
+            });
+        });
+        function getAllNotifications() {
+            let promise = $get("/Home/GetNotifications")
+            promise.then(result => {
+                console.log(result);
+                var data = result.data,
+                    total = result.total,
+                    arrays = result.arrayID;
+                const APPROVAL = "Approval",
+                    UPDATEAPPROVAL = "UpdateApproval",
+                    COMMENT = "Comment",
+                    TASK = "Task",
+                    DONE = "Done"
+                UPLOAD = "Upload",
+                    LATEONUPLOADDATA = "LateOnUploadData",
+                    LATEONTASK = "LateOnTask";
+                console.log('Load lai notification ' + dateNow());
+
+                var htmlNotification = '';
+                var period = "";
+                var sessionUserID = $('#user').data('userid')
+                $.each(data, function (i, item) {
+                    switch (item.Period) {
+                        case "W": period = "Weekly"; break;
+                        case "M": period = "Monthly"; break;
+                        case "Q": period = "Quarterly"; break;
+                        case "Y": period = "Yearly"; break;
+                        default: period = "Not found"; break;
+                    }
+                    item.Sender = toTitleCase(item.Sender);
+                    item.Recipient = toTitleCase(item.Recipient);
+
+                    //Neu la thong bao cua nguoi dang dang nhap tao ra
+                    //Neu la nguoi dang dang nhap tao ra thong bao
+
+                    switch (item.Action) {
+                        case COMMENT:
+                            if (item.SenderID !== sessionUserID) {
+                                htmlNotification += `<li>
+                                                                 <a data-id="${item.ID}" href="/Workplace" class="itemNotify">
+                                                                    <h4>${item.Seen === false ? '<span class="badge bg-green">New</span>' : ''} Comment <i class="fa fa-comment fa-fw"></i><small class="pull-right"><i class="fa fa-clock-o"></i> ${JSONDateWithTime(item.CreateTime)}</small></h4>
+                                                                    <p class="wordWrap">The account ${item.SenderID === sessionUserID ? "you" : item.Sender} mentioned ${item.RecipientID === sessionUserID ? "you" : item.Recipient} in ${item.Title}</p>
+                                                                   <p class="wordWrap">${item.Content}</p>
+                                                                 </a>
+                                                             </li>`;
+                            }
+                            break;
+                        case TASK:
+                            if (item.SenderID !== sessionUserID) {
+                                htmlNotification += `<li>
+                                                                 <a data-id="${item.ID}" href="/Workplace" class="itemNotify">
+                                                                    <h4>${item.Seen === false ? '<span class="badge bg-green">New</span>' : ''} Add Task <i class="fa fa-tasks fa-fw"></i><small class="pull-right"><i class="fa fa-clock-o"></i> ${JSONDateWithTime(item.CreateTime)}</small></h4>
+                                                                    <p class="wordWrap">The account ${item.Sender} assigned  ${item.RecipientID === sessionUserID ? "you" : item.Recipient} the task "${item.TaskName}" </p>
+                                                                    <p class="wordWrap">${item.Title}</p>
+                                                                    <p class="wordWrap">KPI - ${item.KPIName}</p>
+                                                                  </a>
+                                                              </li>`;
+                            }
+                            break;
+                        case DONE:
+                            if (item.SenderID !== sessionUserID) {
+                                htmlNotification += `<li>
+                                                                  <a data-id="${item.ID}" href="/Workplace" class="itemNotify">
+                                                                      <h4>${item.Seen === false ? '<span class="badge bg-green">New</span>' : ''} Update Task Status <i class="fa fa-tasks fa-fw"></i><small class="pull-right"><i class="fa fa-clock-o"></i> ${JSONDateWithTime(item.CreateTime)}</small></h4>
+                                                                      <p class="wordWrap">The account ${item.Sender} has finished the task "${item.TaskName}"</p>
+                                                                      <p class="wordWrap">${item.Title}</p>
+                                                                      <p class="wordWrap">KPI - ${item.KPIName}</p>
+                                                                  </a>
+                                                             </li>`;
+                            }
+                            break;
+                        case APPROVAL:
+                            if (item.SenderID !== sessionUserID) {
+                                 htmlNotification += `<li>
+                                                                 <a data-id="${item.ID}" href="/Workplace" class="itemNotify">
+                                                                    <h4>${item.Seen === false ? '<span class="badge bg-green">New</span>' : ''} Approval Task  <i class="fa fa-tasks fa-fw"></i><small class="pull-right"><i class="fa fa-clock-o"></i> ${JSONDateWithTime(item.CreateTime)}</small></h4>
+                                                                    <p class="wordWrap">Your task "${item.TaskName}" was approved by ${item.Sender}</p>
+                                                                 </a>
+                                                             </li>`;
+                            }
+                            break;
+                        case UPDATEAPPROVAL:
+                            if (item.SenderID !== sessionUserID) {
+                                htmlNotification += `<li>
+                                                                 <a data-id="${item.ID}" href="/Workplace" class="itemNotify">
+                                                                    <h4>${item.Seen === false ? '<span class="badge bg-green">New</span>' : ''} Update Approval Task  <i class="fa fa-tasks fa-fw"></i><small class="pull-right"><i class="fa fa-clock-o"></i> ${JSONDateWithTime(item.CreateTime)}</small></h4>
+                                                                    <p class="wordWrap">The account ${item.Sender} hasn't approved status the task "${item.TaskName}"</p>
+                                                                 </a>
+                                                             </li>`;
+                            }
+                            break;
+                        case LATEONTASK:
+                            htmlNotification += `<li>
+                                                                 <a data-id="${item.ID}" href="/Workplace" class="itemNotify">
+                                                                    <h4>${item.Seen === false ? '<span class="badge bg-green">New</span>' : ''} Late On Task  <i class="fa fa-tasks fa-fw"></i><small class="pull-right"><i class="fa fa-clock-o"></i> ${JSONDateWithTime(item.CreateTime)}</small></h4>
+                                                                    <p>Some of task are overdue. Please check your email</p>
+                                                                 </a>
+                                                             </li>`;
+                            break;
+                        case LATEONUPLOADDATA:
+                            htmlNotification += `<li>
+                                                                 <a data-id="${item.ID}" href="/Home/LateOnUpload/${item.NotificationID}" class="itemNotify">
+                                                                    <h4>${item.Seen === false ? '<span class="badge bg-green">New</span>' : ''} Late On Upload Data  <i class="fa fa-tasks fa-fw"></i><small class="pull-right"><i class="fa fa-clock-o"></i> ${JSONDateWithTime(item.CreateTime)}</small></h4>
+                                                                    <p class="wordWrap">There are some KPIs that haven't uploaded their data on time. Please check your email</p>
+                                                                 </a>
+                                                             </li>`;
+                            break;
+                        case UPLOAD:
+                            if (item.SenderID === sessionUserID || item.RecipientID === sessionUserID || item.UserID === sessionUserID) {
+                                htmlNotification += `<li>
+                                                                                 <a data-id="${item.ID}" data-url="${item.Link}?notificationId=${item.ID}" href="${item.URL}" class="itemNotify">
+                                                                                    <h4>${item.Seen === false ? '<span class="badge bg-green">New</span>' : ''}Upload Successfully <small class="pull-right"><i class="fa fa-clock-o"></i> ${JSONDateWithTime(item.CreateTime)}</small></h4>
+                                                                                    <p> class="wordWrap"${item.ContentDetail}</p>
+                                                                                 </a>
+                                                                             </li>`;
+                            }
+                            break;
+                    }
+                })
+                var html = `<a href="#" data-id="${arrays}" class="dropdown-toggle listNotifies" data-toggle="dropdown">
+                                       <i class="fa fa-bell-o ${total > 0 ? "bell" : ""}"></i>
+                                       <span class="label label-warning ${total === 0 ? "hidden" : ""}">${total}</span>
+                                     </a>
+                                     <ul class="dropdown-menu box-notification" style="min-width:800px;">
+                                         <li class="header"> You have ${total > 1 ? `${total} new notifications` : `${total} new notification`} </li>
+                                         <li>
+                                             <ul class="menu box-scrollbar " id="NotificationMenu" >
+                                                ${htmlNotification}
+                                             </ul>
+                                         </li>
+                                         <li class="footer"><a id="ViewAll" href="/Home/ListHistoryNotification"><i class="fa fa-angle-right"></i>See All Messages</a></li>
+                                     </ul>`
+                $(".notifications-menu").empty();
+                $(".notifications-menu").html(html);
+                $('[data-toggle="tooltip"]').tooltip();
+                $('.itemNotify').off('click').on('click', function () {
+                    let data = {
+                        ID: $(this).data('id')
+                    }
+                    var promise2 = $get("/Notification/Update", data)
+                    promise2.then(data => {
+                        if (data.status) {
+                            console.log("Da xem thong bao" + dateNow());
+                        }
+                    })
+                });
+            }).catch(error => {
+                console.log("error!");
+            })
+        }
+    </script>
+</body>
+</html>

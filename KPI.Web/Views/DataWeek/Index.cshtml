@@ -1,0 +1,301 @@
+﻿@using KPI.Model;
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@{
+    var data = (object)ViewData["mydata"];
+}
+<div class="row">
+    <div class="col-md-12">
+
+        <div id="daterange" class="selectbox pull-right">
+            <i class="fa fa-calendar"></i>
+            <span>June 26, 2019 - July 25, 2019</span> <b class="caret"></b>
+        </div>
+
+
+    </div>
+    <div class="col-md-12">
+        <!-- LINE CHART -->
+        <div class="box box-info">
+            <div class="box-header with-border">
+                <h3 class="box-title">KPI Chart</h3>
+
+                <div class="box-tools pull-right">
+                    <button type="button" class="btn btn-box-tool" data-widget="collapse">
+                        <i class="fa fa-minus"></i>
+                    </button>
+                    <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+                </div>
+            </div>
+            <div class="box-body">
+                <div class="chart">
+                    <canvas id="lineChart" style="height:250px"></canvas>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <div class="col-md-12">
+        <div class="box">
+            <div class="box-header with-border">
+                <h3 class="box-title">KPI</h3>
+            </div>
+            <!-- /.box-header -->
+            <div class="box-body">
+                <table class="table table-bordered">
+                    <tbody>
+                        <tr>
+                            <th style="width: 10px">Factory</th>
+                            <th>January</th>
+                            <th>February</th>
+                            <th>March</th>
+                            <th>April</th>
+                            <th>May</th>
+                            <th>June</th>
+                            <th>July</th>
+                            <th>August</th>
+                            <th>September</th>
+                            <th>October</th>
+                            <th>November</th>
+                            <th>December</th>
+                        </tr>
+                        <tr>
+                            <td style="color:#06b9dd">SHC</td>
+                            <td>80</td>
+                            <td>79</td>
+                            <td>60</td>
+                            <td>60</td>
+                            <td>78</td>
+                            <td>73</td>
+                            <td>84</td>
+                            <td>60</td>
+                            <td>67</td>
+                            <td>78</td>
+                            <td>80</td>
+                            <td>67</td>
+                        </tr>
+                        <tr>
+                            <td style="color:#ff6384">SYF</td>
+                            <td>80</td>
+                            <td>79</td>
+                            <td>60</td>
+                            <td>60</td>
+                            <td>78</td>
+                            <td>73</td>
+                            <td>84</td>
+                            <td>60</td>
+                            <td>67</td>
+                            <td>78</td>
+                            <td>80</td>
+                            <td>67</td>
+                        </tr>
+                        <tr>
+                            <td style="color:#2004db">SPC</td>
+
+                            <td>30</td>
+                            <td>29</td>
+                            <td>30</td>
+                            <td>30</td>
+                            <td>18</td>
+                            <td>13</td>
+                            <td>4</td>
+                            <td>10</td>
+                            <td>20</td>
+                            <td>30</td>
+                            <td>25</td>
+                            <td>33</td>
+                        </tr>
+                        <tr>
+                            <td style="color:#04db0f">CB</td>
+                            <td>20</td>
+                            <td>29</td>
+                            <td>30</td>
+                            <td>50</td>
+                            <td>18</td>
+                            <td>43</td>
+                            <td>49</td>
+                            <td>40</td>
+                            <td>30</td>
+                            <td>20</td>
+                            <td>25</td>
+                            <td>22</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+    </div>
+</div>
+<div class="box box-success">
+    <div class="box-header ui-sortable-handle" style="cursor: move;">
+        <i class="fa fa-comments-o"></i>
+
+        <h3 class="box-title">Comment</h3>
+
+        <div class="box-tools pull-right" data-toggle="tooltip" title="" data-original-title="Status">
+            <div class="btn-group" data-toggle="btn-toggle">
+                <button type="button" class="btn btn-default btn-sm active">
+                    <i class="fa fa-square text-green"></i>
+                </button>
+                <button type="button" class="btn btn-default btn-sm"><i class="fa fa-square text-red"></i></button>
+            </div>
+        </div>
+    </div>
+    <div class="slimScrollDiv" style="position: relative; overflow: hidden; width: auto; height: 250px;">
+        <div class="box-body chat" id="chat-box" style="overflow: hidden; width: auto; height: 250px;">
+            <!-- chat item -->
+            <div class="item">
+                <img src="~/Content/dist/img/user2-160x160.jpg" alt="user image" class="offline">
+
+                <p class="message">
+                    <a href="#" class="name">
+                        <small class="text-muted pull-right"><i class="fa fa-clock-o"></i> 5:30</small>
+                        Mr. Tim
+                    </a>
+                    It seems that the data is good
+                </p>
+            </div>
+            <!-- /.item -->
+            <!-- chat item -->
+            <div class="item">
+                <img src="~/Content/dist/img/user4-128x128.jpg" alt="user image" class="online">
+
+                <p class="message">
+                    <a href="#" class="name">
+                        <small class="text-muted pull-right"><i class="fa fa-clock-o"></i> 2:15</small>
+                        Ms. Coni
+                    </a>
+                    Thank you Mr. Tim
+                </p>
+                @*<div class="attachment">
+                        <h4>Attachments:</h4>
+
+                        <p class="filename">
+                            Theme-thumbnail-image.jpg
+                        </p>
+
+                        <div class="pull-right">
+                            <button type="button" class="btn btn-primary btn-sm btn-flat">Open</button>
+                        </div>
+                    </div>*@
+                <!-- /.attachment -->
+            </div>
+            <!-- /.item -->
+            <!-- chat item -->
+            <div class="item">
+                <img src="~/Content/dist/img/user3-128x128.jpg" alt="user image" class="offline">
+
+                <p class="message">
+                    <a href="#" class="name">
+                        <small class="text-muted pull-right"><i class="fa fa-clock-o"></i> 5:15</small>
+                        Ms. Mei
+                    </a>
+                    I would like to meet you to discuss the latest news about
+                    the arrival of the new theme. They say it is going to be one the
+                    best themes on the market
+                </p>
+            </div>
+            <!-- /.item -->
+
+        </div><div class="slimScrollBar" style="background: rgb(0, 0, 0); width: 7px; position: absolute; top: 66px; opacity: 0.4; display: none; border-radius: 7px; z-index: 99; right: 1px; height: 184.911px;"></div><div class="slimScrollRail" style="width: 7px; height: 100%; position: absolute; top: 0px; display: none; border-radius: 7px; background: rgb(51, 51, 51); opacity: 0.2; z-index: 90; right: 1px;"></div>
+    </div>
+    <!-- /.chat -->
+    <div class="box-footer">
+        <div class="input-group">
+            <input class="form-control" placeholder="Type message...">
+
+            <div class="input-group-btn">
+                <button type="button" class="btn btn-success"><i class="fa fa-plus"></i></button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts{
+    <script>
+        $(function () {
+            $('.sidebar-menu').tree();
+            $('table td, table th').addClass('text-center');
+            console.log(@data);
+              var ctx = document.getElementById('lineChart');
+        Chart.defaults.global.defaultFontSize = 17;
+             //$('#content').html(response);
+             var myChart = new Chart(ctx, {
+                                type: 'line',
+                                data: {
+                                    labels: labels,
+                                    datasets: [{
+                                        label: 'Group 1',
+                                        data: datasets,
+                                        fill: "#ffffff",
+                                        borderWidth: 2,
+                                        borderColor: "#06b9dd",
+                                        backgroundColor: "#06b9dd",
+                                        pointBackgroundColor: "#06b9dd"
+                                    }]
+                                },
+                                options: {
+                                    plugins: {
+                                        datalabels: {
+                                            display: false
+                                        }
+                                    },
+                                    elements: {
+                                        line: {
+                                            tension: 0
+                                        }
+
+                                    },
+                                    scales: {
+                                        yAxes: [{
+                                            ticks: {
+                                                beginAtZero: true,
+                                                padding: 10,
+                                                fontSize: 10,
+                                            }
+                                        }],
+                                        xAxes: [{
+                                            gridLines: {
+                                                display: true,
+                                                tickMarkLength: 8
+                                            },
+                                            ticks: {
+                                                fontSize: 10,
+                                            }
+
+                                        }]
+                                    },
+                                    hover: {
+                                        animationDuration: 0
+                                    },
+                                    animation: {
+                                        duration: 1,
+                                        onComplete: function () {
+                                            var chartInstance = this.chart,
+                                                ctx = chartInstance.ctx;
+
+                                            ctx.textAlign = 'center';
+                                            ctx.textBaseline = 'bottom';
+
+                                            this.data.datasets.forEach(function (dataset, i) {
+                                                var meta = chartInstance.controller.getDatasetMeta(i);
+                                                meta.data.forEach(function (bar, index) {
+                                                    var data = dataset.data[index];
+                                                    ctx.fillText(data, bar._model.x, bar._model.y - 5);
+                                                });
+                                            });
+                                        }
+                                    },
+                                    tooltips: {
+                                        enabled: false
+                                    },
+                                    poitDot: true
+                                }
+                            });               
+        })
+    </script>
+
+}

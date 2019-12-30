@@ -1,0 +1,1147 @@
+﻿@using MvcBreadCrumbs;
+
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var data = (List<KPI.Model.ViewModel.DatasetVM>)ViewBag.Datasets;
+}
+
+@Html.Raw(BreadCrumb.Display())
+
+
+<div class="row">
+    <div class="col-xs-12">
+        <div class="box boxDataset boxdataset-scrollbar" id="box">
+            <div class="box-header">
+                <h3 class="box-title">Datasets</h3>
+
+            </div>
+            <!-- /.box-header -->
+            <div class="box-body table-responsive no-padding" id="tblDataset">
+                <div class="col-md-12">
+                    <div class="form-inline" style="display:none" id="searchMonth">
+                        <label class="my-1 mr-2" for="startMonth">Year</label>
+                        <select class="custom-select form-control year my-1 mr-sm-2" id="monthOfYear">
+                            <option value="0" selected>Choose...</option>
+                            @{
+                                for (int i = 1999; i <= 2099; i++)
+                                {
+                                    <option value="@i">Year @i</option>
+                                }
+                            }
+                        </select>
+                        <label class="my-1 mr-2" for="startMonth">Start</label>
+                        <select class="custom-select form-control my-1 mr-sm-2" id="startMonth">
+                            <option value="0" selected>Choose...</option>
+                            <option value="1">Jan</option>
+                            <option value="2">Feb</option>
+                            <option value="3">Mar</option>
+                            <option value="4">Apr</option>
+                            <option value="5">May</option>
+                            <option value="6">Jun</option>
+                            <option value="7">Jul</option>
+                            <option value="8">Aug</option>
+                            <option value="9">Sep</option>
+                            <option value="10">Oct</option>
+                            <option value="11">Nov</option>
+                            <option value="12">Dec</option>
+                        </select>
+                        <label class="my-1 mr-2" for="endMonth">End</label>
+                        <select class="custom-select form-control my-1 mr-sm-2" id="endMonth">
+                            <option value="0" selected>Choose...</option>
+                            <option value="1">Jan</option>
+                            <option value="2">Feb</option>
+                            <option value="3">Mar</option>
+                            <option value="4">Apr</option>
+                            <option value="5">May</option>
+                            <option value="6">Jun</option>
+                            <option value="7">Jul</option>
+                            <option value="8">Aug</option>
+                            <option value="9">Sep</option>
+                            <option value="10">Oct</option>
+                            <option value="11">Nov</option>
+                            <option value="12">Dec</option>
+                        </select>
+                        <button type="button" class="btn bg-teal margin btnClearSearch"><i class="fa fa-remove"></i> Reset search</button>
+                    </div>
+
+                    @* week *@
+                    <div class="form-inline" style="display:none" id="searchWeek">
+                        <label class="my-1 mr-2" for="startMonth">Year</label>
+                        <select class="custom-select form-control year my-1 mr-sm-2" id="weekOfYear">
+                            <option value="0" selected>Choose...</option>
+                            @{
+                                for (int i = 1999; i <= 2099; i++)
+                                {
+                                    <option value="@i">Year @i</option>
+                                }
+                            }
+                        </select>
+                        <label class="my-1 mr-2" for="startWeek">Week Start</label>
+                        <select class="custom-select form-control my-1 mr-sm-2" id="startWeek">
+                            <option value="0" selected>Choose...</option>
+                            @{
+                                for (int i = 1; i <= 52; i++)
+                                {
+                                    <option value="@i">Week @i</option>
+                                }
+                            }
+                        </select>
+                        <label class="my-1 mr-2" for="endWeek">Week End</label>
+                        <select class="custom-select form-control my-1 mr-sm-2" id="endWeek">
+                            <option value="0" selected>Choose...</option>
+                            @{
+                                for (int i = 1; i <= 52; i++)
+                                {
+                                    <option value="@i">Week @i</option>
+                                }
+                            }
+                        </select>
+                        <button type="button" class="btn bg-teal margin btnClearSearch"><i class="fa fa-remove"></i> Reset search</button>
+
+                    </div>
+                    @* Quarter *@
+                    <div class="form-inline" style="display:none" id="searchQuarter">
+                        <label class="my-1 mr-2" for="startMonth">Year</label>
+                        <select class="custom-select form-control year my-1 mr-sm-2" id="quarterOfYear">
+                            <option value="0" selected>Choose...</option>
+                            @{
+                                for (int i = 1999; i <= 2099; i++)
+                                {
+                                    <option value="@i">Year @i</option>
+                                }
+                            }
+                        </select>
+                        <label class="my-1 mr-2" for="startMonth">Start</label>
+                        <select class="custom-select form-control my-1 mr-sm-2" id="startQuarter">
+                            <option value="0" selected>Choose...</option>
+                            @{
+                                for (int i = 1; i <= 4; i++)
+                                {
+                                    <option value="@i">Quarter @i</option>
+                                }
+                            }
+                        </select>
+                        <label class="my-1 mr-2" for="endMonth">End</label>
+                        <select class="custom-select form-control my-1 mr-sm-2" id="endQuarter">
+                            <option value="0" selected>Choose...</option>
+                            @{
+                                for (int i = 1; i <= 4; i++)
+                                {
+                                    <option value="@i">Quarter @i</option>
+                                }
+                            }
+                        </select>
+                        <button type="button" class="btn bg-teal margin btnClearSearch"><i class="fa fa-remove"></i> Reset search</button>
+
+                    </div>
+                    @* Year *@
+                    <div class="form-inline" style="display:none" id="searchYear">
+                        <label class="my-1 mr-2" for="YearOfYear">Year</label>
+                        <select class="custom-select form-control my-1 mr-sm-2 YearOfYear" id="YearOfYear">
+                            <option value="0" selected>Choose...</option>
+                            @{
+                                for (int i = 1990; i <= 2050; i++)
+                                {
+                                    <option value="@i">Year @i</option>
+                                }
+                            }
+                        </select>
+                        <label class="my-1 mr-2" for="startMonth">Start</label>
+                        <select class="custom-select form-control my-1 mr-sm-2" id="startYear">
+                            <option value="0" selected>Choose...</option>
+                            @{
+                                for (int i = 1990; i <= 2050; i++)
+                                {
+                                    <option value="@i">Year @i</option>
+                                }
+                            }
+                        </select>
+                        <label class="my-1 mr-2" for="endMonth">End</label>
+                        <select class="custom-select form-control my-1 mr-sm-2" id="endYear">
+                            <option value="0" selected>Choose...</option>
+                            @{
+                                for (int i = 1990; i <= 2050; i++)
+                                {
+                                    <option value="@i">Year @i</option>
+                                }
+                            }
+                        </select>
+                        <button type="button" class="btn bg-teal margin btnClearSearch"><i class="fa fa-remove"></i> Reset search</button>
+                    </div>
+                </div>
+
+            </div>
+            <div class="box-body table-responsive no-padding" id="tblDataset">
+                <div class="col-xs-12">
+                    <table class="table">
+                        <thead>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                    <script id='tblDataset-template' type="text/template">
+                        <tr tabindex="0" data-id="{{ID}}">
+                            <td class="text-center">{{No}}</td>
+                            <td>
+                                {{Name}}
+                            </td>
+                            <td class="text-center">{{LevelID}}</td>
+                        </tr>
+                    </script>
+                </div>
+            </div>
+            <!-- /.box-body -->
+        </div>
+        <!-- /.box -->
+    </div>
+</div>
+@RenderPage("_Modal.cshtml")
+@section Scripts{
+    <script>
+
+        var data =@Html.Raw(Json.Encode(data));
+
+       console.log(data)
+        $('#box h3').empty();
+      var titlePage=  $('#box h3').text("Category - " + data[0].CategoryName + " - " + data[0].Period);
+       let th = `<th class="text-center">KPI</th>`;
+
+        let arrTemp = [];
+        for (let i of data) {
+            arrTemp.push(i.Datasets.length)
+        }
+        console.log("arrTemp");
+        console.log(arrTemp);
+
+        let maxLength = arrTemp.indexOf(Math.max(...arrTemp));
+        //add title truoc
+       for (let i of data[maxLength].Datasets)
+       {
+           switch (data[0].Period) {
+               case "Weekly":
+                   th += `<th class="text-center">${i.Week}</th>`;
+                   $('#searchWeek').show();
+                   break;
+              case "Monthly":
+                   th += `<th class="text-center">${convertNumberMonthToText(i.Week)}</th>`;
+                   $('#searchMonth').show();
+                   break;
+               case "Quarterly":
+                   th += `<th class="text-center">${i.Week}</th>`;
+                   $('#searchQuarter').show();
+                   break;
+              case "Yearly":
+                   th += `<th class="text-center">${i.Week}</th>`;
+                   $('#searchYear').show();
+                   break;
+           }
+
+       }
+        th += "</tr>";
+
+        let tr = ``;
+
+        let count = 1;
+       for (let item of data)
+       {
+           if (item.Datasets.length > 0) {
+                console.log(item)
+            let td = '';
+           td += `<td class="">
+                     <div class="tooltip-css" style="text-align: center;">
+                         <span id="kpiname">${item.KPIName}</span>
+                         <div class="right">
+                            <h4>Category: ${item.CategoryName}</h4>
+                            <p>Manager:  ${item.Manager}</p>
+                            <p>Owner:  ${item.Owner}</p>
+                            <p>Updater:  ${item.Updater}</p>
+                            <p>Sponsor:  ${item.Sponsor}</p>
+                            <p>Participant:  ${item.Participant}</p>
+                            <i></i>
+                         </div>
+                     </div>
+            </td>`;
+           for (let i of item.Datasets)
+           {
+
+               td += `<td class="datasetTd ${i.ValueArray[1] === "True" ? "active-td2" : "active-td"}" data-kpilevelcode="${item.KPILevelCode}" data-id="${i.ID}">
+                        <div class="tooltip-css" style="text-align: center;">
+                            ${i.ValueArray[0] == 0 ? "N/A" : i.ValueArray[0]}
+                            <div class='top'>
+			                    <p>${item.CategoryName || "#N/A" }</p>
+                                <p>${item.Period.substring(0, item.Period.length - 2)} : ${i.Week}</p>
+                                <p>Target : ${(i.ValueArray[2] || "#N/A") }</p>
+                                <i></i>
+		                    </div>
+                         </div>
+                      </td>`;
+
+           }
+           if(count % 2 === 0)
+               tr += "<tr class='info'>" + td + "</tr>";
+           else tr += "<tr class='warning'>" + td + "</tr>";
+           count++;
+           }
+
+        }
+
+
+        $('#tblDataset table thead').append(th);
+        $('#tblDataset table tbody').append(tr);
+        $('.mytooltip').hover(function () {
+
+        })
+        $(function () {
+            datasetController.init()
+        })
+        var datasetController = {
+            init() {
+                datasetController.registerEvent();
+            },
+            registerEvent() {
+                var urlarr = datasetController.getURLParameter();
+                $("#weekOfYear").val(urlarr.year);
+                $("#startWeek").val(urlarr.start);
+                $("#endWeek").val(urlarr.end);
+
+                $("#monthOfYear").val(urlarr.year);
+                $("#startMonth").val(urlarr.start);
+                $("#endMonth").val(urlarr.end);
+
+
+                $("#quarterOfYear").val(urlarr.year);
+                $("#startQuarter").val(urlarr.start);
+                $("#endQuarter").val(urlarr.end);
+
+                $("#YearOfYear").val(urlarr.year);
+                $("#startYear").val(urlarr.start);
+                $("#endYear").val(urlarr.end);
+
+                $("#weekOfYear").off('change').on('change', function () {
+
+                    datasetController.search();
+                })
+                $("#startWeek").off('change').on('change', function () {
+                    datasetController.search();
+
+                })
+                $("#endWeek").off('change').on('change', function () {
+                    datasetController.search();
+
+                })
+
+                $("#monthOfYear").off('change').on('change', function () {
+                    datasetController.search();
+
+                })
+                $("#startMonth").off('change').on('change', function () {
+                    datasetController.search();
+
+                })
+                $("#endMonth").off('change').on('change', function () {
+                    datasetController.search();
+                })
+
+
+                $("#quarterOfYear").off('change').on('change', function () {
+                    datasetController.search();
+                })
+                $("#startQuarter").off('change').on('change', function () {
+                    datasetController.search();
+
+                })
+                $("#endQuarter").off('change').on('change', function () {
+                    datasetController.search();
+                })
+
+                $("#YearOfYear").off('change').on('change', function () {
+                    datasetController.search();
+                })
+                $("#startYear").off('change').on('change', function () {
+                    datasetController.search();
+                })
+                $("#endYear").off('change').on('change', function () {
+                    datasetController.search();
+
+                })
+
+                $('.btnClearSearch').off('click').on('click', function () {
+                     var urlarr = datasetController.getURLParameter();
+                    var date = new Date();
+                    var year = date.getFullYear();
+                    var week = getDateOfWeekInYear(date);
+                    var month = date.getMonth();
+                    var quarter = getCurrentQuarter(date);
+                    var startYear = year - 5;
+                    //window.location.href = "/Dataset/?catid=" + catid + "&period=" + period
+                    if (urlarr.period.toLowerCase() === "w")
+                        window.location.href = `/dataset/${urlarr.catid}/w/1/${week}/${year}`;
+                    if (urlarr.period.toLowerCase() === "m")
+                        window.location.href = `/dataset/${urlarr.catid}/m/1/${month}/${year}`;
+                    if (urlarr.period.toLowerCase() === "q")
+                        window.location.href = `/dataset/${urlarr.catid}/q/1/${quarter}/${year}`;
+                    if (urlarr.period.toLowerCase() === "y")
+                        window.location.href = `/dataset/${urlarr.catid}/y/${year}/${startYear}/${year}`;
+                })
+
+
+                $('.datasetTd').off('click').on('click', function () {
+                     //var number = Number($(this).text()),
+                     //   index = Number($(this).index()),
+                     //   a = $('#tblDataChart tr:nth-child(1) th:nth-child(1)').text();
+
+                    //if (number > 0 && number < standard || number > 0 && number < Math.max(...targets))
+                    //{
+                    if ($(this).hasClass('active-td')) {
+                        $('#modal-group-comment-data').modal('show');
+                        $('#modal-group-comment-data .kpilevelcode').val($(this).data('kpilevelcode'));
+
+                        let id = $(this).data('id');
+                        let kpiname = $(this).closest('tr').children('td:first-child').find("#kpiname").text();
+                        console.log(kpiname)
+                        $('.dataid').text(id);
+
+                        $('.RemarkChart').text('');
+
+                        let value = Number($(this).index());
+
+                        if (data[0].Period === "Monthly") {
+                            const monthNames = ["January", "February", "March", "April", "May", "June",
+                                "July", "August", "September", "October", "November", "December"
+                            ];
+
+                            $('.RemarkChart').text(`Remark on ${monthNames[value - 1]} - ${kpiname} - ${data[0].Period}`);
+
+                        }
+                        else if (data[0].Period === "Quarterly") {
+                            const quarterNames = ["First Quarter", "Second Quarter", "Third Quarter", "Fourth Quarter"];
+
+                            $('.RemarkChart').text(`Remark on ${quarterNames[value - 1]} - ${kpiname} - ${data[0].Period}`);
+
+                        }
+                        else {
+                            $('.RemarkChart').text(`Remark on  ${data[0].Period} - ${kpiname} - ${data[0].Period}`);
+
+                        }
+                        datasetController.remark(id);
+
+                        //Khi tao ra table roi thi moi load data
+                        datasetController.loadDataComment();
+                    }
+                })
+
+                $('#modal-group-comment-data').off('hidden.bs.modal').on('hidden.bs.modal', function () {
+
+                    console.log("Đã xem comment");
+
+                    var userid = $('#user').data('userid'),
+                        dataid = Number($('.dataid').text());
+
+                    datasetController.addCommentHistory(userid, dataid);
+                });
+
+                $('.btnComment').off('click').on('click', function () {
+                    datasetController.addData();
+                });
+                
+                $('#modal-group-comment-data2 .datepickerEdit').datepicker({
+                    dateFormat: "mm-dd-yy"
+                });
+
+                $.fn.editable.defaults.mode = 'inline';
+
+                $('#modal-group-comment-data2 .datepickerEdit').off('change').on('change', function () {
+                    var id = $(this).data('id'),
+                         value = $(this).val();
+
+                     $.ajax({
+                          type: "Post",
+                          url: "/ChartPeriod/UpdateSheduleDate/",
+                          data: {name:"DeadLine",value:value,pk:id},
+                          success: function(res)
+                          {
+                              console.log(res);
+                              success('Successfully!')
+                             var commentid = Number($('.commentid').text()),
+                                dataid = Number($('.dataid').text());
+
+                             datasetController.LoadDataActionPlan(dataid, commentid);
+                         },
+                         error: function (error) {
+                             console.log(error)
+                         }
+                     });
+
+                 });
+
+                $('#modal-group-comment-data2 input[name=UpdateSheduleDate]').off('change').on('change', function () {
+
+                    var id = $(this).data('id'),
+                        value = $(this).val(),
+                        name = $(this).attr("name");
+
+                    $.ajax({
+                        type: "Post",
+                        url: "/ChartPeriod/UpdateSheduleDate/",
+                        data:
+                        {
+                            name: name, value: value, pk: id
+                        },
+                        success: function (res) {
+                            var commentid = Number($('.commentid').text());
+
+                            var dataid = Number($('.dataid').text());
+
+                            datasetController.LoadDataActionPlan(dataid, commentid);
+                        }
+                    });
+                });
+
+                $('#modal-group-comment-data2 .DescriptionEdit').editable({
+                    type: "text",
+                    //pk: $(this).data("item-id"),
+                    url: '/ChartPeriod/UpdateSheduleDate/' + $(this).params,
+                    params: function(params) {
+                    params.item = { value: params.value,}
+                        return params;
+                    },
+                    display: function (value, response) {
+                        if (response) {
+                            var commentid = Number($('.commentid').text()),
+                                dataid = Number($('.dataid').text());
+
+                            datasetController.LoadDataActionPlan(dataid, commentid);
+
+                            $(this).attr("data-value", value);
+                        }
+                    },
+                        ajaxOptions: {
+                            type: "POST",
+                            dataType: "json"
+                          }
+                });
+
+                $('.TitleEdit').editable({
+                    placement: "right",
+                    type: "text",
+                    pk: $(this).data("item-id"),
+                    url: '/ChartPeriod/UpdateSheduleDate/'+$(this).params,
+                    params: function(params) {
+                    params.item = { value: params.value,}
+                        return params;
+                    },
+                    display: function (value, response) {
+                        if (response) {
+
+                        var commentid = Number($('.commentid').text()),
+                                dataid = Number($('.dataid').text());
+
+                        datasetController.LoadDataActionPlan(dataid, commentid);
+                        $(this).attr("data-value", value);
+                    }
+                    },
+                    ajaxOptions: {
+                        type: "POST",
+                        dataType: "json"
+                    }
+                });
+
+                //Load actinPlan
+                 $('.btnTask').unbind('click').on('click', function () {
+                    var commentid = $(this).data('commentid');
+
+                    $(".commentid").text(commentid);
+
+                    var commentid = $(this).data('commentid');
+
+                    var dataid = Number($('.dataid').text());
+
+                    var textRemark = $('.RemarkChart').text();
+
+                    textRemark = textRemark.replace("Remark", "Action Plan");
+
+                    $('.ActionPlanChart').text('');
+
+                     $('.ActionPlanChart').text(textRemark);
+                       activaTab('pills-home');
+                    datasetController.LoadDataActionPlan(dataid, commentid);
+                 });
+                //Add actionPlan
+                  $('.btnSaveActionPlan').unbind('click').on('click', function () {
+                    datasetController.addActionPlan();
+                });
+
+            },
+            loadDataComment() {
+                $.ajax({
+                    url: '/ChartPeriod/LoadDataComment',
+                    //url: '/ChartPeriod/GetAllComments',
+                    type: "GET",
+                    data: {
+                        dataid: Number($(".dataid").text()),
+                        userid: Number($("#user").data('userid'))
+                    },
+                    dataType: "json",
+                    success: function (res) {
+                        var data = res.data;
+                        console.log("Lay ra tat ca comment");
+                        console.log(res);
+                        var total = res.total;
+
+                        $('.total-comments').text(total);
+                        var html = '';
+                        $.each(data, function (i, item) {
+
+                            var nowDate = new Date(parseInt(item.CommentedDate.substr(6)));
+                            var date = new Date(nowDate);
+                            //var result = (date.getMonth() + 1) + '/' + date.getDate() + '/' + date.getFullYear();
+                            html += ' <li class="media">';
+                            html += '<a href="#" class="pull-left">';
+                            html += '    <img src="/Scripts/plugins/jquery-comments/user-icon.png" alt="" class="img-circle">';
+                            html += '</a>';
+                            html += '<div class="media-body">';
+                            html += '<span class="text-muted pull-right">';
+                            html += '    <small class="text-muted">' + JSONDateWithTime(item.CommentedDate) + '</small>';
+                            html += '</span>';
+                            html += '<strong class="text-success">' + item.FullName + '</strong>';
+                            if (item.Read) {
+                                html += '<span class="label bg-green"> new</span>';
+                            }
+                            if (item.Task) {
+                                html += '<p><a href="#modal-group-comment-data2" data-toggle="modal" data-commentid="' + item.CommentID + '" data-dismiss="modal" class="btn btn-xs btn-danger text-bold btnTask"><i class="fa fa-tags"></i> Task</a> </p>';
+                            }
+                            else {
+                                html += '<p><a href="#modal-group-comment-data2" data-toggle="modal" title="There are no task." data-commentid="' + item.CommentID + '" data-dismiss="modal" class="btn btn-xs btn-success text-bold btnTask tooltip-ui"><i class="fa fa-tags"></i> Task</a> </p>';
+                            }
+                            html += '<p>';
+                            html += item.CommentMsg;
+                            html += '</p>';
+                            html += '</div>';
+                            html += '</li >';
+                        });
+                        $('#media-list').empty();
+                        $('#media-list').append(html);
+                        datasetController.registerEvent();
+                    },
+                    error: function (err) {
+                    }
+                });
+            },
+            addData() {
+                if ($('#comment').val() == "") {
+                    warning("Please enter message!!");
+                    return;
+                }
+                let CommentMsg = $('#comment').val();
+
+                 let catid = Number(datasetController.getURLParameter().catid);
+                let kpilevelcode = $('#modal-group-comment-data .kpilevelcode').val();
+                var list=[];
+                for(let item of CommentMsg.split(' ')){
+                 let x = item.match(/[@@].+[\f]/g);
+                    if (x !== null)
+                         list.push(x.toString().replace('@@', ' ').trim())
+                }
+                var Tag = [...new Set(list.map(x => x))].join();
+
+                var mObj = {
+                    DataID: Number($('.dataid').text()),
+                    CommentMsg: CommentMsg,
+                    UserID: Number($("#user").data('userid')),
+                    Tag: Tag,
+                    Link: window.location.href,
+                    Title: $('.RemarkChart').text(),
+                    KPILevelCode: kpilevelcode,
+                    CategoryID: Number(catid)
+                };
+                let promise = $post("/ChartPeriod/AddComment", JSON.stringify(mObj));
+                    promise.then(data => {
+                        console.log(data)
+                        var res = data;
+                             if (res.status === true && res.isSendmail === true) {
+                                $('#comment').val("");
+                                 datasetController.loadDataComment();
+                            }
+                            else if (res.status === true && res.isSendmail === false) {
+                                 $('#comment').val("");
+                                 datasetController.loadDataComment();
+                                 warning("Failed sending mail!");
+                                console.log("Khong gui duoc mail")
+                             } else {
+                                 warning("error!");
+                                 console.log("Loi roi")
+                            }
+                     }).catch(error => {
+                        error("error!");
+                        console.log("Loi comment");
+                     })
+               
+            },
+            addCommentHistory(userid, dataid) {
+                    $.post("/ChartPeriod/addCommentHistory", { userid: userid, dataid: dataid }, function (result) {
+                    console.log("data add comment" + result);
+
+                });
+                },
+            remark(id) {
+                $.post("/ChartPeriod/Remark", { dataid: id }, function (data) {
+                    var result = data.model;
+                    var userid = $('#user').data('userid');
+                    var users = [],username,fullname;
+                    var arrays = data.users;
+                    $.each(arrays, function (i,item) {
+                        users.push({
+                            username: item.Username,
+                            fullname:item.FullName
+                        })
+                    })
+                    console.log(users)
+                    $('#Tag').suggest('@@', {
+                        data: users,
+                        map: function (user) {
+                            return {
+                                value: user.username,
+                                text: '<strong>'+user.username + '  </strong> <small>' + user.fullname + '</small>'
+                            }
+                        }
+
+                    })
+                    $('#Auditor').suggest('@@', {
+                        data: users,
+                        map: function (user) {
+                            return {
+                                value: user.username,
+                                text: '<strong>'+user.username + '  </strong> <small>' + user.fullname + '</small>'
+                            }
+                        }
+
+                    })
+
+                    $('#comment').suggest('@@', {
+                        data: users,
+                        map: function (user) {
+                            return {
+                                value: user.username+'\f',
+                                text: '<strong>' + user.username + '  </strong> <small>' + user.fullname + '</small>'
+                            }
+                        }
+
+                    })
+
+                    //$("#remark").val(result.Remark);
+                    $(".lastRemark").text(id);
+
+                    //$("#textarea-remark").toggle(500);
+                    if (result.Period === "W") {
+                        if (result.Remark !== null) {
+                            $("#lastRemark").val(result.Remark);
+                            $("#remark").val("Week " + result.Week + " : " + result.Remark);
+                            $('.lastRemarkLabel').text("Week " + result.Week + " : ");
+                        }
+                    }
+                    if (result.Period === "M") {
+                        if (result.Remark !== null) {
+                            $("#lastRemark").val(result.Remark);
+                            $("#remark").val("Month " + result.Month + " : " + result.Remark);
+                            $('.lastRemarkLabel').text("Month " + result.Month + " : ");
+                        }
+                    }
+                    if (result.Period === "Q") {
+                        $("#lastRemark").val(result.Remark);
+                        $("#remark").val("Quarter " + result.Quater + " : " + result.Remark);
+                        $('.lastRemarkLabel').text("Quarter " + result.Quater + " : ");
+
+                    }
+                    if (result.Period === "Y") {
+                        $("#lastRemark").val(result.Remark);
+                        $("#remark").val("Year " + result.Year + " : " + result.Remark);
+                        $('.lastRemarkLabel').text("Year " + result.Year + " : ");
+
+                    }
+                });
+            },
+            LoadDataActionPlan(dataid, commentid) {
+                $.post('/ChartPeriod/GetAll',
+                    {
+                        DataID: dataid,
+                        CommentID: commentid,
+                        UserID: $('#user').data('userid')
+                    },
+                    function (res) {
+                        console.log(res);
+                        if (res.status) {
+                            var data = res.data;
+                            var html = '';
+                            $.each(data, function (i, item) {
+                                $('.listTask .Approval').hide();
+                                $('.listTask .Option').hide();
+
+                                if (item.CreatedBy === $('#user').data('userid') || item.Auditor === $('#user').data('userid'))
+                                {
+                                    html += '<tr data-id="' + item.ID + '">';
+
+                                    html += '<td>' + (i + 1) + '</td>';
+                                    html += '<td class="text-bold" style="padding-left:15px;"><span style="font-weight: 700;cursor: pointer;"  class="TitleEdit" data-url="/ChartPeriod/UpdateSheduleDate" data-type="text" data-name="Title" data-pk="'+item.ID+'" data-value="' + item.Title + '" data-title="Enter your title">' + item.Title + '</span></td>';
+                                    html += '<td><div class="DescriptionEdit" style="font-weight: 700;cursor: pointer;"  data-type="textarea"  data-name="Description" data-value="' + item.Description + '" data-pk="'+item.ID+'"> ' + item.Description + '</div> ';
+                                    html += '</td>';
+                                    html += '<td>';
+
+                                    if (item.Tag !== null)
+                                    {
+                                        var array2 = item.Tag.split(',');
+
+                                        $.each(array2, function (i, item2)
+                                        {
+                                            if (item2.length > 1) {
+                                                html += '<span class="badge bg-default text-bold ">' + item2 + '</span> ';
+                                            }
+                                        });
+                                    }
+
+                                    html += '</td>';
+                                    html += '<td><input autocomplete="off" data-id="'+item.ID+'" type="text" class="datepickerEdit" style="border: none;font-weight: 700;cursor: pointer;" value="' + item.Deadline + '"></td>';
+                                    html += '<td><input autocomplete="off" data-id="' + item.ID + '" type="text" class="datepickerEdit" name="UpdateSheduleDate" style="border: none;font-weight: 700;cursor: pointer;" value="' + item.UpdateSheduleDate + '"></td>';
+                                    html += '<td><input autocomplete="off" data-id="'+item.ID+'" type="text" class="datepickerEdit" style="border: none;font-weight: 700;cursor: pointer;" value="' + item.ActualFinishDate + '"></td>';
+                                    html += '<td > ';
+                                    html += '<div class="pretty p-icon p-round p-pulse">';
+
+                                    if (item.Status)
+                                    {
+                                        html += '<input type="checkbox" checked onclick="datasetController.done(' + item.ID + ')" />';
+                                        html += '<div class="state p-success">';
+                                        html += '<i class="icon fa fa-check"></i>';
+                                        html += '<label>Finished</label>';
+                                    }
+                                    else
+                                    {
+                                        html += '<input type="checkbox" onclick="datasetController.done(' + item.ID + ')"/>';
+                                        html += '<div class="state p-danger">';
+                                        html += '<i class="icon fa fa-check"></i>';
+                                        html += '<label>Not finished</label>';
+                                    }
+
+                                    html += '</div>';
+                                    html += '</div>';
+                                    html += '</td > ';
+
+                                    $('.listTask .Approval').show();
+                                    $('.listTask .Option').show();
+                                    html += '<td> ';
+
+                                    if (item.ApprovedStatus)
+                                    {
+                                        html += '<div class="pretty p-icon p-round p-jelly">';
+                                        html += '<input type="checkbox" checked onclick="datasetController.approval(' + item.ID + ')" class="btnApproveActionPlan" />';
+                                        html += '<div class="state p-success">';
+                                        html += '<i class="icon fa fa-check"></i>';
+                                        html += '<label class="black">Approved</label>';
+                                        html += '</div>';
+                                        html += '</div >';
+                                    }
+                                    else
+                                    {
+                                        html += '<div class="pretty p-icon p-round p-jelly">';
+                                        html += '<input type="checkbox" onclick="datasetController.approval(' + item.ID + ')" class="btnApproveActionPlan" />';
+                                        html += '<div class="state p-danger">';
+                                        html += '<i class="icon fa fa-check"></i>';
+                                        html += '<label class="black">Not approved</label>';
+                                        html += '</div>';
+                                        html += '</div >';
+                                    }
+
+                                    html += '</td > ';
+                                    html += '<td>';
+                                    html += '<div class="btn-group">';
+                                    html += '<button type="button" onclick="datasetController.deleteActionPlan(' + item.ID + ')" class="btn btn-warning btn-sm btnDeleteActionPlan"><i class="fa fa-remove"></i></button>';
+                                    html += '</div>';
+                                    html += '</div>';
+                                    html += '</td>';
+                                    html += '</tr>';
+                                }
+                                else
+                                {
+                                    if(item.ListUserIDs.indexOf($('#user').data('userid')) !== -1)
+                                        html += '<tr data-id="' + item.ID + '">';
+                                    else
+                                        html += '<tr style="pointer-events: none;" data-id="' + item.ID + '">';
+
+                                    html += '<td>' + (i + 1) + '</td>';
+                                    html += '<td class="text-bold" style="padding-left:15px;"><span style="font-weight: 700;cursor: pointer;"  class="TitleEdit" data-url="/ChartPeriod/Update" data-type="text" data-name="Title" data-pk="'+item.ID+'" data-value="' + item.Title + '" data-title="Enter your title">' + item.Title + '</span></td>';
+                                    html += '<td><div class="DescriptionEdit" style="font-weight: 700;cursor: pointer;"  data-type="textarea"  data-name="Description" data-value="' + item.Description + '" data-pk="'+item.ID+'"> ' + item.Description + '</div> ';
+                                    html += '</td>';
+                                    html += '<td>';
+
+                                    if (item.Tag !== null)
+                                    {
+                                        var array2 = item.Tag.split(',');
+                                        $.each(array2, function (i, item2) {
+                                            if (item2.length > 1) {
+                                                html += '<span class="badge bg-default text-bold ">' + item2 + '</span> ';
+                                            }
+                                        });
+                                    }
+
+                                    html += '</td>';
+                                    html += '<td><input autocomplete="off" data-id="'+item.ID+'" type="text" class="datepickerEdit" style="border: none;font-weight: 700;cursor: pointer;" value="' + item.Deadline + '"></td>';
+                                    html += '<td><input autocomplete="off" data-id="' + item.ID + '" type="text" class="datepickerEdit" name="UpdateSheduleDate" style="border: none;font-weight: 700;cursor: pointer;" value="' + item.UpdateSheduleDate + '"></td>';
+                                    html += '<td><input autocomplete="off" data-id="'+item.ID+'" type="text" class="datepickerEdit" style="border: none;font-weight: 700;cursor: pointer;" value="' + item.ActualFinishDate + '"></td>';
+                                    html += '<td > ';
+                                    html += '<div class="pretty p-icon p-round p-pulse">';
+
+                                    if (item.Status)
+                                    {
+                                        html += '<input type="checkbox" checked onclick="datasetController.done(' + item.ID + ')" />';
+                                        html += '<div class="state p-success">';
+                                        html += '<i class="icon fa fa-check"></i>';
+                                        html += '<label>Finished</label>';
+                                    }
+                                    else
+                                    {
+                                        html += '<input type="checkbox" onclick="datasetController.done(' + item.ID + ')"/>';
+                                        html += '<div class="state p-danger">';
+                                        html += '<i class="icon fa fa-check"></i>';
+                                        html += '<label>Not finished</label>';
+                                    }
+                                    html += '</div>';
+                                    html += '</div>';
+                                    html += '</td > ';
+                                    html += '</tr>';
+                                }
+                            });
+
+                            $('.tblActionPlan').empty();
+                            $('.tblActionPlan').append(html);
+
+                            datasetController.registerEvent();
+                        }
+
+                    });
+            },
+            addActionPlan() {
+                let id = $('.addTask .ID').val();
+                let catid = Number(datasetController.getURLParameter().catid);
+                let kpilevelcode = $('#modal-group-comment-data .kpilevelcode').val();
+
+                let res = datasetController.validate();
+                if (res === false) {
+                    return false;
+                }
+                let KPILevelCodeAndPeriod = kpilevelcode + datasetController.getURLParameter().period;
+                let phrases = new Array();
+
+                $('.Description').each(function () {
+                    $(this).find('li').each(function () {
+                        let current = $(this);
+                        if (current.children().length > 0) { return true; }
+                        phrases.push($(this).text().trim());
+                    });
+                });
+                let Description = phrases.join(';');
+
+
+                let Tag = $('#Tag').val().trim();
+                if (Tag !== null || Tag !== "" || Tag !== undefined)
+                    Tag = Tag.replace(/\@@/g, '').replace(/\ /g, ',');
+                let Auditor = $('#Auditor').val().replace("@@","").trim();
+                let obj = {
+                    ID: id,
+                    UserID: $('#user').data('userid'),
+                    DataID: Number($('.dataid').text()),
+                    CommentID: Number($('.commentid').text()),
+                    Title: $('.addTask .Title').val(),
+                    Tag: Tag,
+                    KPILevelCodeAndPeriod: KPILevelCodeAndPeriod,
+                    Description: Description,
+                    Deadline: $('.addTask .datepicker').datepicker({ dateFormat: 'mm-dd-yy' }).val(),
+                    SubmitDate: convertDate(new Date),
+                    Link: window.location.href,
+                    Subject: $('.ActionPlanChart').text(),
+                    Auditor: Auditor,
+                    CategoryID: Number(catid),
+                    KPILevelCode: kpilevelcode
+                };
+                console.log(obj);
+            $.post('/ChartPeriod/Add', { obj: obj }, function (res) {
+                console.log(res);
+                if (res.status === true && res.isSendmail === true) {
+                    var commentid = Number($('.commentid').text());
+                    var dataid = Number($('.dataid').text()); 
+                    datasetController.LoadDataActionPlan(dataid, commentid);
+                    datasetController.resetForm();
+                    activaTab('pills-home');
+                }
+                else if (res.status === true && res.isSendmail === false) {
+                    var commentid = Number($('.commentid').text());
+                    var dataid = Number($('.dataid').text());
+                    datasetController.LoadDataActionPlan(dataid, commentid);
+                    datasetController.resetForm();
+                    activaTab('pills-home');
+                    console.log("Can not send email")
+                }
+                else if (!res.status) {
+                    var commentid = Number($('.commentid').text());
+                    var dataid = Number($('.dataid').text());
+                    datasetController.resetForm();
+                    warning(res.message);
+
+                }
+                else {
+                    if (res.message !== "") {
+                        Toast.fire({
+                          type: 'warning',
+                          title: res.message
+                        })
+
+                    } else {
+                      error( "Failed");
+                    }
+                }
+            });
+            },
+            resetForm: function () {
+                $('.Title').val("");
+                $('.ID').val("");
+                $('.Description').each(function () {
+                    $(this).find('li').remove();
+                });
+                $('.Description ul').append("<li></li>")
+                $('.DueDate').val("");
+                $('#Tag').val("");
+                $('#Auditor').val("");
+                $('.Tag').val("");
+                $('.Title').css('border-color', 'lightgrey');
+                $('.DueDate').css('border-color', 'lightgrey');
+
+            },
+            validate: function () {
+                var isValid = true;
+                if ($('.Title').val().trim() === "") {
+                    $('.Title').css('border-color', 'Red');
+                    isValid = false;
+                }
+                else {
+                    $('.Title').css('border-color', 'lightgrey');
+                }
+                //if ($('.Description').val().trim() === "") {
+                //    $('.Description').css('border-color', 'Red');
+                //    isValid = false;
+                //}
+                //else {
+                //    $('.Description').css('border-color', 'lightgrey');
+                //}
+                if ($('.DueDate').val().trim() === "") {
+                    $('.DueDate').css('border-color', 'Red');
+                    isValid = false;
+                }
+                else {
+                    $('.DueDate').css('border-color', 'lightgrey');
+                }
+                 if ($('.Tag').val().trim() === "") {
+                    $('.Tag').css('border-color', 'Red');
+                    isValid = false;
+                }
+                else {
+                    $('.Tag').css('border-color', 'lightgrey');
+                }
+                 if ($('.Auditor').val().trim() === "") {
+                    $('.Auditor').css('border-color', 'Red');
+                    isValid = false;
+                }
+                else {
+                    $('.Auditor').css('border-color', 'lightgrey');
+                }
+                return isValid;
+            },
+            approval(id) {
+                let catid = Number(datasetController.getURLParameter().catid);
+                let kpilevelcode = $('#modal-group-comment-data .kpilevelcode').val();
+                let data = {
+                     id: id,
+                     approveby: $('#user').data('userid'),
+                     KPILevelCode: kpilevelcode,
+                    CategoryID: Number(catid),
+                    url: window.location.href
+                }
+                let promise = $post("/ChartPeriod/Approval", JSON.stringify(data));
+                    promise.then(res => {
+                        success("Successfully!")
+                        var commentid = Number($('.commentid').text());
+                        var dataid = Number($('.dataid').text());
+                        datasetController.LoadDataActionPlan(dataid, commentid);
+                        datasetController.resetForm();
+                    })
+            },
+            updateActionPlan(ID,Title,DeadLine,Description,Tag) {
+                if (Number(ID) > 0) {
+                    $.post('UpdateActionPlan', { ID: ID, Title:Title,DeadLine:DeadLine, Description:Description,Tag:Tag}, function (res) {
+                        console.log(res);
+                        if (res) {
+                            var commentid = Number($('.commentid').text());
+                            var dataid = Number($('.dataid').text());
+                            datasetController.LoadDataActionPlan(dataid, commentid);
+                            datasetController.resetForm();
+                        }
+                    });
+                }
+            },
+            done(id) {
+                let catid = Number(datasetController.getURLParameter().catid);
+                let kpilevelcode = $('#modal-group-comment-data .kpilevelcode').val();
+                let data = {
+                    id: id,
+                    KPILevelCode: kpilevelcode,
+                    CategoryID: Number(catid),
+                    url: window.location.href
+                };
+                let promise = $post("/ChartPeriod/Done", JSON.stringify(data))
+                    promise.then(data => {
+                        success("Successfully!")
+                        var commentid = Number($('.commentid').text());
+                        var dataid = Number($('.dataid').text());
+                        datasetController.LoadDataActionPlan(dataid, commentid);
+                        datasetController.resetForm();
+                    })
+              
+            },
+            deleteActionPlan(id) {
+                if (Number(id) > 0) {
+                    $.post('/ChartPeriod/Delete', { id: id }, function (res) {
+                        if (res) {
+                            var commentid = Number($('.commentid').text());
+                            var dataid = Number($('.dataid').text());
+                            datasetController.LoadDataActionPlan(dataid, commentid);
+
+                        }
+                    });
+
+                }
+            },
+            search() {
+                var urlarr = datasetController.getURLParameter();
+                switch (urlarr.period.toLowerCase()) {
+                    case 'w':
+                        window.location.href = `/Dataset/${urlarr.catid}/${urlarr.period}/${Number($("#startWeek").val())}/${Number($("#endWeek").val())}/${Number($("#weekOfYear").val())}`; break;
+                    case 'm':
+                        window.location.href = `/Dataset/${urlarr.catid}/${urlarr.period}/${Number($("#startMonth").val())}/${Number($("#endMonth").val())}/${Number($("#monthOfYear").val())}`; break;
+                    case 'q':
+                        window.location.href = `/Dataset/${urlarr.catid}/${urlarr.period}/${Number($("#startQuarter").val())}/${Number($("#endQuarter").val())}/${Number($("#quarterOfYear").val())}`; break;
+                    case 'y':
+                        window.location.href = `/Dataset/${urlarr.catid}/${urlarr.period}/${Number($("#startYear").val())}/${Number($("#endYear").val())}/${Number($("#yearOfYear").val())}`; break;
+                }
+            },
+            getURLParameter() {
+                 var arr = window.location.pathname.split('/');
+                return {
+                    catid: arr[2],
+                    period: arr[3],
+                    start: arr[4],
+                    end: arr[5],
+                    year: arr[6]
+                }
+            }
+
+        }
+
+    </script>
+}

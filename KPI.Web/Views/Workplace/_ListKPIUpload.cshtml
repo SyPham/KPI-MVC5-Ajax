@@ -1,0 +1,88 @@
+﻿@*@using PagedList.Mvc
+@using PagedList*@
+@{
+//var kpis = (IEnumerable<KPI.Model.ViewModel.ListKPIUploadVM>)ViewBag.KPI;
+//int i = 0;
+}
+<div class="box box-widget" id="boxActionPlan">
+    <div class="box-header with-border kpi-name">
+        <button type="button" data-toggle="modal" data-target="#modal-group" class="btn pull-right btn-microsoft btn-upload"><i class="fa fa-upload"></i> Upload File</button>
+
+        <h3 style="margin-right: 10px;" class="box-title pull-left font-weight-bold">KPI&#32;&#32;</h3>
+        <div class="form-group">
+            <select id="role" class="form-control task" style="width:200px">
+                <option value="">N/A</option>
+                <option value="Upd">Updater</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="box-body">
+        <table class="table table-condensed table-bordered">
+            <thead>
+                <tr>
+                    <th style="width: 10px">No.</th>
+                    <th>KPI name</th>
+                    <th>Status Weekly</th>
+                    <th>Status Monthly</th>
+                    <th>Status Quarterly </th>
+                    <th>Status Yearly</th>
+                </tr>
+            </thead>
+            <tbody class="tblKPIUpload" id="tblKPIUpload" style="display:none">
+
+                @*@foreach (var item in kpis)
+                {
+                    var ontime = new HtmlString("<span class='badge bg-green'>on time</span>");
+                    var late = new HtmlString("<span class='badge bg-red'>late</span>");
+                    var NA = new HtmlString("<span class='badge bg-gray'>#N/A</span>");
+                    i++;
+                    <tr @(i % 2 != 0 ? "class=info" : "")>
+                        <td>@i</td>
+                        <td>@item.KPIName</td>
+                        <td>@(item.StateDataW == true ? (item.StateW == true ? ontime : late) : NA)</td>
+                        <td>@(item.StateDataM == true ? (item.StateM == true ? ontime : late) : NA)</td>
+                        <td>@(item.StateDataQ == true ? (item.StateQ == true ? ontime : late) : NA)</td>
+                        <td>@(item.StateDataY == true ? (item.StateY == true ? ontime : late) : NA)</td>
+
+                    </tr>
+                }*@
+
+            </tbody>
+        </table>
+        <script id='tblKPIUpload-template' type="text/template">
+            <tr {{Color}}>
+                <td>{{No}}</td>
+                <td class="text-center">{{{KPIName}}}</td>
+                <td class="text-center">{{{StateW}}}</td>
+                <td class="text-center">{{{StateM}}}</td>
+                <td class="text-center">{{{StateQ}}}</td>
+                <td class="text-center">{{{StateY}}}</td>
+            </tr>
+        </script>
+    </div>
+    <!-- /.box-body -->
+    <div class="box-footer clearfix">
+        @*<div class="pull-right">
+            @Html.PagedListPager((PagedList.IPagedList)ViewBag.KPI,
+                page => Url.Action("Index", new { page }),
+                new PagedListRenderOptions
+                     {
+                    LinkToFirstPageFormat = "First",
+                    LinkToPreviousPageFormat = "Previous",
+                    LinkToNextPageFormat = "Next",
+                    LinkToLastPageFormat = "Last",
+                    MaximumPageNumbersToDisplay = 6
+                })
+
+        </div>*@
+        @* @Html.PagedListPager((IPagedList)kpis, page => Url.Action("Index", new { page }))*@
+        <ul id="paginationKPIUpload" class="pagination pagination-sm no-margin pull-right">
+                <li><a href="#">«</a></li>
+                <li><a href="#">1</a></li>
+                <li><a href="#">2</a></li>
+                <li><a href="#">3</a></li>
+                <li><a href="#">»</a></li>
+            </ul>
+    </div>
+</div>

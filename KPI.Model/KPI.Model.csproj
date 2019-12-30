@@ -1,0 +1,586 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{95452EBE-A871-423D-9CD9-A8BF1D9467A2}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>KPI.Model</RootNamespace>
+    <AssemblyName>KPI.Model</AssemblyName>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <Deterministic>true</Deterministic>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <LangVersion>8.0</LangVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <DebugSymbols>true</DebugSymbols>
+    <LangVersion>8.0</LangVersion>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\packages\EntityFramework.6.2.0\lib\net45\EntityFramework.dll</HintPath>
+    </Reference>
+    <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\packages\EntityFramework.6.2.0\lib\net45\EntityFramework.SqlServer.dll</HintPath>
+    </Reference>
+    <Reference Include="ExcelDataReader, Version=3.6.0.0, Culture=neutral, PublicKeyToken=93517dbe6a4012fa, processorArchitecture=MSIL">
+      <HintPath>..\packages\ExcelDataReader.3.6.0\lib\net45\ExcelDataReader.dll</HintPath>
+    </Reference>
+    <Reference Include="ExcelDataReader.DataSet, Version=3.6.0.0, Culture=neutral, PublicKeyToken=93517dbe6a4012fa, processorArchitecture=MSIL">
+      <HintPath>..\packages\ExcelDataReader.DataSet.3.6.0\lib\net35\ExcelDataReader.DataSet.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.AspNet.Identity.Core, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.Identity.Core.2.2.2\lib\net45\Microsoft.AspNet.Identity.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.AspNet.Identity.EntityFramework, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.Identity.EntityFramework.2.2.2\lib\net45\Microsoft.AspNet.Identity.EntityFramework.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Owin, Version=2.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Owin.2.1.0\lib\net45\Microsoft.Owin.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Owin.Host.SystemWeb, Version=2.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Owin.Host.SystemWeb.2.1.0\lib\net45\Microsoft.Owin.Host.SystemWeb.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Owin.Security, Version=2.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Owin.Security.2.1.0\lib\net45\Microsoft.Owin.Security.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.6.0.4\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="PagedList, Version=1.17.0.0, Culture=neutral, PublicKeyToken=abbb863e9397c5e1, processorArchitecture=MSIL">
+      <HintPath>..\packages\PagedList.1.17.0.0\lib\net40\PagedList.dll</HintPath>
+    </Reference>
+    <Reference Include="PagedList.Mvc, Version=4.5.0.0, Culture=neutral, PublicKeyToken=abbb863e9397c5e1, processorArchitecture=MSIL">
+      <HintPath>..\packages\PagedList.Mvc.4.5.0.0\lib\net40\PagedList.Mvc.dll</HintPath>
+    </Reference>
+    <Reference Include="PresentationCore" />
+    <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.configuration" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.IO.Compression" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Security" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Web.Extensions" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Abstract\ALang.cs" />
+    <Compile Include="Abstract\General.cs" />
+    <Compile Include="Abstract\IGeneral.cs" />
+    <Compile Include="Abstract\IInheritance .cs" />
+    <Compile Include="Abstract\ILink.cs" />
+    <Compile Include="Abstract\Inheritance .cs" />
+    <Compile Include="Abstract\Link.cs" />
+    <Compile Include="DAO\SettingDAO.cs" />
+    <Compile Include="DAO\OCCategoryDAO.cs" />
+    <Compile Include="DAO\CategoryKPILevelAdminDAO.cs" />
+    <Compile Include="DAO\ActionPlanDAO.cs" />
+    <Compile Include="DAO\AdminCategoryDAO.cs" />
+    <Compile Include="DAO\CategoryKPILevelDAO.cs" />
+    <Compile Include="DAO\ErrorMessageDAO.cs" />
+    <Compile Include="DAO\NotificationDAO.cs" />
+    <Compile Include="EF\ActionPlanDetail.cs" />
+    <Compile Include="EF\ActionPlan.cs" />
+    <Compile Include="EF\CategoryKPILevel.cs" />
+    <Compile Include="EF\CommentChart.cs" />
+    <Compile Include="EF\CommentChartDetail.cs" />
+    <Compile Include="EF\ErrorMessage.cs" />
+    <Compile Include="EF\Language.cs" />
+    <Compile Include="EF\LateOnUpLoad.cs" />
+    <Compile Include="EF\Manager.cs" />
+    <Compile Include="EF\MenuLang.cs" />
+    <Compile Include="EF\NotificationDetail.cs" />
+    <Compile Include="EF\Notification.cs" />
+    <Compile Include="EF\OCCategory.cs" />
+    <Compile Include="EF\Owner.cs" />
+    <Compile Include="EF\Participant.cs" />
+    <Compile Include="EF\SubNotification.cs" />
+    <Compile Include="EF\Revise.cs" />
+    <Compile Include="EF\Setting.cs" />
+    <Compile Include="EF\Sponsor.cs" />
+    <Compile Include="EF\StateSendMail.cs" />
+    <Compile Include="EF\Tag.cs" />
+    <Compile Include="EF\Uploader.cs" />
+    <Compile Include="helpers\GetterOCs.cs" />
+    <Compile Include="helpers\OC.cs" />
+    <Compile Include="helpers\ConfigHelper.cs" />
+    <Compile Include="DAO\FavouriteDAO.cs" />
+    <Compile Include="DAO\DataChartDAO.cs" />
+    <Compile Include="DAO\KPIDAO.cs" />
+    <Compile Include="DAO\LevelDAO.cs" />
+    <Compile Include="DAO\UploadDAO.cs" />
+    <Compile Include="DAO\UserAdminDAO.cs" />
+    <Compile Include="DAO\KPIAdminDAO.cs" />
+    <Compile Include="DAO\KPILevelDAO.cs" />
+    <Compile Include="DAO\UserLoginDAO.cs" />
+    <Compile Include="EF\Menu.cs" />
+    <Compile Include="EF\Permission.cs" />
+    <Compile Include="EF\Resource.cs" />
+    <Compile Include="EF\Unit.cs" />
+    <Compile Include="EF\Role.cs" />
+    <Compile Include="EF\Category.cs" />
+    <Compile Include="EF\Comment.cs" />
+    <Compile Include="EF\Favourite.cs" />
+    <Compile Include="EF\Data.cs" />
+    <Compile Include="EF\KPI.cs" />
+    <Compile Include="EF\KPIKind.cs" />
+    <Compile Include="EF\KPILevel.cs" />
+    <Compile Include="EF\Level.cs" />
+    <Compile Include="EF\SeenComment.cs" />
+    <Compile Include="EF\User.cs" />
+    <Compile Include="helpers\CodeUtility.cs" />
+    <Compile Include="helpers\CookieUtility.cs" />
+    <Compile Include="helpers\Getter.cs" />
+    <Compile Include="helpers\LevelHelper.cs" />
+    <Compile Include="helpers\MailUtility.cs" />
+    <Compile Include="helpers\PagedData.cs" />
+    <Compile Include="helpers\Pagination.cs" />
+    <Compile Include="KPIDbContext.cs" />
+    <Compile Include="helpers\MailHelper.cs" />
+    <Compile Include="Migrations\201909060044026_InitialDb.cs" />
+    <Compile Include="Migrations\201909060044026_InitialDb.Designer.cs">
+      <DependentUpon>201909060044026_InitialDb.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201909060224088_UpdateNotification.cs" />
+    <Compile Include="Migrations\201909060224088_UpdateNotification.Designer.cs">
+      <DependentUpon>201909060224088_UpdateNotification.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201909070047370_addTargettblData.cs" />
+    <Compile Include="Migrations\201909090839231_addTagTblComment.cs" />
+    <Compile Include="Migrations\201909090839231_addTagTblComment.Designer.cs">
+      <DependentUpon>201909090839231_addTagTblComment.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201909100210177_modifyValueTblData.cs" />
+    <Compile Include="Migrations\201909100210177_modifyValueTblData.Designer.cs">
+      <DependentUpon>201909100210177_modifyValueTblData.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201909100818221_AddActionPlanDetailNotificationDetail.cs" />
+    <Compile Include="Migrations\201909100818221_AddActionPlanDetailNotificationDetail.Designer.cs">
+      <DependentUpon>201909100818221_AddActionPlanDetailNotificationDetail.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201909100821030_AddActionPlanDetailNotificationDetail1.cs" />
+    <Compile Include="Migrations\201909100821030_AddActionPlanDetailNotificationDetail1.Designer.cs">
+      <DependentUpon>201909100821030_AddActionPlanDetailNotificationDetail1.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201909100831039_AddActionPlanDetailNotificationDetail2.cs" />
+    <Compile Include="Migrations\201909100831039_AddActionPlanDetailNotificationDetail2.Designer.cs">
+      <DependentUpon>201909100831039_AddActionPlanDetailNotificationDetail2.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201909120331168_tagComment.cs" />
+    <Compile Include="Migrations\201909120331168_tagComment.Designer.cs">
+      <DependentUpon>201909120331168_tagComment.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201909120351476_tagComment1.cs" />
+    <Compile Include="Migrations\201909120351476_tagComment1.Designer.cs">
+      <DependentUpon>201909120351476_tagComment1.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201909120459044_tagComment2.cs" />
+    <Compile Include="Migrations\201909120459044_tagComment2.Designer.cs">
+      <DependentUpon>201909120459044_tagComment2.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201909120822165_ModifiTag.cs" />
+    <Compile Include="Migrations\201909120822165_ModifiTag.Designer.cs">
+      <DependentUpon>201909120822165_ModifiTag.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201909130307562_newversion.cs" />
+    <Compile Include="Migrations\201909130307562_newversion.Designer.cs">
+      <DependentUpon>201909130307562_newversion.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201909141811177_addTitleNotification.cs" />
+    <Compile Include="Migrations\201909141811177_addTitleNotification.Designer.cs">
+      <DependentUpon>201909141811177_addTitleNotification.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201909170041339_addTblComment.cs" />
+    <Compile Include="Migrations\201909170041339_addTblComment.Designer.cs">
+      <DependentUpon>201909170041339_addTblComment.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201909170252168_AddLinkTblActionPlan.cs" />
+    <Compile Include="Migrations\201909170252168_AddLinkTblActionPlan.Designer.cs">
+      <DependentUpon>201909170252168_AddLinkTblActionPlan.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201909180925537_EditNoitification.cs" />
+    <Compile Include="Migrations\201909180925537_EditNoitification.Designer.cs">
+      <DependentUpon>201909180925537_EditNoitification.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201909230315011_version.cs" />
+    <Compile Include="Migrations\201909230315011_version.Designer.cs">
+      <DependentUpon>201909230315011_version.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201909230904071_version1.cs" />
+    <Compile Include="Migrations\201909230904071_version1.Designer.cs">
+      <DependentUpon>201909230904071_version1.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201909241400596_version2.cs" />
+    <Compile Include="Migrations\201909241400596_version2.Designer.cs">
+      <DependentUpon>201909241400596_version2.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201909270917516_vertion3.cs" />
+    <Compile Include="Migrations\201909270917516_vertion3.Designer.cs">
+      <DependentUpon>201909270917516_vertion3.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201909270925377_vertion4.cs" />
+    <Compile Include="Migrations\201909270925377_vertion4.Designer.cs">
+      <DependentUpon>201909270925377_vertion4.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201909300403113_version5.cs" />
+    <Compile Include="Migrations\201909300403113_version5.Designer.cs">
+      <DependentUpon>201909300403113_version5.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201909300405451_version6.cs" />
+    <Compile Include="Migrations\201909300405451_version6.Designer.cs">
+      <DependentUpon>201909300405451_version6.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201909300457531_version7.cs" />
+    <Compile Include="Migrations\201909300457531_version7.Designer.cs">
+      <DependentUpon>201909300457531_version7.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201909300500089_version71.cs" />
+    <Compile Include="Migrations\201909300500089_version71.Designer.cs">
+      <DependentUpon>201909300500089_version71.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201909300553251_version8.cs" />
+    <Compile Include="Migrations\201909300553251_version8.Designer.cs">
+      <DependentUpon>201909300553251_version8.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201909300603525_version9.cs" />
+    <Compile Include="Migrations\201909300603525_version9.Designer.cs">
+      <DependentUpon>201909300603525_version9.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201909301453314_version10.cs" />
+    <Compile Include="Migrations\201909301453314_version10.Designer.cs">
+      <DependentUpon>201909301453314_version10.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201909301602017_version11.cs" />
+    <Compile Include="Migrations\201909301602017_version11.Designer.cs">
+      <DependentUpon>201909301602017_version11.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201910030755102_vertion12.cs" />
+    <Compile Include="Migrations\201910030755102_vertion12.Designer.cs">
+      <DependentUpon>201910030755102_vertion12.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201910030852441_vertion13.cs" />
+    <Compile Include="Migrations\201910030852441_vertion13.Designer.cs">
+      <DependentUpon>201910030852441_vertion13.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201910040955034_version14.cs" />
+    <Compile Include="Migrations\201910040955034_version14.Designer.cs">
+      <DependentUpon>201910040955034_version14.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201910050043106_vertion15.cs" />
+    <Compile Include="Migrations\201910050043106_vertion15.Designer.cs">
+      <DependentUpon>201910050043106_vertion15.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201910050934513_version16.cs" />
+    <Compile Include="Migrations\201910050934513_version16.Designer.cs">
+      <DependentUpon>201910050934513_version16.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201910080306414_vertion17.cs" />
+    <Compile Include="Migrations\201910080306414_vertion17.Designer.cs">
+      <DependentUpon>201910080306414_vertion17.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201910110258522_vertion18.cs" />
+    <Compile Include="Migrations\201910110258522_vertion18.Designer.cs">
+      <DependentUpon>201910110258522_vertion18.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201910160052468_vertion151.cs" />
+    <Compile Include="Migrations\201910160052468_vertion151.Designer.cs">
+      <DependentUpon>201910160052468_vertion151.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201910220656028_version19.cs" />
+    <Compile Include="Migrations\201910220656028_version19.Designer.cs">
+      <DependentUpon>201910220656028_version19.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201910220657318_version20.cs" />
+    <Compile Include="Migrations\201910220657318_version20.Designer.cs">
+      <DependentUpon>201910220657318_version20.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201910250511302_version21.cs" />
+    <Compile Include="Migrations\201910250511302_version21.Designer.cs">
+      <DependentUpon>201910250511302_version21.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201910260457030_version22.cs" />
+    <Compile Include="Migrations\201910260457030_version22.Designer.cs">
+      <DependentUpon>201910260457030_version22.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201910280430352_version22.0.1.cs" />
+    <Compile Include="Migrations\201910280430352_version22.0.1.Designer.cs">
+      <DependentUpon>201910280430352_version22.0.1.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201911050754441_version1.0.1.cs" />
+    <Compile Include="Migrations\201911050754441_version1.0.1.Designer.cs">
+      <DependentUpon>201911050754441_version1.0.1.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201911060200120_version1.0.2.cs" />
+    <Compile Include="Migrations\201911060200120_version1.0.2.Designer.cs">
+      <DependentUpon>201911060200120_version1.0.2.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201911090800076_version1.0.3.cs" />
+    <Compile Include="Migrations\201911090800076_version1.0.3.Designer.cs">
+      <DependentUpon>201911090800076_version1.0.3.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201911110125420_version1.0.4.cs" />
+    <Compile Include="Migrations\201911110125420_version1.0.4.Designer.cs">
+      <DependentUpon>201911110125420_version1.0.4.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201911250037225_version1.0.5.cs" />
+    <Compile Include="Migrations\201911250037225_version1.0.5.Designer.cs">
+      <DependentUpon>201911250037225_version1.0.5.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201912060910123_Version1.0.6.cs" />
+    <Compile Include="Migrations\201912060910123_Version1.0.6.Designer.cs">
+      <DependentUpon>201912060910123_Version1.0.6.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201912070200084_Version1.0.7.cs" />
+    <Compile Include="Migrations\201912070200084_Version1.0.7.Designer.cs">
+      <DependentUpon>201912070200084_Version1.0.7.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201912180705361_version1.0.8.cs" />
+    <Compile Include="Migrations\201912180705361_version1.0.8.Designer.cs">
+      <DependentUpon>201912180705361_version1.0.8.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201912250748014_version1.0.9.cs" />
+    <Compile Include="Migrations\201912250748014_version1.0.9.Designer.cs">
+      <DependentUpon>201912250748014_version1.0.9.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\Configuration.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SqlServerNotifier\NotifierEntity.cs" />
+    <Compile Include="SqlServerNotifier\NotifierEntityExtentions.cs" />
+    <Compile Include="SqlServerNotifier\PushSqlDependency.cs" />
+    <Compile Include="SqlServerNotifier\SqlDependencyRegister.cs" />
+    <Compile Include="SqlServerNotifier\SqlNotificationEventHandler.cs" />
+    <Compile Include="ViewModel\ActionPlanGetAllViewModel.cs" />
+    <Compile Include="ViewModel\ActionPlanTagVM.cs" />
+    <Compile Include="ViewModel\AddActionPlanViewModel.cs" />
+    <Compile Include="ViewModel\ActionPlanVM.cs" />
+    <Compile Include="ViewModel\AddActionPlanVM.cs" />
+    <Compile Include="ViewModel\AddCommentViewModel.cs" />
+    <Compile Include="ViewModel\AddCommentVM.cs" />
+    <Compile Include="ViewModel\CategoryKPILevelVM.cs" />
+    <Compile Include="ViewModel\DataExportVM.cs" />
+    <Compile Include="ViewModel\DatasetVM.cs" />
+    <Compile Include="ViewModel\EmailViewModel\UserViewModel.cs" />
+    <Compile Include="ViewModel\KPITreeViewModelAdminLevel.cs" />
+    <Compile Include="ViewModel\LevelActionVM.cs" />
+    <Compile Include="ViewModel\LevelVM.cs" />
+    <Compile Include="ViewModel\ListActionPlanVM.cs" />
+    <Compile Include="ViewModel\ListCheckTaskVM.cs" />
+    <Compile Include="ViewModel\ListDataUploadVM.cs" />
+    <Compile Include="ViewModel\ListKPIUploadVM.cs" />
+    <Compile Include="ViewModel\ManagerOwnerUpdaterSponsorParticipantVM.cs" />
+    <Compile Include="ViewModel\ManagerOwnerUpdaterSponsorVM.cs" />
+    <Compile Include="ViewModel\Menu\MenuViewModel.cs" />
+    <Compile Include="ViewModel\NotificationViewModel.cs" />
+    <Compile Include="ViewModel\QuarterVM.cs" />
+    <Compile Include="ViewModel\ToDoList.cs" />
+    <Compile Include="ViewModel\UpdateActionPlanVM.cs" />
+    <Compile Include="ViewModel\UpdateKPILevelVM.cs" />
+    <Compile Include="ViewModel\UploadKPIVM.cs" />
+    <Compile Include="ViewModel\WorkplaceVM.cs" />
+    <Compile Include="ViewModel\DataCompareVM.cs" />
+    <Compile Include="ViewModel\CompareVM.cs" />
+    <Compile Include="ViewModel\ChartVM.cs" />
+    <Compile Include="ViewModel\CommentVM.cs" />
+    <Compile Include="ViewModel\DataVM.cs" />
+    <Compile Include="ViewModel\FavouriteVM.cs" />
+    <Compile Include="ViewModel\KPIVM.cs" />
+    <Compile Include="ViewModel\KPILevelViewModel.cs" />
+    <Compile Include="ViewModel\KPILevelVM.cs" />
+    <Compile Include="ViewModel\KPITreeViewModel.cs" />
+    <Compile Include="ViewModel\KPIViewModel.cs" />
+    <Compile Include="ViewModel\MenuVM.cs" />
+    <Compile Include="ViewModel\UploadDataVM.cs" />
+    <Compile Include="ViewModel\UserProfileVM.cs" />
+    <Compile Include="ViewModel\UserSession.cs" />
+    <Compile Include="ViewModel\YearVM.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\201909060044026_InitialDb.resx">
+      <DependentUpon>201909060044026_InitialDb.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201909060224088_UpdateNotification.resx">
+      <DependentUpon>201909060224088_UpdateNotification.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201909090839231_addTagTblComment.resx">
+      <DependentUpon>201909090839231_addTagTblComment.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201909100210177_modifyValueTblData.resx">
+      <DependentUpon>201909100210177_modifyValueTblData.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201909100818221_AddActionPlanDetailNotificationDetail.resx">
+      <DependentUpon>201909100818221_AddActionPlanDetailNotificationDetail.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201909100821030_AddActionPlanDetailNotificationDetail1.resx">
+      <DependentUpon>201909100821030_AddActionPlanDetailNotificationDetail1.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201909100831039_AddActionPlanDetailNotificationDetail2.resx">
+      <DependentUpon>201909100831039_AddActionPlanDetailNotificationDetail2.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201909120331168_tagComment.resx">
+      <DependentUpon>201909120331168_tagComment.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201909120351476_tagComment1.resx">
+      <DependentUpon>201909120351476_tagComment1.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201909120459044_tagComment2.resx">
+      <DependentUpon>201909120459044_tagComment2.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201909120822165_ModifiTag.resx">
+      <DependentUpon>201909120822165_ModifiTag.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201909130307562_newversion.resx">
+      <DependentUpon>201909130307562_newversion.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201909141811177_addTitleNotification.resx">
+      <DependentUpon>201909141811177_addTitleNotification.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201909170041339_addTblComment.resx">
+      <DependentUpon>201909170041339_addTblComment.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201909170252168_AddLinkTblActionPlan.resx">
+      <DependentUpon>201909170252168_AddLinkTblActionPlan.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201909180925537_EditNoitification.resx">
+      <DependentUpon>201909180925537_EditNoitification.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201909230315011_version.resx">
+      <DependentUpon>201909230315011_version.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201909230904071_version1.resx">
+      <DependentUpon>201909230904071_version1.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201909241400596_version2.resx">
+      <DependentUpon>201909241400596_version2.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201909270917516_vertion3.resx">
+      <DependentUpon>201909270917516_vertion3.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201909270925377_vertion4.resx">
+      <DependentUpon>201909270925377_vertion4.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201909300403113_version5.resx">
+      <DependentUpon>201909300403113_version5.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201909300405451_version6.resx">
+      <DependentUpon>201909300405451_version6.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201909300457531_version7.resx">
+      <DependentUpon>201909300457531_version7.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201909300500089_version71.resx">
+      <DependentUpon>201909300500089_version71.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201909300553251_version8.resx">
+      <DependentUpon>201909300553251_version8.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201909300603525_version9.resx">
+      <DependentUpon>201909300603525_version9.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201909301453314_version10.resx">
+      <DependentUpon>201909301453314_version10.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201909301602017_version11.resx">
+      <DependentUpon>201909301602017_version11.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201910030755102_vertion12.resx">
+      <DependentUpon>201910030755102_vertion12.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201910030852441_vertion13.resx">
+      <DependentUpon>201910030852441_vertion13.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201910040955034_version14.resx">
+      <DependentUpon>201910040955034_version14.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201910050043106_vertion15.resx">
+      <DependentUpon>201910050043106_vertion15.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201910050934513_version16.resx">
+      <DependentUpon>201910050934513_version16.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201910080306414_vertion17.resx">
+      <DependentUpon>201910080306414_vertion17.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201910110258522_vertion18.resx">
+      <DependentUpon>201910110258522_vertion18.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201910160052468_vertion151.resx">
+      <DependentUpon>201910160052468_vertion151.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201910220656028_version19.resx">
+      <DependentUpon>201910220656028_version19.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201910220657318_version20.resx">
+      <DependentUpon>201910220657318_version20.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201910250511302_version21.resx">
+      <DependentUpon>201910250511302_version21.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201910260457030_version22.resx">
+      <DependentUpon>201910260457030_version22.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201910280430352_version22.0.1.resx">
+      <DependentUpon>201910280430352_version22.0.1.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201911050754441_version1.0.1.resx">
+      <DependentUpon>201911050754441_version1.0.1.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201911060200120_version1.0.2.resx">
+      <DependentUpon>201911060200120_version1.0.2.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201911090800076_version1.0.3.resx">
+      <DependentUpon>201911090800076_version1.0.3.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201911110125420_version1.0.4.resx">
+      <DependentUpon>201911110125420_version1.0.4.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201911250037225_version1.0.5.resx">
+      <DependentUpon>201911250037225_version1.0.5.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201912060910123_Version1.0.6.resx">
+      <DependentUpon>201912060910123_Version1.0.6.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201912070200084_Version1.0.7.resx">
+      <DependentUpon>201912070200084_Version1.0.7.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201912180705361_version1.0.8.resx">
+      <DependentUpon>201912180705361_version1.0.8.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201912250748014_version1.0.9.resx">
+      <DependentUpon>201912250748014_version1.0.9.cs</DependentUpon>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Content\PagedList.css" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>

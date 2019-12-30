@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29001.49
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KPI.Model", "KPI.Model\KPI.Model.csproj", "{95452EBE-A871-423D-9CD9-A8BF1D9467A2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KPI.Web", "KPI.Web\KPI.Web.csproj", "{69CA8C0C-060C-4F34-92F9-5AD4D0484777}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{95452EBE-A871-423D-9CD9-A8BF1D9467A2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{95452EBE-A871-423D-9CD9-A8BF1D9467A2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{95452EBE-A871-423D-9CD9-A8BF1D9467A2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{95452EBE-A871-423D-9CD9-A8BF1D9467A2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{69CA8C0C-060C-4F34-92F9-5AD4D0484777}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{69CA8C0C-060C-4F34-92F9-5AD4D0484777}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{69CA8C0C-060C-4F34-92F9-5AD4D0484777}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{69CA8C0C-060C-4F34-92F9-5AD4D0484777}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {EA1BC2C6-37BC-46E1-A62B-4967256F1AAC}
+	EndGlobalSection
+EndGlobal

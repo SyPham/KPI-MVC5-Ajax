@@ -1,0 +1,98 @@
+﻿@using MvcBreadCrumbs;
+@{
+    ViewBag.Title = "Admin User";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+}
+@Html.Raw(BreadCrumb.Display())
+<div class="box box-widget" id="table-group">
+    <div class="box-header with-border">
+        <h3 class="box-title pull-left">User</h3>
+        <div class="col-md-offset-4 col-md-3">
+            <input type="text" class="form-control" id="search" placeholder="Search name, code" />
+        </div>
+        <button id="btnShowModal" class="btn btn-success pull-right" data-toggle="modal" data-target="#modal-group"><i class="fa fa-plus"></i> Add</button>
+
+    </div>
+    <!-- /.box-header -->
+    <div class="box-body table-responsive no-padding">
+
+        <table class="table table-hover table-bordered">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Username</th>
+                    <th>Email</th>
+                    <th>Alias</th>
+                    <th>FullName</th>
+                    <th>Code</th>
+                    <th>Skype</th>
+                    <th>State</th>
+                    <th>Permission</th>
+                    <th>Add/Edit/Delete</th>
+                </tr>
+            </thead>
+            <tbody class="tbody" id="tbluser">
+
+            </tbody>
+        </table>
+        <script id="tbluser-template" type="x-tmpl-mustache">
+            <tr {{{Color}}}>
+                <td>{{No}}</td>
+                <td>{{Username}}</td>
+                <td>{{Email}}</td>
+                <td>{{Alias}}</td>
+                <td>{{FullName}}</td>
+                <td class="code">{{Code}}</td>
+
+                <td>{{Skype}}</td>
+                <td class="lock">
+                    <div class="pretty p-icon p-jelly">
+                        <input type="checkbox" class="lockUser" onchange="return adminUserController.lockUser({{ID}})" value="{{IDStatus}}" {{{IsActive}}} />
+                        <div class="state p-info-o">
+                            <i class="icon fa fa-lock"></i>
+                            <label>{{{Label}}}</label>
+                        </div>
+                    </div>
+                </td>
+                <td>
+                    {{PermissionName}}
+                </td>
+                <td style="width:20%">
+                    <div class="btn-user">
+                        <button data-toggle="modal"
+                                data-id="{{ID}}"
+                                data-target="#modal-group2"
+                                class="btn btn-primary btn-sm btnUpdate"
+                                id="btnUpdate">
+                            <i class="fa fa-edit"></i> Edit
+                        </button>
+                        <button id="btnDelete"
+                                data-id="{{IDDelete}}"
+                                class="btn btn-danger btn-sm btnDelete">
+                            <i class="fa fa-remove"></i> Delete
+                        </button>
+
+                    </div>
+                </td>
+            </tr>
+        </script>
+    </div>
+    <!-- /.box-body -->
+    <div class="box-footer clearfix" id="pageds">
+        <ul id="pagination" class="pagination pagination-sm no-margin pull-right">
+            <li><a href="#">«</a></li>
+            <li><a href="#">1</a></li>
+            <li><a href="#">2</a></li>
+            <li><a href="#">3</a></li>
+            <li><a href="#">»</a></li>
+        </ul>
+    </div>
+</div>
+@* Modal *@
+@RenderPage("_Modal.cshtml")
+
+@section Scripts{
+    <script src="~/Scripts/controllers/userAdminController.js"></script>
+}
+

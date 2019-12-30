@@ -1,0 +1,352 @@
+﻿body.modal-open {
+    overflow: hidden;
+}
+#ListKPI {
+    height: 300px;
+    overflow-y: scroll;
+}
+/*label.tooltip {
+    display: inline-block;
+    width: 5em;
+}*/
+.unselectable {
+    cursor: not-allowed !important;
+}
+
+#ListKPI .henry {
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+    #ListKPI .henry .period {
+        float: left;
+        display: block;
+    }
+
+    #ListKPI .henry .kpilevel {
+        float: left;
+        width: 30%;
+    }
+
+.clearfix {
+    clear: both;
+}
+
+.black {
+    color: black;
+    font-weight: 600;
+}
+
+thead tr th {
+    text-align: center !important;
+}
+
+#table-group table thead tr th, #table-group table tbody tr td {
+    text-align: center !important;
+}
+
+    #table-group table thead tr th:first-child {
+        width: 3%;
+    }
+
+    #table-group table thead tr th:nth-child(2) {
+        width: 20%;
+    }
+
+    #table-group table thead tr th:nth-child(3) {
+        width: 15%;
+    }
+
+    #table-group table thead tr th:nth-child(4) {
+        width: 5%;
+    }
+
+
+#ListKPILevel table thead tr th, #ListKPILevel table tbody tr td, #ListKPILevel table tbody tr th {
+    text-align: center !important;
+}
+
+#ListKPILevel table tr th:first-child {
+    width: 5%;
+}
+
+#ListKPILevel table tr th:nth-child(2) {
+    width: 35%;
+}
+
+#ListKPILevel table tr th:nth-child(3) {
+    width: 10%;
+}
+
+#ListKPILevel table tbody tr td:nth-child(2) {
+    text-align: justify !important
+}
+
+/* Define custom width and alignment of table columns */
+/*#treetable {
+    table-layout: fixed;
+}
+
+    #treetable tr td:nth-of-type(1) {
+        text-align: right;
+    }
+
+    #treetable tr td:nth-of-type(2) {
+        text-align: center;
+    }
+
+    #treetable tr td:nth-of-type(3) {
+        min-width: 100px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }*/
+
+#lineChart {
+    height: 500px !important;
+}
+
+#home-admin {
+}
+
+    #home-admin a {
+        color: black;
+    }
+
+        #home-admin a .info-box {
+            transition: box-shadow .3s;
+        }
+
+        #home-admin a:hover .info-box {
+            /*color: black;*/
+            cursor: pointer !important;
+            box-shadow: 0 2px 11px rgba(33,33,33,.2);
+        }
+
+.complete {
+    /*the container must be positioned relative:*/
+    position: relative !important;
+    display: block !important;
+}
+
+.complete-items {
+    position: absolute;
+    border: 1px solid #d4d4d4;
+    border-bottom: none;
+    border-top: none;
+    z-index: 99;
+    /*position the autocomplete items to be the same width as the container:*/
+    top: 100%;
+    left: 0;
+    right: 0;
+}
+
+
+    .complete-items div:hover {
+        /*when hovering an item:*/
+        background-color: #e9e9e9;
+    }
+
+.acomplete-active {
+    /*when navigating through the items using the arrow keys:*/
+    background-color: DodgerBlue !important;
+    color: #ffffff;
+}
+
+.parent-search {
+    position: relative;
+}
+
+.active-td {
+    box-shadow: 0 0 3px #022598 !important;
+    color: #fff !important;
+    font-weight: bold !important;
+    background-color: #e7263b !important;
+}
+
+.active-td2 {
+    box-shadow: 0 0 3px #08872f !important;
+    color: #fff !important;
+    font-weight: bold !important;
+    background-color: #08872f !important;
+}
+
+.parent-search .search-box {
+    position: absolute;
+    z-index: 9999;
+    top: 100%;
+    left: 0;
+    box-sizing: border-box;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    /*display:none;*/
+    width: 100%;
+}
+
+    .parent-search .search-box ul {
+        list-style: none;
+        padding: 0;
+    }
+
+        .parent-search .search-box ul li {
+            padding-top: 5px;
+            padding-bottom: 5px;
+            padding-left: 10px;
+            padding-right: 10px;
+            color: black;
+            font-weight: 500;
+        }
+
+            .parent-search .search-box ul li:hover {
+                background-color: #d4cfcf;
+            }
+
+.breadcrumb {
+    background-color: #fff !important;
+}
+
+#tblkpi tr td {
+    text-align: center
+}
+
+#tblkpi tr th {
+    text-align: center;
+}
+
+#tblkpi tr:first-child th:first-child {
+    text-align: left;
+    width: 6%;
+}
+
+#tblkpi tr:nth-child(2) th {
+    width: 6%;
+    text-align: left;
+    color: #d81b60;
+}
+
+#tableWorkplace tr td {
+    text-align: center;
+}
+
+#tblDataChart tr:nth-child(2) th {
+    color: #022598 !important;
+}
+
+#tblDataChart tr:nth-child(2) td {
+    cursor: pointer !important;
+    box-shadow: 0 !important;
+    transition: box-shadow .2s !important;
+}
+
+    #tblDataChart tr:nth-child(2) td:hover {
+        cursor: pointer !important;
+        box-shadow: 0 0 3px #022598 !important;
+        color: #fff !important;
+        font-weight: bold !important;
+        background-color: #022598 !important;
+    }
+
+.warning-data {
+}
+
+/*.led-box {
+    height: 30px;
+    width: 25%;
+    margin: 10px 0;
+    float: left;
+}*/
+.led-red {
+    margin: 0 auto;
+    width: 24px;
+    height: 24px;
+    background-color: #F00;
+    border-radius: 50%;
+    box-shadow: rgba(0, 0, 0, 0.2) 0 -1px 7px 1px, inset #441313 0 -1px 9px, rgba(255, 0, 0, 0.5) 0 2px 12px;
+    -webkit-animation: blinkRed 0.5s infinite;
+    -moz-animation: blinkRed 0.5s infinite;
+    -ms-animation: blinkRed 0.5s infinite;
+    -o-animation: blinkRed 0.5s infinite;
+    animation: blinkRed 0.5s infinite;
+}
+
+#comment-list .wrapper {
+    background-color: #fff !important;
+}
+
+.comment-wrapper .panel-body {
+    max-height: 100%;
+    overflow: auto;
+}
+
+.comment-wrapper .media-list .media img {
+    width: 64px;
+    height: 64px;
+    border: 2px solid #e5e7e8;
+}
+
+.comment-wrapper .media-list .media {
+    border-bottom: 1px dashed #efefef;
+    margin-bottom: 25px;
+}
+
+.tooltip {
+    position: relative;
+    display: inline-block;
+    font-size: 16px;
+}
+
+    .tooltip .tooltiptext {
+        visibility: hidden;
+        background-color: black;
+        color: #fff;
+        text-align: center;
+        padding: 5px 0;
+        border-radius: 6px;
+        position: absolute;
+        z-index: 1;
+        width: 120px;
+        top: 100%;
+        left: 50%;
+        margin-left: -60px;
+        font-size: 12px;
+    }
+
+    .tooltip:hover .tooltiptext {
+        visibility: visible;
+    }
+
+.tag {
+    color: inherit;
+    font-size: 0.9em;
+    line-height: 1.2em;
+    background: #ddd;
+    border: 1px solid #ccc;
+    padding: 0.05em 0.4em;
+    cursor: pointer;
+    font-weight: normal;
+    border-radius: 1em;
+    transition: all 0.2s linear;
+}
+
+
+/*To Do List*/
+/* Remove margins and padding from the list */
+.Description ul, .tblActionPlan ul {
+    list-style: decimal;
+
+
+}
+
+    .Description ul li, .tblActionPlan ul li {
+        font-size: 16px;
+        font-weight: 600;
+    }
+/* Important part */
+.modal-dialog {
+    overflow-y: initial !important
+}
+
+.modal-content {
+    max-height: calc(100vh - 50px);
+    overflow-y: auto !important;
+}

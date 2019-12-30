@@ -1,0 +1,32 @@
+﻿<div class="modal fade" id="modal-group" >
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+                <h4 class="modal-title">Upload </h4>
+            </div>
+            <div class="modal-body">
+                <div class="box-body" id="Upload">
+                    <p class="text-red">*Notice: Excel file must be followed a system template. If you do not have a template, please <a class="download btn btn-sm">click here </a>to download. Thank you!</p>
+                    <form id="upload" method="post" enctype="multipart/form-data">
+                        <div class="form-group">
+                            <label for="Upload">Upload file: </label>
+
+                            <div class="input-group">
+                                <input type="file" class="form-control UploadedFile" name="UploadedFile" id="UploadedFile" placeholder="Upload file">
+                                <span class="input-group-btn">
+                                    <button type="submit" class="btn btn-success btn-flat btnUpload" id="btnUpload"><i class="fa fa-upload"></i> Upload file</button>
+                                </span>
+                            </div>
+                            <!-- /.input group -->
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>

@@ -1,0 +1,45 @@
+﻿<div class="box box-widget" id="box">
+    <div class="box-header with-border kpi-name">
+        <h3 class="box-title pull-left">KPI </h3> <span class="id" style="display:none"></span> <span class="code" style="display:none"></span><span class="level" style="display:none"></span>
+        <select class="form-control pull-right" style="width:50%"></select>
+    </div>
+    <div class="box-body">
+
+        <div class="box-body">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>KPILevel Name</th>
+                        <th>Period</th>
+                    </tr>
+                </thead>
+                <tbody class="tbody" id="tblkpilevel"></tbody>
+            </table>
+            <script id='tblkpilevel-template' type="text/template">
+                <tr>
+                    <td>{{No}}</td>
+                    <td>
+                        <strong>{{KPIName}}</strong>
+                    </td>
+                    <td>
+                        <button data-kpilevelcode="{{KPILevelCode}}" data-period="W" {{WeeklyCheckedAttr}}  class="btn btn-sm {{WeeklyChecked}} week"><i class="fa fa-bar-chart" aria-hidden="true"></i> Weekly</button>
+                        <button data-kpilevelcode="{{KPILevelCode}}" data-period="M" {{MonthlyCheckedAttr}}  class="btn btn-sm {{MonthlyChecked}} month"><i class="fa fa-bar-chart" aria-hidden="true"></i> Monthly</button>
+                        <button data-kpilevelcode="{{KPILevelCode}}" data-period="Q" {{QuarterlyCheckedAttr}} class="btn btn-sm {{QuarterlyChecked}} quarter"><i class="fa fa-bar-chart" aria-hidden="true"></i> Quarterly</button>
+                        <button data-kpilevelcode="{{KPILevelCode}}" data-period="Y" {{YearlyCheckedAttr}}  class="btn btn-sm {{YearlyChecked}} year"><i class="fa fa-bar-chart" aria-hidden="true"></i> Yearly</button>
+                    </td>
+                </tr>
+            </script>
+        </div>
+        <!-- /.box-body -->
+    </div>
+    <div class="box-footer clearfix">
+        <ul id="paginationKPILevel" class="pagination pagination-sm no-margin pull-right">
+            <li><a href="#">«</a></li>
+            <li><a href="#">1</a></li>
+            <li><a href="#">2</a></li>
+            <li><a href="#">3</a></li>
+            <li><a href="#">»</a></li>
+        </ul>
+    </div>
+</div>

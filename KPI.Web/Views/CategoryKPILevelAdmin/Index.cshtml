@@ -1,0 +1,645 @@
+﻿@using MvcBreadCrumbs;
+@{
+    ViewBag.Title = "Category KPI OC";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@Html.Raw(BreadCrumb.Display())
+@section Scripts{
+    <script>
+        var CLIPBOARD = null;
+        var glyph_opts = {
+            preset: "bootstrap3",
+            map: {
+            }
+        };
+        $.ui.fancytree.debugLevel = 3; // silence debug output
+        //$('#box').fadeOut();
+        function logEvent(event, data, msg) {
+            //        var args = $.isArray(args) ? args.join(", ") :
+            msg = msg ? ": " + msg : "";
+            $.ui.fancytree.info("Event('" + event.type + "', node=" + data.node + ")" + msg);
+        }
+        $("#box").hide();
+        $(function () {
+            categoryKPILevelAdmin.init();
+
+            $("#treetable").fancytree({
+                extensions: ["glyph", "table"],
+                checkbox: false,
+                selectMode: 2,
+                dnd5: {
+                    preventVoidMoves: true,
+                    preventRecursion: true,
+                    autoExpandMS: 400,
+                    dragStart: function (node, data) {
+                        return true;
+                    },
+                    dragEnter: function (node, data) {
+                        // return ["before", "after"];
+                        return true;
+                    },
+                    dragDrop: function (node, data) {
+                        data.otherNode.moveTo(node, data.hitMode);
+                    }
+                },
+                glyph: glyph_opts,
+                source: { url: "/AdminKPILevel/GetListTree", debugDelay: 1000 },
+                table: {
+                    indentation: 20,
+                    nodeColumnIdx: 1,
+                    //checkboxColumnIdx: 0
+                },
+                gridnav: {
+                    autofocusInput: false,
+                    handleCursorKeys: true
+                },
+                focus: function (event, data) {
+                      $("#box").hide();
+                    $('#boxCategory tr').off('focus').on('focus', function () {
+                        $('#boxCategory tr').removeClass('trfocus');
+                    })
+                    logEvent(event, data, ", targetType=" + data.targetType);
+                    var node = data.node,
+                        $tdList = $(node.tr).find(">td");
+                    var level = $tdList.eq(0).text();
+                    var name = $tdList.eq(1).text();
+                    $('#boxCategory .kpi-name h3').text('Category list - ' + name);
+                    categoryKPILevelAdmin.getAllCategories(true, level,data.node.key)
+                    logEvent(event, data, ", targetType=" + data.targetType);
+                    
+                    //categoryKPILevelAdmin.loadDataKPILevel(true,data.node.key)
+                    //$('#box .kpi-name h3').text('KPI - ' + data.node.title);
+                    //$('#box .kpi-name .code').text(data.node.key);
+                    // categoryKPILevelAdmin.loadDataKPILevel(true, data.node.key)
+                    // return false to prevent default behavior (i.e. activation, ...)
+                    //return false;
+
+                    $('#boxCategory .levelID').val(data.node.key);
+                },
+                lazyLoad: function (event, data) {
+                    data.result = { url: "/GetListTree", debugDelay: 1000 };
+                },
+                renderColumns: function (event, data) {
+                    var node = data.node,
+                        $tdList = $(node.tr).find(">td");
+
+                    // (Index #0 is rendered by fancytree by adding the checkbox)
+                    // Set column #1 info from node data:
+                    // (Index #2 is rendered by fancytree)
+                    // Set column #3 info from node data:
+
+                    $tdList.eq(0).addClass('text-bold').text(node.data.levelnumber);
+                    $tdList.eq(1).find('span.fancytree-icon').removeClass('fancytree-icon').addClass('fa fa-book')
+                    $tdList.eq(1).addClass('text-bold');
+                    $tdList.eq(1).addClass('text-bold');
+                    // Static markup (more efficiently defined as html row template):
+                    // $tdList.eq(3).html("<input type='input' value='" + "" + "'>");
+                    // ...
+                }
+            });
+
+            $('.fancy-collapse').off('click').on('click', function () {
+                $("#treetable").fancytree("getTree").expandAll(false);
+            });
+            $('.fancy-expand').off('click').on('click', function () {
+                $("#treetable").fancytree("getTree").expandAll();
+            });
+
+        });
+
+        var config = {
+            pageSize: 6,
+            pageIndex: 1
+        };
+        var categoryKPILevelAdmin = {
+            init: function () {
+                categoryKPILevelAdmin.registerEvent();
+                categoryKPILevelAdmin.getAllUser();
+
+            },
+            registerEvent: function () {
+
+                $('#modal-group-general .btnSaveGeneral').off('click').on('click', function () {
+                    var entity = {
+                        kpilevel: $('#modal-group-general .kpilevelInputHidden').val(),
+                        category: $('#box .catid').val(),
+                        pic: $('#modal-group-general .PIC .KPILevelSelect2').val().replace(/\@@/g, ",").trim(),
+                        owner: $('#modal-group-general .Owner .KPILevelSelect2').val().replace(/\@@/g, ",").trim(),
+                        manager: $('#modal-group-general .ownerManager .KPILevelSelect2').val().replace(/\@@/g, ",").trim(),
+                        sponsor: $('#modal-group-general .Sponsor .KPILevelSelect2').val().replace(/\@@/g, ",").trim(),
+                        participant: $('#modal-group-general .Participant .KPILevelSelect2').val().replace(/\@@/g, ",").trim()
+                    }
+                    categoryKPILevelAdmin.addGeneral(entity);
+                });
+
+                $('#box .kpilevelID').off('click').on('click', function () {
+                    var kpilevel = $(this).closest('tr').data('id');
+                    $('#modal-group-general .kpilevelInputHidden').val(kpilevel);
+                });
+
+                $('#boxCategory tr').off('click').on('click', function () {
+                    $('#box .levelid').val("");
+                    $('#box .catid').val("")
+                    var key = $('#boxCategory .levelID').val();
+                    $('#box .levelid').val(key);
+                    var catName = $(this).find('td:eq(1)').text();
+                    $('#box .kpi-name h3').text("OC - " + catName);
+                    var catID = $(this).data('id');
+                    $('#box .catid').val(catID)
+                    $('#box').fadeIn();
+
+                    categoryKPILevelAdmin.loadDataKPILevel("", Number($('#boxCategory .levelID').val()),catID)
+                });
+                //Focus tr category list
+                $('#boxCategory tr').off('focus').on('focus', function () {
+                    $('#boxCategory tr').removeClass('trfocus');
+                    $(this).addClass('trfocus');
+                })
+                //$('#tblCategory .levelID').off('change').on('change', function () {
+                //    alert(1)
+                //    var key = $(this).val();
+
+                //    var catName = $(this).find('td:eq(1)').text();
+                //    $('#boxKPILevel .kpi-name h3').text("KPI Level - " + catName);
+                //    var catID = $(this).data('id');
+                //    categoryKPILevelAdmin.loadDataKPILevel(true, key, catID)
+                //    $('#boxKPILevel .catid').val(catID)
+                //});
+
+                $('#tbluser tr td:nth-child(2) input').change(function () {
+                    var id = $(this).parent().parent('td:nth-child(2)').children('div').children('span.level').data('id');
+                    var levelid = Number($('#box .kpi-name .code').text());
+                    if (levelid === 0) {
+                        warning('Please choose team!');
+                    }
+                    else {
+                        categoryKPILevelAdmin.updateUser(id, levelid);
+                        categoryKPILevelAdmin.loadTree();
+                    }
+
+                });
+                $('.kpilevelID').off('change').on('change', function () {
+                    
+                    var levelID = Number($('#box .levelid').val());
+                    var entity = {
+                        KPILevelID: $(this).closest('tr').data('id'),
+                        CategoryID: Number($('#box .catid').val()),
+                    };
+                    categoryKPILevelAdmin.getUserByCategoryIDAndKPILevelID(entity);
+                    categoryKPILevelAdmin.addCategoryLevel(entity);
+                    config.pageIndex = Number($('#paginationKPILevel li.active a').text());
+                      var catid = $('#box .catid').val();
+                        categoryKPILevelAdmin.loadDataKPILevel("", levelID,catid);
+                    if ($(this).is(':checked')) {
+                        $('#modal-group-general').modal('show').fadeIn(1000);
+                    }
+                });
+
+                ////show ra de thay id cua tung o checkbox
+                //$('#boxKPILevel .kpilevelID').on('change', function (e) {
+                //    //lay id cua cai dong ma chua recordCheckbox
+                //    var id = $(this).closest("tr").data("id");
+
+
+                //    if (this.checked) {
+                //        //Khai bao 1 bien de chua list id
+                //        let valOld = $("#boxKPILevel .kpilevelIDInputHidden").val(); //=== ""
+                //        valOld += id + " "; //100_
+                //        $("#boxKPILevel .kpilevelIDInputHidden").val(valOld);
+
+                //    }
+                //    else {
+                //        let valOld = $("#boxKPILevel .kpilevelIDInputHidden").val();
+                //        valOld = valOld.replace(id + " ", "");
+                //        $("#boxKPILevel .kpilevelIDInputHidden").val(valOld);
+                //    }
+
+                //});
+            },
+            updateUser: function (id, levelid) {
+                var mObj = {
+                    id: id,
+                    levelid: levelid,
+                };
+
+                $.ajax({
+                    url: "/AddUserToLevel/AddUserToLevel",
+                    data: JSON.stringify(mObj),
+                    type: "POST",
+                    contentType: "application/json;charset=utf-8",
+                    dataType: "json",
+                    success: function (result) {
+
+                        if (result) {
+
+                            Swal.fire({
+                                title: 'Success!',
+                                text: 'Update successfully!',
+                                type: 'success'
+                            });
+
+                        }
+                    },
+                    error: function (errormessage) {
+                        console.log(errormessage.responseText);
+                    }
+                });
+            },
+            addCategoryLevel: function (entity) {
+                var entity = {
+                    KPILevelID: entity.KPILevelID,
+                    CategoryID: entity.CategoryID
+                };
+                $.ajax({
+                    url: "/CategoryKPILevelAdmin/Add",
+                    data: JSON.stringify(entity),
+                    type: "POST",
+                    contentType: "application/json;charset=utf-8",
+                    dataType: "json",
+                    success: function (result) {
+                        console.log(result)
+                        if (result) {
+                            success('Add successfully!');
+                        }
+                    },
+                    error: function (errormessage) {
+                        console.log(errormessage.responseText);
+                    }
+                });
+            },
+            loadTree: function () {
+                $.ui.fancytree.getTree("#treetable").reload().done();
+            },
+            getAllCategories: function (changePageSize, level,OCID) {
+                console.log("getAllCategories")
+
+                $.ajax({
+                    url: '/CategoryKPILevelAdmin/GetAllCategories',
+                    type: "GET",
+                    data: {
+                        OCID: OCID,
+                        level: level,
+                        page: config.pageIndex,
+                        pageSize: config.pageSize
+                    },
+                    dataType: "json",
+                    success: function (response) {
+                        console.log(response)
+                        if (response.status) {
+                            var count = 1;
+                            var data = response.data;
+                            var page = response.page;
+                            var pageSize = response.pageSize;
+                            if (page === 1) count = page;
+                            else count = (page - 1) * pageSize;
+                            var html = '';
+                            var template = $('#tblCategory-template').html();
+                            $.each(data, function (i, item) {
+                                html += Mustache.render(template, {
+                                    //Color: count % 2 !== 0 ?"class='info'":"",
+                                    No: count,
+                                    ID: item.ID,
+                                    Name: item.Name,
+                                    LevelID: item.LevelID,
+                                });
+                                count++;
+                            });
+                            $('#tblCategory').html(html);
+                            categoryKPILevelAdmin.pagingCategoryKPILevel(response.total, function () {
+                                categoryKPILevelAdmin.getAllCategories("", level,OCID);
+                            }, changePageSize);
+                            categoryKPILevelAdmin.registerEvent();
+                        }
+                    },
+                    error: function (err) {
+                        console.log(err);
+                    }
+                });
+            },
+            pagingCategoryKPILevel: function (totalRow, callback, changePageSize) {
+                var totalPage = Math.ceil(totalRow / config.pageSize);
+
+                //Unbind pagination if it existed or click change pagesize
+                if ($('#paginationCategoryKPILevel a').length === 0 || changePageSize === true) {
+                    $('#paginationCategoryKPILevel').empty();
+                    $('#paginationCategoryKPILevel').removeData("twbs-pagination");
+                    $('#paginationCategoryKPILevel').unbind("page");
+                }
+
+                $('#paginationCategoryKPILevel').twbsPagination({
+                    totalPages: totalPage === 0 ? 1 : totalPage,
+                    first: "First",
+                    next: "Next",
+                    last: "Last",
+                    prev: "Previous",
+                    visiblePages: 10,
+                    onPageClick: function (event, page) {
+                        config.pageIndex = page;
+                        setTimeout(callback, 500);
+                    }
+                });
+            },
+            loadDataKPILevel: function (changePageSize, level, catid) {
+                var category = catid || 0;
+                var levelid = level || 0;
+
+                console.log(category)
+                console.log(levelid)
+                 $get('/CategoryKPILevelAdmin/LoadDataKPILevel', {
+                        level: levelid,
+                        category: category,
+                        page: config.pageIndex,
+                        pageSize: config.pageSize
+                    }).then(response => {
+
+                        console.log(response)
+                         if (response.status) {
+                            var count = 1;
+                            var data = response.data;
+                            var page = response.page;
+                            var pageSize = response.pageSize;
+                            if (page === 1) count = page;
+                            else count = (page - 1) * pageSize + 1;
+                            var data = response.data;
+                            var html = '';
+                            var template = $('#tblkpilevel-template').html();
+                            $.each(data, function (i, item) {
+                                html += Mustache.render(template, {
+                                    Color: count % 2 !== 0 ? "class='info'" : "",
+                                    No: count,
+                                    ID: item.ID,
+                                    KPIName: item.KPIName,
+                                    KPILevelCode: item.KPILevelCode,
+                                    CheckCategory: item.CheckCategory == true ? "checked" : "",
+                                    //neu co check week thi kiem tra tiep neu co du lieu thi khong disabled
+                                    WeeklyCheckedAttr: item.WeeklyChecked === true ? (item.StatusUploadDataW === true ? "" : (item.StatusEmptyDataW === true ? "" : "")) : "disabled",
+                                    MonthlyCheckedAttr: item.MonthlyChecked === true ? (item.StatusUploadDataM === true ? "" : (item.StatusEmptyDataM === true ? "" : "")) : "disabled",
+                                    QuarterlyCheckedAttr: item.QuarterlyChecked === true ? (item.StatusUploadDataQ === true ? "" : (item.StatusEmptyDataQ === true ? "" : "")) : "disabled",
+                                    YearlyCheckedAttr: item.YearlyChecked === true ? (item.StatusUploadDataY === true ? "" : (item.StatusEmptyDataY === true ? "" : "")) : "disabled",
+
+                                    //Neu duoc check va upload dung thoi han thi xanh
+
+                                    WeeklyChecked: item.Checked === true? (item.WeeklyChecked === true ? (item.StatusUploadDataW === true ? "btn-success" : (item.StatusEmptyDataW === true ? "btn-warning" : "btn-success")) : "bg-navy"): "bg-navy",
+                                    MonthlyChecked: item.Checked === true?(item.MonthlyChecked === true ? (item.StatusUploadDataM === true ? "btn-success" : (item.StatusEmptyDataM === true ? "btn-warning" : "btn-success")) : "bg-navy"): "bg-navy",
+                                    QuarterlyChecked: item.Checked === true?(item.QuarterlyChecked === true ? (item.StatusUploadDataQ === true ? "btn-success" : (item.StatusEmptyDataQ === true ? "btn-warning" : "btn-success")) : "bg-navy"): "bg-navy",
+                                    YearlyChecked: item.Checked === true?(item.YearlyChecked === true ? (item.StatusUploadDataY === true ? "btn-success" : (item.StatusEmptyDataY === true ? "btn-warning" : "btn-success")) : "bg-navy"): "bg-navy",
+                                });
+                                count++;
+                            });
+
+                            $('#tblkpilevel').html(html);
+                            categoryKPILevelAdmin.pagingKPILevel(response.total, function () {
+                                categoryKPILevelAdmin.loadDataKPILevel("", level, category);
+                            }, changePageSize);
+                            categoryKPILevelAdmin.registerEvent();
+                        }
+                    })
+                    .catch(function (err) {
+                        console.log(err)
+                    });
+                //$.ajax({
+                //    url: '/CategoryKPILevelAdmin/LoadDataKPILevel',
+                //    type: "GET",
+                //    data: {
+                //        level: levelid,
+                //        category: category,
+                //        page: config.pageIndex,
+                //        pageSize: config.pageSize
+                //    },
+                //    dataType: "json",
+                //    success: function (response) {
+                //        console.log(response);
+                       
+                //    },
+                //    error: function (err) {
+                //        console.log(err);
+                //    }
+                //});
+            },
+            pagingKPILevel: function (totalRow, callback, changePageSize) {
+                var totalPage = Math.ceil(totalRow / config.pageSize);
+
+                //Unbind pagination if it existed or click change pagesize
+                if ($('#paginationKPILevel a').length === 0 || changePageSize === true) {
+                    $('#paginationKPILevel').empty();
+                    $('#paginationKPILevel').removeData("twbs-pagination");
+                    $('#paginationKPILevel').unbind("page");
+                   
+                }
+               
+                $('#paginationKPILevel').twbsPagination({
+                    totalPages: totalPage === 0 ? 1 : totalPage,
+                    first: "First",
+                    next: "Next",
+                    last: "Last",
+                    prev: "Previous",
+                    visiblePages: 10,
+                    onPageClick: function (event, page) {
+                        config.pageIndex = page;
+                        setTimeout(callback, 500);
+                    }
+                });
+            },
+            getAllUser() {
+
+                $.post("/AdminKPILevel/GetListAllUser", function (data) {
+                    var users = [], username, fullname;
+                    var arrays = data;
+                    $.each(arrays, function (i, item) {
+                        users.push({
+                            username: item.Username,
+                            fullname: item.FullName
+                        })
+                    })
+
+                    $('.KPILevelSelect2').suggest('@@', {
+                        data: users,
+                        map: function (user) {
+                            return {
+                                value: user.username + '\f',
+                                text: '<strong>' + user.username + '  </strong> <small>' + user.fullname + '</small>'
+                            }
+                        },
+                        get: function (index) {
+                            console.log(index)
+                        }
+
+                    });
+                });
+            },
+            addGeneral: function (entity) {
+
+                var res = categoryKPILevelAdmin.validate();
+                if (res === false) {
+                    return false;
+                }
+                var entity = {
+                    kpilevel: entity.kpilevel,
+                    category: entity.category,
+                    pic: entity.pic,
+                    owner: entity.owner,
+                    manager: entity.manager,
+                    sponsor: entity.sponsor,
+                    participant: entity.participant
+                };
+                $.ajax({
+                    url: "/CategoryKPILevelAdmin/AddGeneral",
+                    data: JSON.stringify(entity),
+                    type: "POST",
+                    contentType: "application/json;charset=utf-8",
+                    dataType: "json",
+                    success: function (result) {
+                        console.log(result)
+                        if (result) {
+                            success('Add successfully!');
+                            categoryKPILevelAdmin.clearForm();
+                            var key = $('#box .levelid').val();
+                            var catid = $('#box .catid').val();
+                             config.pageIndex = Number($('#paginationKPILevel li.active a').text());
+
+                            categoryKPILevelAdmin.loadDataKPILevel(false, key, catid);
+                            $('#modal-group-general').modal('hide');
+                        }
+                    },
+                    error: function (errormessage) {
+                        console.log(errormessage.responseText);
+                    }
+                });
+            },
+            clearForm() {
+                $('#modal-group-general .PIC .KPILevelSelect2').val("");
+                $('#modal-group-general .Owner .KPILevelSelect2').val("");
+                $('#modal-group-general .ownerManager .KPILevelSelect2').val("");
+                $('#modal-group-general .Sponsor .KPILevelSelect2').val("");
+                $('#modal-group-general .Participant .KPILevelSelect2').val("");
+            },
+            validate: function () {
+                var isValid = true;
+                if ($('#modal-group-general .PIC .KPILevelSelect2').val().trim() === "") {
+                    $('#modal-group-general .PIC .KPILevelSelect2').css('border-color', 'Red');
+                    isValid = false;
+                }
+                else {
+                    $('#modal-group-general .PIC .KPILevelSelect2').css('border-color', 'lightgrey');
+                }
+
+                if ($('#modal-group-general .Owner .KPILevelSelect2').val().trim() === "") {
+                    $('#modal-group-general .Owner .KPILevelSelect2').css('border-color', 'Red');
+                    isValid = false;
+                }
+                else {
+                    $('#modal-group-general .Owner .KPILevelSelect2').css('border-color', 'lightgrey');
+                }
+
+                if ($('#modal-group-general .ownerManager .KPILevelSelect2').val().trim() === "") {
+                    $('#modal-group-general .ownerManager .KPILevelSelect2').css('border-color', 'Red');
+                    isValid = false;
+                }
+                else {
+                    $('#modal-group-general .ownerManager .KPILevelSelect2').css('border-color', 'lightgrey');
+                }
+
+                //if ($('#modal-group-general .Sponsor .KPILevelSelect2').val().trim() === "") {
+                //    $('#modal-group-general .Sponsor .KPILevelSelect2').css('border-color', 'Red');
+                //    isValid = false;
+                //}
+                //else {
+                //    $('#modal-group-general .Sponsor .KPILevelSelect2').css('border-color', 'lightgrey');
+                //}
+
+                //if ($('#modal-group-general .Participant .KPILevelSelect2').val().trim() === "") {
+                //    $('#modal-group-general .Participant .KPILevelSelect2').css('border-color', 'Red');
+                //    isValid = false;
+                //}
+                //else {
+                //    $('#modal-group-general .Participant .KPILevelSelect2').css('border-color', 'lightgrey');
+                //}
+                return isValid;
+            },
+            getUserByCategoryIDAndKPILevelID(entity) {
+                $.ajax({
+                    url: "/CategoryKPILevelAdmin/GetUserByCategoryIDAndKPILevelID",
+                    data: {
+                        KPILevelID: entity.KPILevelID,
+                        CategoryID: entity.CategoryID
+
+                    },
+                    type: "GET",
+                    contentType: "application/json;charset=utf-8",
+                    dataType: "json",
+                    success: function (res) {
+                        console.log(res)
+                        $('#modal-group-general .PIC .KPILevelSelect2').val(res.Updater);
+                        $('#modal-group-general .Owner .KPILevelSelect2').val(res.Owner);
+                        $('#modal-group-general .ownerManager .KPILevelSelect2').val(res.Manager);
+                        $('#modal-group-general .Sponsor .KPILevelSelect2').val(res.Sponsor);
+                        $('#modal-group-general .Participant .KPILevelSelect2').val(res.Participant);
+                    },
+                    error: function (errormessage) {
+                        console.log(errormessage.responseText);
+                    }
+                });
+
+            }
+        }
+    </script>
+}
+<div class="row">
+    <div class="col-md-12">
+        <div class="callout bg-maroon-gradient" style="border-color:#d6004e">
+            <h3>
+                6. OC Category KPI
+            </h3>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-4">
+        <div class="box box-info">
+            <div class="box-header">
+                <span style="font-size:18px;font-weight:bold">Organization Chart</span>
+
+                <div class="pull-right box-tools">
+                    <!-- button with a dropdown -->
+                    <button type="button" class="btn btn-warning btn-sm fancy-collapse">
+                        <i class="fa fa-compress"></i> Collapse
+                    </button>
+                    <button type="button" class="btn btn-info btn-sm fancy-expand">
+                        <i class="fa fa-expand"></i> Expand
+                    </button>
+                </div>
+            </div>
+            <div class="box-body">
+                <table id="treetable" class="table table-condensed table-hover table-striped fancytree-fade-expander fancytree-colorize-selected">
+                    <colgroup>
+                        <col width="30px"></col>
+                        <col width="*"></col>
+                    </colgroup>
+                    <thead>
+                        <tr>
+                            <th>Level Number</th>
+                            <th class="text-right">Name</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="text-center"></td>
+                            <td></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+    </div>
+    <div class="col-md-8">
+        @RenderPage("_ListCategoies.cshtml")
+        @RenderPage("_ListKPILevel.cshtml")
+
+        @RenderPage("_Modal.cshtml")
+    </div>
+
+</div>
+
+
+

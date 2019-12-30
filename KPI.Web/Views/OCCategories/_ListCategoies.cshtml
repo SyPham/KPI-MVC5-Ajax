@@ -1,0 +1,49 @@
+﻿<div class="box box-info" id="boxCategory">
+    <div class="box-header with-border kpi-name">
+        <h3 class="box-title pull-left">Category lists </h3>
+        <input type="text" class="form-control ocId" style="display:none" />
+    </div>
+    <div class="box-body">
+
+        <div class="box-body">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Category Name</th>
+                        <th>Level Number</th>
+                    </tr>
+                </thead>
+                <tbody class="tbody" id="tblCategory">
+
+                </tbody>
+            </table>
+            <script id='tblCategory-template' type="text/template">
+                <tr tabindex="0" data-id="{{ID}}">
+                    <td class="text-center">{{No}}</td>
+                    <td>
+                        <div class="pretty p-icon p-rotate ">
+                            <input type="checkbox" class="addOCCategoryCheckbox" {{Status}} name="checkbox" />
+                            <div class="state p-success">
+                                <i class="icon fa fa-check"></i>
+                                <label class="black"> {{Name}}</label>
+                            </div>
+                        </div>
+                       
+                    </td>
+                    <td class="text-center">{{LevelID}}</td>
+                </tr>
+            </script>
+        </div>
+        <!-- /.box-body -->
+    </div>
+    <div class="box-footer clearfix" >
+        <ul id="paginationCategoryKPILevel" class="pagination pagination-sm no-margin pull-right">
+            <li><a href="#">«</a></li>
+            <li><a href="#">1</a></li>
+            <li><a href="#">2</a></li>
+            <li><a href="#">3</a></li>
+            <li><a href="#">»</a></li>
+        </ul>
+    </div>
+</div>

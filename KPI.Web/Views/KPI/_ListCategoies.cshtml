@@ -1,0 +1,42 @@
+﻿<div class="box box-widget" id="boxCategory">
+    <div class="box-header with-border kpi-name">
+        <h3 class="box-title pull-left">Category lists </h3> <span class="id" style="display:none"></span> <span class="code" style="display:none"></span><span class="level" style="display:none"></span>
+
+    </div>
+    <div class="box-body">
+
+        <div class="box-body">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Name</th>
+                        <th>Level</th>
+                    </tr>
+                </thead>
+                <tbody class="tbody" id="tblCategory">
+
+                </tbody>
+            </table>
+            <script id='tblCategory-template' type="text/template">
+                <tr tabindex="0" data-id="{{ID}}">
+                    <td class="text-center">{{No}}</td>
+                    <td>
+                        {{Name}}
+                    </td>
+                    <td class="text-center">{{LevelID}}</td>
+                </tr>
+            </script>
+        </div>
+        <!-- /.box-body -->
+    </div>
+    <div class="box-footer clearfix" >
+        <ul id="paginationCategoryKPILevel" class="pagination pagination-sm no-margin pull-right">
+            <li><a href="#">«</a></li>
+            <li><a href="#">1</a></li>
+            <li><a href="#">2</a></li>
+            <li><a href="#">3</a></li>
+            <li><a href="#">»</a></li>
+        </ul>
+    </div>
+</div>

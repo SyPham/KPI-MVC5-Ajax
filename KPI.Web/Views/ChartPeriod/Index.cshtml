@@ -1,0 +1,2417 @@
+﻿
+@using KPI.Model.helpers;
+@using MvcBreadCrumbs
+@{
+    ViewBag.Title = "Chart";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var models = ViewBag.Model as KPI.Model.ViewModel.ChartVM;
+    
+}
+@Html.Raw(BreadCrumb.Display())
+@section Scripts{
+
+    <script type="text/javascript">
+
+        //Khi AddActionPlan xong thì chuyển qua tab list
+        $("#modal-group-comment-data").on("shown.bs.modal", function (){
+            activaTab('pills-home');
+        });
+
+        //Open skpye
+        $('.btn-skype').unbind('click').on('click',function () {
+            window.location = 'skype:some_skype_user?chat';
+        });
+
+        var labelString;
+        if ("@models.period" === "W")
+        {
+            labelString = " Weeks in year ";
+            $("#searchWeek").show();
+        }
+
+        if ("@models.period" === "M")
+        {
+            labelString = "Months in year";
+              $("#searchMonth").show();
+        }
+
+        if ("@models.period" === "Q")
+        {
+            labelString = "Quarters in year";
+              $("#searchQuarter").show();
+        }
+
+        if ("@models.period" === "Y")
+        {
+            labelString = "Years";
+              $("#searchYear").show();
+        }
+        var datasets =@Html.Raw(Json.Encode(models.datasets));
+        //Nếu chưa có dữ liệu thì hiện thông báo
+        if (datasets.length === 0)
+        {
+                  error('Not available!');
+        }
+        //Khai báo các biến chứa dữ liệu global
+        var borderWith = 0;
+            model = @Html.Raw(Json.Encode(models)),
+            labels =@Html.Raw(Json.Encode(models.labels)),
+            dataremarks =@Html.Raw(Json.Encode(models.Dataremarks)),
+            targetsList =@Html.Raw(Json.Encode(models.targets)),
+            standards =@Html.Raw(Json.Encode(models.standards)),
+            label = "@models.label",
+            period = "@models.period",
+            kpilevelcode = "@models.kpilevelcode",
+            standard = 0;
+            unit = "@models.Unit",
+            targets = targetsList.map(v => parseFloat(v));
+            console.log(model)
+        if (unit === "Numeric")
+        {
+            var datasets = datasets.map(datasets => Number(datasets));
+            let max = Math.max(...datasets);
+            $('#stepChart').attr("step",max/2)
+        }
+        else
+        {
+            //if (datasets[0].isFloat) {
+            //    $('#minChart').attr("step", (Math.min(...datasets)/2));
+            //} else {
+            //     $('#stepChart').attr("step", Math.min(...datasets)/2));
+            //}
+        }
+
+        $(function () {
+            console.log(dataremarks)
+            var target2;
+            for (var i = targets.length; i > 0; i--)
+            {
+                if (parseFloat(targets[i]) > 0)
+                {
+                    target2 = targets[i];
+                    break;
+                }
+                else
+                    target2 = 0;
+            }
+            if (period === "W")
+            {
+                //Thêm tiêu đề cho tr:first-child th
+                $("#tblDataChart tr:first-child").append("<th>Week</th>");
+
+                //Thêm dữ liệu tr từ tuần 1 đến tuần còn lại
+                $.each(labels, function (key, item) {
+                    $("#tblDataChart tr:first-child").append("<th>" + item + "</th>");
+                });
+
+                $("#tblDataChart tr:first-child").children("th:not(:first-child)").addClass("text-center");
+
+                if (unit === "Numeric")
+                    //Thêm tiêu đề cho tr:nth-child(2) th
+                    $("#tblDataChart tr:nth-child(2)").append("<th>Actual Data</th>");
+                else
+                     //Thêm tiêu đề cho tr:nth-child(2) th
+                    $("#tblDataChart tr:nth-child(2)").append("<th>Actual Data</th>");
+
+
+                 //Thêm dữ liệu cho tr:nth-child(2) td
+                $.each(labels, function (key, item)
+                {
+                    $("#tblDataChart tr:nth-child(2)").append("<td data-id='' class='unselectable'>0</td>");
+                });
+
+                $.each(dataremarks, function (key, item) {
+
+                    if (unit === "Numeric")
+                    {
+                        var flag = parseFloat(item.Value) > parseFloat(item.Target) ? true : false;
+                        console.log(flag)
+                        if (flag)
+                            $("#tblDataChart tr:nth-child(2)").children("td:eq('" + (key) + "')").addClass("active-td2");
+                        else
+                            $("#tblDataChart tr:nth-child(2)").children("td:eq('" + (key) + "')").addClass("active-td");
+                    }
+                    else
+                    {
+                        var flag = parseFloat(item.Value) >  parseFloat(item.Target) ? true : false;
+                        if (flag)
+                            $("#tblDataChart tr:nth-child(2)").children("td:eq('" + (key) + "')").addClass("active-td2");
+                        else
+                            $("#tblDataChart tr:nth-child(2)").children("td:eq('" + (key) + "')").addClass("active-td");
+                    }
+
+                    $("#tblDataChart tr:nth-child(2)").children("td").addClass("text-center");
+
+                    $("#tblDataChart tr:nth-child(2)").children("td:eq('" + (key) + "')").text(item.Value|| "0");
+
+                    $("#tblDataChart tr:nth-child(2)").children("td:eq('" + (key) + "')").attr('data-id', item.ID);
+                });
+
+                var lastRemark = dataremarks[dataremarks.length - 1]==undefined?"":dataremarks[dataremarks.length - 1];
+                $('#lastRemark').val(lastRemark.Remark);
+
+                $('.lastRemark').text(lastRemark.ID);
+
+                $('.lastRemarkLabel').text("Week " + lastRemark.Week + " : ");
+
+                $("#fromDateEndDate").show();
+
+                $("#tblDataChart tr:first-child").children("th:first-child").attr("width", '10%');
+
+                $("#tblDataChart tr:nth-child(2)").children("th:first-child").attr("width", '10%');
+            }
+            else if (period === "M")
+            {
+                //Thêm tiêu đề cho tr:first-child th
+                $("#tblDataChart tr:first-child").append("<th>Month</th>");
+
+                //Thêm dữ liệu tr từ tháng 1 đến tháng còn lại
+                $.each(labels, function (key, item) {
+                    $("#tblDataChart tr:first-child").append("<th>" + item + "</th>");
+                });
+
+                $("#tblDataChart tr:first-child").children("th:not(:first-child)").addClass("text-center");
+
+                if (unit === "Numeric")
+                   //Thêm tiêu đề cho tr:nth-child(2) th
+                  $("#tblDataChart tr:nth-child(2)").append("<th>Actual Data</th>");
+                else
+                  //Thêm tiêu đề cho tr:nth-child(2) th
+                  $("#tblDataChart tr:nth-child(2)").append("<th>Actual Data</th>");
+
+                  //Thêm dữ liệu cho tr:nth-child(2) td
+                $.each(labels, function (key, item) {
+                    $("#tblDataChart tr:nth-child(2)").append("<td>0</td>");
+                });
+                //console.log(dataremarks);
+                $.each(dataremarks, function (key, item) {
+                    if (unit === "Numeric")
+                    {
+                        var flag = parseFloat(item.Value) >  parseFloat(item.Target) ? true : false;
+                        if (flag)
+                            $("#tblDataChart tr:nth-child(2)").children("td:eq('" + (key) + "')").addClass("active-td2");
+                        else
+                            $("#tblDataChart tr:nth-child(2)").children("td:eq('" + (key) + "')").addClass("active-td");
+                    }
+                    else
+                    {
+                        var flag = parseFloat(item.Value) > parseFloat(item.Target) ? true : false;
+                        if (flag)
+                            $("#tblDataChart tr:nth-child(2)").children("td:eq('" + (key) + "')").addClass("active-td2");
+                        else
+                            $("#tblDataChart tr:nth-child(2)").children("td:eq('" + (key) + "')").addClass("active-td");
+                    }
+
+                    $("#tblDataChart tr:nth-child(2), #tblDataChart tr:nth-child(1)").children("td,th").addClass("text-center");
+
+                    $("#tblDataChart tr:nth-child(2)").children("td:eq('" + (key) + "')").text(item.Value|| "0");
+
+                    $("#tblDataChart tr:nth-child(2)").children("td:eq('" + (key) + "')").attr('data-id', item.ID);
+
+                });
+
+                var lastRemark = dataremarks[dataremarks.length - 1] == undefined ? "" : dataremarks[dataremarks.length - 1];
+
+                $('#lastRemark').val(lastRemark.Remark);
+
+                $('.lastRemarkLabel').text("Month " + lastRemark.Month + " : ");
+
+                $("#tblDataChart tr:first-child").children("th:first-child").attr("width", '10%');
+
+                $("#tblDataChart tr:nth-child(2)").children("th:first-child").attr("width", '10%');
+            }
+            else if (period === "Q")
+            {
+                //Thêm tiêu đề cho tr:first-child th
+                $("#tblDataChart tr:first-child").append("<th >Quarter</th>");
+
+                //Thêm dữ liệu tr từ quý 1 đến tháng còn lại
+                $.each(labels, function (key, item) {
+                    $("#tblDataChart tr:first-child").append("<th >" + item + "</th>");
+                });
+
+                $("#tblDataChart tr:first-child").children("th:not(:first-child)").addClass("text-center");
+
+                 if (unit === "Numeric") //Thêm tiêu đề cho tr:nth-child(2) th
+                    $("#tblDataChart tr:nth-child(2)").append("<th>Actual Data</th>");
+                 else //Thêm tiêu đề cho tr:nth-child(2) th
+                    $("#tblDataChart tr:nth-child(2)").append("<th>Actual Data</th>");
+
+                 //Thêm dữ liệu cho tr:nth-child(2) td
+                $.each(labels, function (key, item) {
+                    $("#tblDataChart tr:nth-child(2)").append("<td>0</td>");
+                });
+
+                $.each(dataremarks, function (key, item) {
+                    if (unit === "Numeric") {
+
+                        var flag = parseFloat(item.Value) >  parseFloat(item.Target) ? true : false;
+                        if (flag)
+                            $("#tblDataChart tr:nth-child(2)").children("td:eq('" + (key) + "')").addClass("active-td2");
+                        else
+                            $("#tblDataChart tr:nth-child(2)").children("td:eq('" + (key) + "')").addClass("active-td");
+                    }
+                    else {
+                        var flag = parseFloat(item.Value) >  parseFloat(item.Target) ? true : false;
+                        if (flag)
+                            $("#tblDataChart tr:nth-child(2)").children("td:eq('" + (key) + "')").addClass("active-td2");
+                        else
+                            $("#tblDataChart tr:nth-child(2)").children("td:eq('" + (key) + "')").addClass("active-td");
+                    }
+
+                    $("#tblDataChart tr:nth-child(2), #tblDataChart tr:nth-child(1)").children("td,th").addClass("text-center");
+                    $("#tblDataChart tr:nth-child(2)").children("td:eq('" + (key) + "')").text(item.Value || "0");
+                    $("#tblDataChart tr:nth-child(2)").children("td:eq('" + (key) + "')").attr('data-id', item.ID);
+
+                });
+
+                $("#tblDataChart tr:first-child").children("th:first-child").attr("width", '10%');
+                $("#tblDataChart tr:nth-child(2)").children("th:first-child").attr("width", '10%');
+            }
+            else if (period === "Y")
+            {
+
+                 //Thêm tiêu đề cho tr:first-child th
+                $("#tblDataChart tr:first-child").append("<th >Year</th>");
+
+                //Thêm dữ liệu tr từ quý 1 đến tháng còn lại
+                $.each(labels, function (key, item) {
+                    $("#tblDataChart tr:first-child").append("<th >" + item + "</th>");
+                });
+
+                $("#tblDataChart tr:first-child").children("th:not(:first-child)").addClass("text-center");
+
+                 if (unit === "Numeric")
+                    //Thêm tiêu đề cho tr:nth-child(2) th
+                    $("#tblDataChart tr:nth-child(2)").append("<th>Actual Data</th>");
+                 else
+                     //Thêm tiêu đề cho tr:nth-child(2) th
+                    $("#tblDataChart tr:nth-child(2)").append("<th>Actual Data</th>");
+
+
+                 //Thêm dữ liệu cho tr:nth-child(2) td
+                $.each(labels, function (key, item) {
+                    $("#tblDataChart tr:nth-child(2)").append("<td>0</td>");
+                });
+
+                $.each(dataremarks, function (key, item) {
+
+                  $("#tblDataChart tr:nth-child(2), #tblDataChart tr:nth-child(1)").children("td,th").addClass("text-center");
+
+                  if (unit === "Numeric")
+                  {
+                        var flag = parseFloat(item.Value) >  parseFloat(item.Target) ? true : false;
+                     if (flag)
+                         $("#tblDataChart tr:nth-child(2)").children("td:eq('" + (key) + "')").addClass("active-td");
+                     else
+                         $("#tblDataChart tr:nth-child(2)").children("td:eq('" + (key) + "')").addClass("active-td2");
+                  }
+                  else
+                  {
+                     var flag = parseFloat(item.Value) >  parseFloat(item.Target) ? true : false;
+                     if (flag)
+                         $("#tblDataChart tr:nth-child(2)").children("td:eq('" + (key) + "')").addClass("active-td");
+                     else
+                         $("#tblDataChart tr:nth-child(2)").children("td:eq('" + (key) + "')").addClass("active-td2");
+                  }
+
+                    $("#tblDataChart tr:nth-child(2)").children("td:eq('" + (key) + "')").text(item.Value|| "0");
+
+                   $("#tblDataChart tr:nth-child(2)").children("td:eq('" + (key) + "')").attr('data-id', item.ID);
+
+                });
+
+                $("#tblDataChart tr:first-child").children("th:first-child").attr("width", '10%');
+                $("#tblDataChart tr:nth-child(2)").children("th:first-child").attr("width", '10%');
+            }
+            //var standards = [];
+
+            //---------------------------------------------------------------------------------
+            //for (var i = 0; i < datasets.length; i++) {
+            //    if (datasets[i] === 0) {
+            //        datasets[i] = undefined;
+            //    }
+            //}
+
+            datasets = datasets.map((dataset, index, datasets) => {
+                if (Number(dataset) === 0) dataset = NaN;
+                return dataset;
+            })
+            //console.log(datasets)
+
+            var listData = {
+                label: label,
+                data: datasets,
+                spanGaps: true, //data=undefined thi k draw line
+                datalabels: {
+                    align: 'center',
+                    anchor: 'center',
+
+                 listeners: {
+                        click: function(context) {
+                            // Receives `click` events only for labels of the first dataset.
+                             // The clicked label index is available in `context.dataIndex`.
+                             //console.log('label ' + context.dataIndex + ' has been clicked!');
+                        }
+                    }
+                },
+
+                pointBackgroundColor: "#fff",
+                pointBorderWidth: 3,
+                pointHoverBorderWidth: 3,
+                pointRadius: 2,
+                pointHitRadius: 10,
+
+            };
+            var listTargets = {
+                label: "Target",
+                spanGaps: true, //data=undefined thi k draw line
+                backgroundColor: "#3c8d8a",
+                borderColor: "#3c8d8a",
+                data: targets,
+                datalabels: {
+                    align: 'center',
+                    anchor: 'center'
+                }
+            };
+
+            //var listStandards = {
+            //    label: "Target",
+            //    spanGaps: false, //data=undefined thi k draw line
+            //    backgroundColor: "#3c8d8a",
+            //    borderColor: "#3c8d8a",
+            //    data: targets,
+            //    datalabels: {
+            //        align: 'center',
+            //        anchor: 'center'
+            //    }
+            //};
+
+            var hiddenPluginDataLabels = {
+                 datalabels: {
+                            backgroundColor: function (context) {
+                                return context.dataset.backgroundColor;
+                            },
+                            borderRadius: 4,
+                            color: 'white',
+                            font: {
+                                weight: 'bold',
+                                size:12
+                            },
+                            formatter: function(value, context) {
+                                return value;
+                            },
+                            display: function (context) {
+
+                                return false;
+                      },
+                      id:'p1'
+                }
+            }
+
+            var pluginDataLabels = {
+                 datalabels: {
+                            backgroundColor: function (context) {
+                                return context.dataset.backgroundColor;
+                            },
+                            borderRadius: 4,
+                            color: 'white',
+                            font: {
+                                weight: 'bold',
+                                size:12
+                            },
+                            formatter: function(value, context) {
+                                return value;
+                            },
+                            display: function (context) {
+                                //return context.dataset.label !=="Target" && context.dataset.label !=="Target";
+                      },
+                      id:'p1'
+                }
+            }
+
+            var options = {
+                plugins: pluginDataLabels,
+                title: {
+                    display: true,
+                        text: "KPI Chart - @models.label - @models.kpiname",
+                        fontSize: 20,
+                        fontColor: 'black'
+                    },
+                elements: {
+                    point:{
+                       radius: 0
+                    },
+                    line: {
+                       tension: 0
+                    }
+                },
+                scales: {
+                    yAxes:  [{
+                        display: true,
+                        position: "left",
+                        ticks: {
+                            beginAtZero: true,
+                            padding: 10,
+                            fontSize: 12,
+                            stepSize: 10,
+                            min: 0,
+
+                        },
+                        scaleLabel: {
+                            display: true,
+                            labelString: unit,
+                            fontSize: 12,
+                            fontStyle: 'normal'
+                        }
+                    }],
+                    xAxes: [{
+                         gridLines: {
+                            display: true,
+                            tickMarkLength: 8
+                         },
+                         ticks: {
+                            fontSize: 12,
+                         },
+                         scaleLabel: {
+                            display: true,
+                             labelString: labelString,
+                             fontSize: 12,
+                              fontStyle:'normal'
+                         }
+                    }]
+                }
+            }
+            var dataChart = {
+                labels: labels,
+                datasets: [listTargets, listData]
+            };
+
+            //if (unit === "Numeric")
+            //{
+
+            //}
+            //else
+            //{
+            //     dataChart = {
+            //        labels: labels,
+            //        datasets: [listStandards, listData]
+            //    }
+            //}
+
+            var chart = new Chart('lineChart', {
+                type: 'line',
+                data: dataChart,
+                options: options
+            });
+            var chartdatasets = chart.data.datasets[1].data;
+            if (chartdatasets.length > 0) borderWith = 3;
+            //m la phan tu cuoi cua mang > 0
+            var m, target, lengthDataset = chartdatasets.length, lengthTarget =targets.length;
+
+            if (lengthDataset === 1)
+                m = chartdatasets[0];
+            else {
+                for (var i = lengthDataset; i > 0; i--)
+                {
+                    if (chartdatasets[i] > 0)
+                    {
+                        m = chartdatasets[i]; break;
+                    }
+                    else
+                        m = 0;
+                }
+            }
+
+            if (lengthTarget === 1)
+                target = targets[0];
+            else {
+                for (var i = lengthTarget; i > 0; i--) {
+                    if (targets[i] > 0) {
+                        target = targets[i];
+                        break;
+                    } else
+                        target = 0;
+                }
+            }
+            if (unit !== "Numeric")
+            {
+                if (m < target)
+                {
+                    chart.data.datasets[1].borderColor = "#e7263b";
+                    chart.data.datasets[1].backgroundColor = "#e7263b";
+                    chart.data.datasets[1].pointBorderColor="#e7263b";
+                    chart.update();
+                }
+                else if (m === 0)
+                {
+                     chart.data.datasets[1].pointBorderColor= "#e7263b";
+                     chart.data.datasets[1].borderColor = "#e7263b";
+                     chart.data.datasets[1].backgroundColor = "#e7263b";
+                     chart.update();
+                }
+                else
+                {
+                     chart.data.datasets[1].pointBorderColor= "green";
+                     chart.data.datasets[1].borderColor = "green";
+                     chart.data.datasets[1].backgroundColor = "green";
+                     chart.update();
+                }
+            }
+            else
+            {
+
+                if (m < target)
+                {
+                    chart.data.datasets[1].pointBorderColor= "#e7263b"; //mau do
+                    chart.data.datasets[1].borderColor = "#e7263b";//mau do
+                    chart.data.datasets[1].backgroundColor = "#e7263b";//mau do
+                    chart.update();
+                }
+                else if (m === 0)
+                {
+                     chart.data.datasets[1].pointBorderColor= "#e7263b";//mau do
+                     chart.data.datasets[1].borderColor = "#e7263b";//mau do
+                     chart.data.datasets[1].backgroundColor = "#e7263b";//mau do
+                     chart.update();
+                }
+                else
+                {
+                     chart.data.datasets[1].pointBorderColor = "green";
+                     chart.data.datasets[1].borderColor = "green";
+                     chart.data.datasets[1].backgroundColor = "green";
+                     chart.update();
+                }
+            }
+
+            $('#stepChart').val(chart.options.scales.yAxes[0].ticks.major.stepSize);
+
+            $('#minChart').val(chart.options.scales.yAxes[0].ticks.major.min);
+
+            $('.btnShowData').hide();
+
+            $('.btnHiddenData').show();
+
+            chartperiodController.init();
+
+            $('.btnHiddenData').off('click').on('click', function () {
+                chart.options.plugins = hiddenPluginDataLabels;
+
+                chart.update();
+
+                $('.btnHiddenData').hide();
+
+                $('.btnShowData').show();
+            })
+
+            $('.btnShowData').off('click').on('click', function () {
+                chart.options.plugins = pluginDataLabels;
+
+                chart.update();
+
+                $('.btnShowData').hide();
+
+                $('.btnHiddenData').show();
+             })
+
+            //Cập nhật step và min của chartjs
+            if (unit === "Numeric")
+            {
+                $('#minChart').attr("step", 0.1);
+
+                $('#stepChart').val(Math.round(Math.max(...datasets)));
+
+                $('#stepChart').attr("step", 0.1);
+            }
+            else
+            {
+                $('#minChart').attr("step", 0);
+
+                $('#stepChart').val(10);
+
+                $('#stepChart').attr("step", 1);
+            }
+
+            $('#minChart').off('keyup change').on('keyup change', function () {
+                var min = 0, stepSize;
+
+                if (unit === "Numeric") {
+                    stepSize = Math.max(...datasets) / 2;
+
+                    stepSize = Number($('#stepChart').val());
+                }
+                else {
+                    stepSize = 10;
+
+                    stepSize = Number($('#stepChart').val());
+                }
+
+                min = Number($('#minChart').val());
+
+                options = {
+                    plugins: pluginDataLabels,
+                    title: {
+                        display: true,
+                        text: "KPI Chart - @models.label - @models.kpiname",
+                        fontSize: 20,
+                        fontColor: 'black'
+                    },
+                    elements: {
+                        point: {
+                            radius: 0
+                        },
+                        line: {
+                            tension: 0.2
+                        }
+                    },
+                    scales: {
+                        yAxes: [{
+                            display: true,
+                            position: "left",
+                            ticks: {
+                                beginAtZero: true,
+                                padding: 10,
+                                fontSize: 12,
+                                stepSize: stepSize,
+                                min: min,
+
+                            },
+                            scaleLabel: {
+                                display: true,
+                                labelString: unit,
+                                fontSize: 12,
+                                fontStyle: 'normal'
+                            }
+                        }],
+                        xAxes: [{
+                            gridLines: {
+                                display: true,
+                                tickMarkLength: 8
+                            },
+                            ticks: {
+                                fontSize: 12,
+                            },
+                            scaleLabel: {
+                                display: true,
+                                labelString: labelString,
+                                fontSize: 12,
+                                fontStyle: 'normal'
+                            }
+                        }]
+                    }
+                }
+
+                //Update chartjs
+                chart.options = options;
+                chart.update();
+            });
+
+            $('#stepChart').off('keyup change').on('keyup change', function () {
+                var min = $(this).attr("min"),
+                    stepSize;
+
+                if (unit === "Numeric")
+                    stepSize = Number($('#stepChart').val());
+                else
+                    stepSize = Number($('#stepChart').val());
+
+                min = Number($('#minChart').val());
+
+                options = {
+                    plugins: pluginDataLabels,
+                    title: {
+                        display: true,
+                        text: "KPI Chart - @models.label - @models.kpiname",
+                        fontSize: 20,
+                        fontColor: 'black'
+                    },
+                    elements: {
+                        point: {
+                            radius: 0
+                        },
+                        line: {
+                            tension: 0.2
+                        }
+                    },
+                    scales: {
+                        yAxes: [{
+                            display: true,
+                            position: "left",
+                            ticks: {
+                                beginAtZero: true,
+                                padding: 10,
+                                fontSize: 12,
+                                stepSize: stepSize,
+                                min: min,
+                            },
+                            scaleLabel: {
+                                display: true,
+                                labelString: unit,
+                                fontSize: 12,
+                                fontStyle: 'normal'
+                            }
+                        }],
+                        xAxes: [{
+                            gridLines: {
+                                display: true,
+                                tickMarkLength: 8
+                            },
+                            ticks: {
+                                fontSize: 12,
+                            },
+                            scaleLabel: {
+                                display: true,
+                                labelString: labelString,
+                                fontSize: 12,
+                                fontStyle: 'normal'
+                            }
+                        }]
+                    }
+                }
+                chart.options = options;
+                chart.update();
+            });
+        });
+
+        var chartperiodlConfig = {
+            pageSize: 6,
+            pageIndex: 1
+        };
+        var chartperiodController = {
+            init() {
+
+                chartperiodController.loadDataProvide();
+
+                chartperiodController.registerEvent();
+            },
+            registerEvent() {
+                $('.updateStatus').unbind('click').on('click', function () {
+                    var id = $(this).closest("tr").data('id');
+                    chartperiodController.done(id);
+                });
+
+                 $('.btnApproveActionPlan').off('click').on('click', function () {
+                    var id = $(this).closest("tr").data('id');
+                    chartperiodController.approval(id);
+                 });
+
+                 $('.btnDeleteActionPlan').off('click').on('click', function () {
+                    var id = $(this).closest("tr").data('id');
+                    chartperiodController.deleteActionPlan(id);
+                });
+                $('.btnTask').unbind('click').on('click', function () {
+                    var commentid = $(this).data('commentid');
+
+                    $(".commentid").text(commentid);
+
+                    var commentid = $(this).data('commentid');
+
+                    var dataid = Number($('.dataid').text());
+
+                    var textRemark = $('.RemarkChart').text();
+
+                    textRemark = textRemark.replace("Remark", "Action Plan");
+
+                    $('.ActionPlanChart').text('');
+
+                     $('.ActionPlanChart').text(textRemark);
+
+                    chartperiodController.LoadDataActionPlan(dataid, commentid);
+                });
+
+                 //$("#dob").datepicker({ dateFormat: 'mm-dd-yy' });
+                $('.btnSaveActionPlan').unbind('click').on('click', function () {
+                    chartperiodController.addActionPlan();
+                });
+
+                $('#lastRemark').off('keypress').on('keypress', function (e) {
+                    if (e.keyCode === 13) {
+                        chartperiodController.updateRemark();
+                    }
+                });
+                var year = getUrlParameter('year'),
+                    start = getUrlParameter('start'),
+                    end = getUrlParameter('end'),
+                    period = getUrlParameter('period');
+
+                if (Number(year) === 2019 && Number(start) === 0 && Number(end) === 0)
+                {
+                    $("#fromDateEndDate").hide();
+
+                    var d = new Date(),
+                        currenyear = d.getFullYear();
+
+                    year = currenyear;
+                    start = 0;
+                    end = 0;
+
+                    if (period === "W")
+                    {
+                        $("#weekOfYear").val(currenyear);
+
+                        $("#startWeek").val(0);
+
+                        $("#endWeek").val(0);
+                    }
+
+                    if (period === "M")
+                    {
+                        $("#monthOfYear").val(currenyear);
+
+                        $("#startMonth").val(0);
+
+                        $("#endMonth").val(0);
+
+                        year = currenyear;
+
+                        start = 0;
+
+                        end = 0;
+                    }
+                    if (period === "Q")
+                    {
+                        $("#quarterOfYear").val(currenyear);
+
+                        $("#startQuarter").val(0);
+
+                        $("#endQuarter").val(0);
+
+                        year = currenyear;
+
+                        start = 0;
+
+                        end = 0;
+                    }
+                    if (period === "Y")
+                    {
+                        $("#YearOfYear").val(currenyear);
+
+                        $("#startYear").val(0);
+
+                        $("#endYear").val(0);
+
+                        year = currenyear;
+
+                        start = 0;
+
+                        end = 0;
+                    }
+                }
+                else
+                {
+                    $("#weekOfYear").val(year);
+                    $("#startWeek").val(start);
+                    $("#endWeek").val(end);
+
+                    $("#monthOfYear").val(year);
+                    $("#startMonth").val(start);
+                    $("#endMonth").val(end);
+
+
+                    $("#quarterOfYear").val(year);
+                    $("#startQuarter").val(start);
+                    $("#endQuarter").val(end);
+
+                    $("#YearOfYear").val(year);
+                    $("#startYear").val(start);
+                    $("#endYear").val(end);
+
+                }
+                if (Number($('#weekOfYear').val()) !== 0)
+                {
+                    var year = year;
+                    var startWeek = start;
+                    var fromDate = new Date("Jan 01, " + year + " 01:00:00");
+                    var fw = fromDate.getTime() + 604800000 * (startWeek - 1);
+
+                    var fromDayStartWeek = new Date(fw);
+                    var fromDayStartW = (fromDayStartWeek.getMonth() + 1) + ' - ' + fromDayStartWeek.getDate() + ' - ' + fromDayStartWeek.getFullYear();
+
+                    var endDayStartWeek = new Date(fw + 518400000);
+                    var endDayStartW = (endDayStartWeek.getMonth() + 1) + ' - ' + endDayStartWeek.getDate() + ' - ' + endDayStartWeek.getFullYear();
+
+                    var endWeek = end;
+                    var ed = new Date("Jan 01, " + year + " 01:00:00");
+                    var ew = ed.getTime() + 604800000 * (endWeek - 1);
+
+                    var fromDayEndWeek = new Date(ew);
+                    var fromDayEndW = (fromDayEndWeek.getMonth() + 1) + ' - ' + fromDayEndWeek.getDate() + ' - ' + fromDayEndWeek.getFullYear();
+
+
+                    var endDayEndWeek = new Date(ew + 518400000);
+                    var endDayEndW = (endDayEndWeek.getMonth() + 1) + ' - ' + endDayEndWeek.getDate() + ' - ' + endDayEndWeek.getFullYear();
+
+                    $("#fromDateEndDate .fromDayOfWeek").text('Week ' + start + ' ( from ' + getDateOfISOWeek(start, year) + ' to ' + getEndDateOfISOWeek(start, year) + ' )');
+                    $("#fromDateEndDate .endDayOfWeek").text(' -> Week ' + end + ' ( from ' + getDateOfISOWeek(end, year) + ' to ' + getEndDateOfISOWeek(end, year) + ' )');
+
+                }
+
+                if (Number($('#monthOfYear').val()) !== 0)
+                {
+                    var now = new Date(year, start, 1);
+                    var prevMonthLastDate = new Date(now.getFullYear(), now.getMonth(), 0);
+                    var prevMonthFirstDate = new Date(now.getFullYear() - (now.getMonth() > 0 ? 0 : 1), (now.getMonth() - 1 + 12) % 12, 1);
+
+                    var formatDateComponent = function (dateComponent) {
+                        return (dateComponent < 10 ? '0' : '') + dateComponent;
+                    };
+
+                    var now2 = new Date(year, end, 1);
+                    var prevMonthLastDate2 = new Date(now2.getFullYear(), now2.getMonth(), 0);
+                    var prevMonthFirstDate2 = new Date(now2.getFullYear() - (now2.getMonth() > 0 ? 0 : 1), (now2.getMonth() - 1 + 12) % 12, 1);
+
+                    var formatDateComponent = function (dateComponent) {
+                        return (dateComponent < 10 ? '0' : '') + dateComponent;
+                    };
+
+                    var formatDate = function (date) {
+                        return formatDateComponent(date.getMonth() + 1) + ' - ' + formatDateComponent(date.getDate()) + ' - ' + date.getFullYear();
+                    };
+                    $("#fromDateEndDateM .fromDayOfMonth").text('Month ' + start + ' ( from ' + formatDate(prevMonthFirstDate) + ' to ' + formatDate(prevMonthLastDate) + ' )');
+                    $("#fromDateEndDateM .endDayOfMonth").text(' -> Month ' + end + ' ( from ' + formatDate(prevMonthFirstDate2) + ' to ' + formatDate(prevMonthLastDate2) + ' )');
+                }
+
+                if (Number($('#quarterOfYear').val()) !== 0)
+                {
+                    var startQ = new Date(year, start * 3 - 3, 1),
+                        endQ = new Date(year, start * 3, 0);
+
+                    var startQ2 = new Date(year, end * 3 - 3, 1),
+                        endQ2 = new Date(year, end * 3, 0);
+
+                    var formatDateComponent = function (dateComponent) {
+                         return (dateComponent < 10 ? '0' : '') + dateComponent;
+                    };
+
+                    var formatDate = function (date) {
+                        return formatDateComponent(date.getMonth() + 1) + ' - ' + formatDateComponent(date.getDate()) + ' - ' + date.getFullYear();
+                    };
+
+                    $("#fromDateEndDateQ .fromDayOfQuarter").text('Quarter ' + start + ' ( from ' + formatDate(startQ) + ' to ' + formatDate(endQ) + ' )');
+                    $("#fromDateEndDateQ .endDayOfQuarter").text(' -> Quarter ' + end + ' ( from ' + formatDate(startQ2) + ' to ' + formatDate(endQ2) + ' )');
+                }
+
+                $('.btnClearSearch').off('click').on('click', function () {
+                    var kpilevelcode = getUrlParameter('kpilevelcode'),
+                        catid = getUrlParameter('catid'),
+                        period = getUrlParameter('period'),
+                        borderWith = 0,
+                        d = new Date(),
+                        currenyear = d.getFullYear();
+
+                    if (period === "W") {
+                        let currentWeek = getDateOfWeekInYear(d);
+                        window.location.href = "/ChartPeriod/?kpilevelcode=" + kpilevelcode + "&catid=" + catid + "&period=" + period + "&year=" + currenyear + "&start=1&end=" + currentWeek;
+                    }
+
+                    if (period === "M") {
+                        let currentMonth = d.getMonth();
+                        window.location.href = "/ChartPeriod/?kpilevelcode=" + kpilevelcode + "&catid=" + catid + "&period=" + period + "&year=" + currenyear + "&start=1&end=" + currentMonth;
+                    }
+                    if (period === "Q") {
+                        let currentWeek = getDateOfWeekInYear(d);
+                        window.location.href = "/ChartPeriod/?kpilevelcode=" + kpilevelcode + "&catid=" + catid + "&period=" + period + "&year=" + currenyear + "&start=1&end=4";
+                    }
+
+                    if (period === "Y") {
+                        let currentMonth = d.getMonth();
+                        window.location.href = "/ChartPeriod/?kpilevelcode=" + kpilevelcode + "&catid=" + catid + "&period=" + period + "&year=" + currenyear + "&start="+currenyear+"&end=" + currenyear;
+                    }
+                });
+
+                $('#btnLike').off('click').on('click', function (e) {
+
+                    chartperiodController.addFavourite();
+                });
+
+                $('#endWeek').off('change').on('change', function (e) {
+                    chartperiodController.search();
+
+                });
+
+                $('#endMonth').off('change').on('change', function (e) {
+                    chartperiodController.search();
+                });
+
+                $('#endQuarter').off('change').on('change', function (e) {
+                    chartperiodController.search();
+
+                });
+
+                $('#endYear').off('change').on('change', function (e) {
+                    chartperiodController.search();
+                });
+
+                $('#startWeek').off('change').on('change', function (e) {
+                    chartperiodController.search();
+                });
+
+                $('#startMonth').off('change').on('change', function (e) {
+                    chartperiodController.search();
+                });
+
+                $('#startQuarter').off('change').on('change', function (e) {
+                    chartperiodController.search();
+                });
+
+                $('#startYear').off('change').on('change', function (e) {
+                    chartperiodController.search();
+                });
+
+                $('#weekOfYear').off('change').on('change', function (e) {
+                     chartperiodController.search();
+                });
+
+                $('#monthOfYear').off('change').on('change', function (e) {
+                    chartperiodController.search();
+                });
+
+                $('#quarterOfYear').off('change').on('change', function (e) {
+                    chartperiodController.search();
+                });
+
+                $('#YearOfYear').off('change').on('change', function (e) {
+                    chartperiodController.search();
+                });
+
+                $('#btnCompare').off('click').on('click', function (e) {
+                    chartperiodController.loadDataProvide();
+                });
+
+
+                //Khi click vao tung o trong bang ben duoi chart thi hien len modal va comment
+                $("#tblDataChart tr:nth-child(2) td").off('click').on('click', function () {
+                    //Kiem tra neu duoi target thi moi comment
+                    if ($(this).hasClass('active-td'))
+                    {
+                        let number = Number($(this).text()),
+                            value = Number($(this).index()),
+                            period = $('#tblDataChart tr:nth-child(1) th:nth-child(1)').text();
+                        $('#modal-group-comment-data').modal('show');
+
+                        var id = $(this).data('id');
+
+                        $('.dataid').text(id);
+
+                        $('.RemarkChart').text('');
+                        
+                        if (getUrlParameter("period") === "M") {
+                            const monthNames = ["January", "February", "March", "April", "May", "June",
+                                "July", "August", "September", "October", "November", "December"
+                            ];
+
+                            $('.RemarkChart').text("Remark on " + monthNames[value - 1] + " - KPI Chart - @models.kpiname - " + periodText('@models.period'));
+
+                        }
+                        else if (getUrlParameter("period") === "Q") {
+                             const quarterNames = ["First Quarter", "Second Quarter", "Third Quarter", "Fourth Quarter"];
+
+                            $('.RemarkChart').text("Remark on " + quarterNames[value - 1] + " - KPI Chart - @models.kpiname - " + periodText('@models.period'));
+
+                        }
+                        else {
+                        $('.RemarkChart').text("Remark on " + period +" "+ value +" - KPI Chart - @models.kpiname - "+periodText('@models.period') );
+
+                        }
+
+                        chartperiodController.remark(id);
+
+                        //Khi tao ra table roi thi moi load data
+                        chartperiodController.loadDataComment();
+                    }
+                });
+
+                $('#modal-group-comment-data').off('hidden.bs.modal').on('hidden.bs.modal', function () {
+
+                    console.log("Đã xem comment");
+
+                    var userid = $('#user').data('userid'),
+                        dataid = Number($('.dataid').text());
+
+                    chartperiodController.addCommentHistory(userid, dataid);
+                });
+
+                $('.btnComment').off('click').on('click', function () {
+                    chartperiodController.addData();
+                });
+
+                $('#modal-group-comment-data2 .datepickerEdit').datepicker({
+                    dateFormat: "mm-dd-yy"
+                });
+
+                $.fn.editable.defaults.mode = 'inline';
+
+                $('#modal-group-comment-data2 .datepickerEdit').off('change').on('change', function () {
+                    var id = $(this).data('id'),
+                         value = $(this).val();
+
+                     $.ajax({
+                          type: "Post",
+                          url: "/ChartPeriod/UpdateSheduleDate/",
+                          data: {name:"DeadLine",value:value,pk:id},
+                          success: function(res)
+                          {
+                              console.log(res);
+                              success('Successfully!')
+                             var commentid = Number($('.commentid').text()),
+                                dataid = Number($('.dataid').text());
+
+                             chartperiodController.LoadDataActionPlan(dataid, commentid);
+                         },
+                         error: function (error) {
+                             console.log(error)
+                         }
+                     });
+
+                 });
+
+                $('#modal-group-comment-data2 input[name=UpdateSheduleDate]').off('change').on('change', function () {
+
+                    var id = $(this).data('id'),
+                        value = $(this).val(),
+                        name = $(this).attr("name");
+
+                    $.ajax({
+                        type: "Post",
+                        url: "/ChartPeriod/UpdateSheduleDate/",
+                        data:
+                        {
+                            name: name, value: value, pk: id
+                        },
+                        success: function (res) {
+                            var commentid = Number($('.commentid').text());
+
+                            var dataid = Number($('.dataid').text());
+
+                            chartperiodController.LoadDataActionPlan(dataid, commentid);
+                        }
+                    });
+                });
+
+                $('#modal-group-comment-data2 .DescriptionEdit').editable({
+                    type: "text",
+                    //pk: $(this).data("item-id"),
+                    url: '/ChartPeriod/UpdateSheduleDate/'+$(this).params,
+                    params: function(params) {
+                    params.item = { value: params.value,}
+                        return params;
+                    },
+                    display: function (value, response) {
+                        if (response) {
+                            var commentid = Number($('.commentid').text()),
+                                dataid = Number($('.dataid').text());
+
+                            chartperiodController.LoadDataActionPlan(dataid, commentid);
+
+                            $(this).attr("data-value", value);
+                        }
+                    },
+                        ajaxOptions: {
+                            type: "POST",
+                            dataType: "json"
+                          }
+                });
+
+                $('#modal-group-comment-data2 .TitleEdit').editable({
+                    placement: "right",
+                    type: "text",
+                    pk: $(this).data("item-id"),
+                    url: '/ChartPeriod/UpdateSheduleDate/'+$(this).params,
+                    params: function(params) {
+                    params.item = { value: params.value,}
+                        return params;
+                    },
+                    display: function (value, response) {
+                        if (response) {
+
+                        var commentid = Number($('.commentid').text()),
+                                dataid = Number($('.dataid').text());
+
+                        chartperiodController.LoadDataActionPlan(dataid, commentid);
+                        $(this).attr("data-value", value);
+                    }
+                    },
+                    ajaxOptions: {
+                        type: "POST",
+                        dataType: "json"
+                    }
+                });
+            },
+            search() {
+                var catid = getUrlParameter('catid');
+                if ("@models.period" === "W")
+                    window.location.href = "/ChartPeriod/?kpilevelcode=@models.kpilevelcode&catid=" + catid+"&period=@models.period&year=" + Number($("#weekOfYear").val()) + "&start=" + Number($("#startWeek").val()) + "&end=" + Number($("#endWeek").val());
+
+                if ("@models.period" === "M")
+                    window.location.href = "/ChartPeriod/?kpilevelcode=@models.kpilevelcode&catid=" + catid+"&period=@models.period&year=" + Number($("#monthOfYear").val()) + "&start=" + Number($("#startMonth").val()) + "&end=" + Number($("#endMonth").val());
+
+                if ("@models.period" === "Q")
+                    window.location.href = "/ChartPeriod/?kpilevelcode=@models.kpilevelcode&catid=" + catid+"&period=@models.period&year=" + Number($("#quarterOfYear").val()) + "&start=" + Number($("#startQuarter").val()) + "&end=" + Number($("#endQuarter").val());
+
+                if ("@models.period" === "Y")
+                    window.location.href = "/ChartPeriod/?kpilevelcode=@models.kpilevelcode&catid=" + catid+"&period=@models.period&year=" + Number($("#YearOfYear").val()) + "&start=" + Number($("#startYear").val()) + "&end=" + Number($("#endYear").val());
+            },
+            getByID: function (actionplaneID) {
+                var value = actionplaneID;
+                $.ajax({
+                    url: "/ChartPeriod/GetByID/",
+                    data: { id: JSON.stringify(value) },
+                    type: "GET",
+                    contentType: "application/json;charset=UTF-8",
+                    dataType: "json",
+                    success: function (res) {
+                        $('.addTask .Title').val(res.Title);
+                        if (res.Description !== undefined) {
+                            let arr = res.Description.split(';');
+                            $.each(arr, function (i, item) {
+                                $('.addTask .Description ul').append("<li>" + item + "</li>")
+                            })
+
+                        }
+                        if (res.Tag !== null) {
+                            var arr2 = res.Tag.split(',');
+                            var value = '';
+                            $.each(arr2, function (i, item) {
+                                if (item.length > 1)
+                                    value += '@@' + item + ' ';
+                            })
+
+                            $('#Tag').val(arr);
+                        }
+                        else {
+                            $('.addTask .Tag').val("");
+                        }
+
+                        $('.addTask .ID').val(res.ID);
+
+                        $('.addTask .DueDate').val(res.Deadline);
+                    },
+                    error: function (err) {
+                        console.log(err);
+                    }
+                });
+            },
+            LoadDataActionPlan(dataid, commentid) {
+                $.post('GetAll',
+                    {
+                        DataID: dataid,
+                        CommentID: commentid,
+                        UserID: $('#user').data('userid')
+                    },
+                    function (res) {
+                        console.log(res);
+                        if (res.status) {
+                            var data = res.data;
+                            var html = '';
+                            $.each(data, function (i, item) {
+                                $('.listTask .Approval').hide();
+                                $('.listTask .Option').hide();
+
+
+                                if (item.CreatedBy === $('#user').data('userid') || item.Auditor === $('#user').data('userid'))
+                                {
+                                    html += '<tr data-id="' + item.ID + '">';
+                                    html += '<td>' + (i + 1) + '</td>';
+                                    html += '<td class="text-bold" style="padding-left:15px;"><span style="font-weight: 700;cursor: pointer;"  class="TitleEdit" data-url="/ChartPeriod/UpdateSheduleDate" data-type="text" data-name="Title" data-pk="'+item.ID+'" data-value="' + item.Title + '" data-title="Enter your title">' + item.Title + '</span></td>';
+                                    html += '<td><div class="DescriptionEdit" style="font-weight: 700;cursor: pointer;"  data-type="textarea"  data-name="Description" data-value="' + item.Description + '" data-pk="'+item.ID+'"> ' + item.Description + '</div> ';
+                                    html += '</td>';
+                                    html += '<td>';
+
+                                    if (item.Tag !== null)
+                                    {
+                                        var array2 = item.Tag.split(',');
+
+                                        $.each(array2, function (i, item2)
+                                        {
+                                            if (item2.length > 1) {
+                                                html += '<span class="badge bg-default text-bold ">' + item2 + '</span> ';
+                                            }
+                                        });
+                                    }
+
+                                    html += '</td>';
+                                    html += '<td><input autocomplete="off" data-id="'+item.ID+'" type="text" class="datepickerEdit" style="border: none;font-weight: 700;cursor: pointer;" value="' + item.Deadline + '"></td>';
+                                    html += '<td><input autocomplete="off" data-id="' + item.ID + '" type="text" class="datepickerEdit" name="UpdateSheduleDate" style="border: none;font-weight: 700;cursor: pointer;" value="' + item.UpdateSheduleDate + '"></td>';
+                                    html += '<td><input autocomplete="off" data-id="'+item.ID+'" type="text" class="datepickerEdit" style="border: none;font-weight: 700;cursor: pointer;" value="' + item.ActualFinishDate + '"></td>';
+                                    html += '<td > ';
+                                    html += '<div class="pretty p-icon p-round p-pulse">';
+
+                                    if (item.Status)
+                                    {
+                                        html += '<input type="checkbox" class="updateStatus" checked  />';
+                                        html += '<div class="state p-success">';
+                                        html += '<i class="icon fa fa-check"></i>';
+                                        html += '<label>Finished</label>';
+                                    }
+                                    else
+                                    {
+                                        html += '<input type="checkbox" class="updateStatus" />';
+                                        html += '<div class="state p-danger">';
+                                        html += '<i class="icon fa fa-check"></i>';
+                                        html += '<label>Not finished</label>';
+                                    }
+
+                                    html += '</div>';
+                                    html += '</div>';
+                                    html += '</td > ';
+
+                                    $('.listTask .Approval').show();
+                                    $('.listTask .Option').show();
+                                    html += '<td> ';
+
+                                    if (item.ApprovedStatus)
+                                    {
+                                        html += '<div class="pretty p-icon p-round p-jelly">';
+                                        html += '<input type="checkbox" checked class="btnApproveActionPlan" />';
+                                        html += '<div class="state p-success">';
+                                        html += '<i class="icon fa fa-check"></i>';
+                                        html += '<label class="black">Approved</label>';
+                                        html += '</div>';
+                                        html += '</div >';
+                                    }
+                                    else
+                                    {
+                                        html += '<div class="pretty p-icon p-round p-jelly">';
+                                        html += '<input type="checkbox" class="btnApproveActionPlan" />';
+                                        html += '<div class="state p-danger">';
+                                        html += '<i class="icon fa fa-check"></i>';
+                                        html += '<label class="black">Not approved</label>';
+                                        html += '</div>';
+                                        html += '</div >';
+                                    }
+
+                                    html += '</td > ';
+                                    html += '<td>';
+                                    html += '<div class="btn-group">';
+                                    html += '<button type="button" class="btn btn-warning btn-sm btnDeleteActionPlan"><i class="fa fa-remove"></i></button>';
+                                    html += '</div>';
+                                    html += '</div>';
+                                    html += '</td>';
+                                    html += '</tr>';
+                                }
+                                else
+                                {
+                                    if(item.ListUserIDs.indexOf($('#user').data('userid')) !== -1)
+                                        html += '<tr data-id="' + item.ID + '">';
+                                    else
+                                        html += '<tr style="pointer-events: none;" data-id="' + item.ID + '">';
+
+                                    html += '<td>' + (i + 1) + '</td>';
+                                    html += '<td class="text-bold" style="padding-left:15px;"><span style="font-weight: 700;cursor: pointer;"  class="TitleEdit" data-url="/ChartPeriod/Update" data-type="text" data-name="Title" data-pk="'+item.ID+'" data-value="' + item.Title + '" data-title="Enter your title">' + item.Title + '</span></td>';
+                                    html += '<td><div class="DescriptionEdit" style="font-weight: 700;cursor: pointer;"  data-type="textarea"  data-name="Description" data-value="' + item.Description + '" data-pk="'+item.ID+'"> ' + item.Description + '</div> ';
+                                    html += '</td>';
+                                    html += '<td>';
+
+                                    if (item.Tag !== null)
+                                    {
+                                        var array2 = item.Tag.split(',');
+                                        $.each(array2, function (i, item2) {
+                                            if (item2.length > 1) {
+                                                html += '<span class="badge bg-default text-bold ">' + item2 + '</span> ';
+                                            }
+                                        });
+                                    }
+
+                                    html += '</td>';
+                                    html += '<td><input autocomplete="off" data-id="'+item.ID+'" type="text" class="datepickerEdit" style="border: none;font-weight: 700;cursor: pointer;" value="' + item.Deadline + '"></td>';
+                                    html += '<td><input autocomplete="off" data-id="' + item.ID + '" type="text" class="datepickerEdit" name="UpdateSheduleDate" style="border: none;font-weight: 700;cursor: pointer;" value="' + item.UpdateSheduleDate + '"></td>';
+                                    html += '<td><input autocomplete="off" data-id="'+item.ID+'" type="text" class="datepickerEdit" style="border: none;font-weight: 700;cursor: pointer;" value="' + item.ActualFinishDate + '"></td>';
+                                    html += '<td > ';
+                                    html += '<div class="pretty p-icon p-round p-pulse">';
+
+                                    if (item.Status)
+                                    {
+                                        html += '<input type="checkbox" class="updateStatus" checked />';
+                                        html += '<div class="state p-success">';
+                                        html += '<i class="icon fa fa-check"></i>';
+                                        html += '<label>Finished</label>';
+                                    }
+                                    else
+                                    {
+                                        html += '<input type="checkbox" class="updateStatus" />';
+                                        html += '<div class="state p-danger">';
+                                        html += '<i class="icon fa fa-check"></i>';
+                                        html += '<label>Not finished</label>';
+                                    }
+                                    html += '</div>';
+                                    html += '</div>';
+                                    html += '</td > ';
+                                    html += '</tr>';
+                                }
+                            });
+
+                            $('.tblActionPlan').empty();
+                            $('.tblActionPlan').append(html);
+
+                            chartperiodController.registerEvent();
+                        }
+
+                    });
+            },
+            addActionPlan() {
+                var id = $('.addTask .ID').val();
+                var res = chartperiodController.validate();
+                if (res === false) {
+                    return false;
+                }
+                var KPILevelCodeAndPeriod = getUrlParameter('kpilevelcode') + getUrlParameter('period');
+                var phrases = new Array();
+
+                $('.Description').each(function () {
+                    $(this).find('li').each(function () {
+                        var current = $(this);
+                        if (current.children().length > 0) { return true; }
+                        phrases.push($(this).text().trim());
+                    });
+                });
+                var Description = phrases.join(';');
+
+
+                var Tag = $('#Tag').val().trim();
+                if (Tag !== null || Tag !== "" || Tag !== undefined)
+                    Tag = Tag.replace(/\@@/g, '').replace(/\ /g, ',');
+                var Auditor = $('#Auditor').val().replace("@@","").trim();
+                var obj = {
+                    ID: id,
+                    UserID: $('#user').data('userid'),
+                    DataID: Number($('.dataid').text()),
+                    CommentID: Number($('.commentid').text()),
+                    Title: $('.addTask .Title').val(),
+                    Tag: Tag,
+                    KPILevelCodeAndPeriod: KPILevelCodeAndPeriod,
+                    Description: Description,
+                    Deadline: $('.addTask .datepicker').datepicker({ dateFormat: 'mm-dd-yy' }).val(),
+                    SubmitDate: convertDate(new Date),
+                    Link: window.location.href,
+                    Subject: $('.ActionPlanChart').text(),
+                    Auditor: Auditor,
+                    CategoryID: Number(getUrlParameter('catid')),
+                    KPILevelCode: getUrlParameter('kpilevelcode')
+                };
+                console.log(obj);
+            $.post('/ChartPeriod/Add', { obj: obj }, function (res) {
+                console.log(res);
+                if (res.status === true && res.isSendmail === true) {
+                    var commentid = Number($('.commentid').text());
+                    var dataid = Number($('.dataid').text());
+                    chartperiodController.LoadDataActionPlan(dataid, commentid);
+                    chartperiodController.resetForm();
+                    activaTab('pills-home');
+                }
+                else if (res.status === true && res.isSendmail === false) {
+                    var commentid = Number($('.commentid').text());
+                    var dataid = Number($('.dataid').text());
+                    chartperiodController.LoadDataActionPlan(dataid, commentid);
+                    chartperiodController.resetForm();
+                    activaTab('pills-home');
+                    console.log("Can not send email")
+                }
+                else if (!res.status) {
+                    var commentid = Number($('.commentid').text());
+                    var dataid = Number($('.dataid').text());
+                    chartperiodController.resetForm();
+                    warning(res.message);
+
+                }
+                else {
+                    if (res.message !== "") {
+                        Toast.fire({
+                          type: 'warning',
+                          title: res.message
+                        })
+
+                    } else {
+                      error( "Failed");
+                    }
+                }
+            });
+            },
+            approval(id) {
+                var data = {
+                     id: id,
+                     approveby: $('#user').data('userid'),
+                     KPILevelCode: getUrlParameter("kpilevelcode"),
+                    CategoryID: Number(getUrlParameter("catid")),
+                     url: window.location.href
+                }
+                var promise = $post("/ChartPeriod/Approval", JSON.stringify(data));
+                    promise.then(res => {
+                        success("Successfully!")
+                        var commentid = Number($('.commentid').text());
+                        var dataid = Number($('.dataid').text());
+                        chartperiodController.LoadDataActionPlan(dataid, commentid);
+                        chartperiodController.resetForm();
+                    })
+            },
+            updateActionPlan(ID,Title,DeadLine,Description,Tag) {
+                if (Number(ID) > 0) {
+                    $.post('UpdateActionPlan', { ID: ID, Title:Title,DeadLine:DeadLine, Description:Description,Tag:Tag}, function (res) {
+                        console.log(res);
+                        if (res) {
+                            var commentid = Number($('.commentid').text());
+                            var dataid = Number($('.dataid').text());
+                            chartperiodController.LoadDataActionPlan(dataid, commentid);
+                            chartperiodController.resetForm();
+                        }
+                    });
+                }
+            },
+            done(id) {
+                var data = {
+                    id: id,
+                    KPILevelCode: getUrlParameter("kpilevelcode"),
+                    CategoryID: Number(getUrlParameter("catid")),
+                    url: window.location.href
+                };
+                let promise = $post("/ChartPeriod/Done", JSON.stringify(data))
+                    promise.then(data => {
+                        success("Successfully!")
+                        var commentid = Number($('.commentid').text());
+                        var dataid = Number($('.dataid').text());
+                        chartperiodController.LoadDataActionPlan(dataid, commentid);
+                        chartperiodController.resetForm();
+                    })
+                //if (Number(id) > 0) {
+                //    $.post('Done',
+                //        {
+                //            id: id,
+                //            KPILevelCode: getUrlParameter("kpilevelcode"),
+                //            CategoryID: Number(getUrlParameter("catid"))
+                //        }, function (res) {
+                //        console.log(res);
+                //        if (res) {
+                //            var commentid = Number($('.commentid').text());
+                //            var dataid = Number($('.dataid').text());
+                //            chartperiodController.LoadDataActionPlan(dataid, commentid);
+                //            chartperiodController.resetForm();
+                //        }
+                //    });
+                //}
+            },
+            deleteActionPlan(id) {
+                if (Number(id) > 0) {
+                    $.post('Delete', { id: id }, function (res) {
+                        if (res) {
+                            var commentid = Number($('.commentid').text());
+                            var dataid = Number($('.dataid').text());
+                            chartperiodController.LoadDataActionPlan(dataid, commentid);
+                            success("Successfully!");
+                        }
+                    });
+
+                }
+            },
+            resetForm: function () {
+                $('.Title').val("");
+                $('.ID').val("");
+                $('.Description').each(function () {
+                    $(this).find('li').remove();
+                });
+                $('.Description ul').append("<li></li>")
+                $('.DueDate').val("");
+                $('#Tag').val("");
+                $('#Auditor').val("");
+                $('.Tag').val("");
+                $('.Title').css('border-color', 'lightgrey');
+                $('.DueDate').css('border-color', 'lightgrey');
+
+            },
+            validate: function () {
+                var isValid = true;
+                if ($('.Title').val().trim() === "") {
+                    $('.Title').css('border-color', 'Red');
+                    isValid = false;
+                }
+                else {
+                    $('.Title').css('border-color', 'lightgrey');
+                }
+                //if ($('.Description').val().trim() === "") {
+                //    $('.Description').css('border-color', 'Red');
+                //    isValid = false;
+                //}
+                //else {
+                //    $('.Description').css('border-color', 'lightgrey');
+                //}
+                if ($('.DueDate').val().trim() === "") {
+                    $('.DueDate').css('border-color', 'Red');
+                    isValid = false;
+                }
+                else {
+                    $('.DueDate').css('border-color', 'lightgrey');
+                }
+                 if ($('.Tag').val().trim() === "") {
+                    $('.Tag').css('border-color', 'Red');
+                    isValid = false;
+                }
+                else {
+                    $('.Tag').css('border-color', 'lightgrey');
+                }
+                 if ($('.Auditor').val().trim() === "") {
+                    $('.Auditor').css('border-color', 'Red');
+                    isValid = false;
+                }
+                else {
+                    $('.Auditor').css('border-color', 'lightgrey');
+                }
+                return isValid;
+            },
+            addData() {
+                if ($('#comment').val() == "") {
+                    warning("Please enter message!!");
+                    return;
+                }
+                var CommentMsg = $('#comment').val();
+
+
+                var list=[];
+                for(let item of CommentMsg.split(' ')){
+                 let x = item.match(/[@@].+[\f]/g);
+                    if (x !== null)
+                         list.push(x.toString().replace('@@', ' ').trim())
+                }
+                var Tag = [...new Set(list.map(x => x))].join();
+
+                var mObj = {
+                    DataID: Number($('.dataid').text()),
+                    CommentMsg: CommentMsg,
+                    UserID: Number($("#user").data('userid')),
+                    Tag: Tag,
+                    Link: window.location.href,
+                    Title: $('.RemarkChart').text(),
+                    KPILevelCode: getUrlParameter("kpilevelcode"),
+                    CategoryID: Number(getUrlParameter("catid"))
+                };
+                let promise = $post("/ChartPeriod/AddComment", JSON.stringify(mObj));
+                    promise.then(data => {
+                        console.log(data)
+                        var res = data;
+                             if (res.status === true && res.isSendmail === true) {
+                                $('#comment').val("");
+                                 chartperiodController.loadDataComment();
+                            }
+                            else if (res.status === true && res.isSendmail === false) {
+                                 $('#comment').val("");
+                                 chartperiodController.loadDataComment();
+                                 warning("Failed sending mail!");
+                                console.log("Khong gui duoc mail")
+                             } else {
+                                 warning("error!");
+                                 console.log("Loi roi")
+                            }
+                     }).catch(error => {
+                        error("error!");
+                        console.log("Loi comment");
+                     })
+                //    $.ajax({
+                //    url: "/ChartPeriod/AddComment",
+                //    data: JSON.stringify(mObj),
+                //    type: "POST",
+                //    contentType: "application/json;charset=utf-8",
+                //    dataType: "json",
+                //    success: function (res) {
+                //        if (res.status === true && res.isSendmail === true) {
+                //            $('#comment').val("");
+                //            chartperiodController.loadDataComment();
+                //        }
+                //        else if (res.status === true && res.isSendmail === false) {
+                //             $('#comment').val("");
+                //            chartperiodController.loadDataComment();
+                //            console.log("Khong gui duoc mail")
+                //        } else {
+                //             console.log("Loi roi")
+                //        }
+                //    },
+                //    error: function (errormessage) {
+                //        console.log("Loi comment");
+                //    }
+                //});
+            },
+            addFavourite() {
+                var UserID = $('#user').data('userid');
+                if (UserID === 0 || UserID === "" || UserID === undefined) {
+                    Swal.fire({
+                        title: 'Warning!',
+                        text: 'Error!',
+                        type: 'warning',
+                        confirmButtonText: 'OK'
+                    });
+                    return;
+                }
+                var mObj = {
+                    KPILevelCode: "@models.kpilevelcode",
+                    Period: "@models.period",
+                    UserID: UserID,
+                };
+                $.ajax({
+                    url: "/ChartPeriod/AddFavourite",
+                    data: JSON.stringify(mObj),
+                    type: "POST",
+                    contentType: "application/json;charset=utf-8",
+                    dataType: "json",
+                    success: function (result) {
+                        //
+                        Swal.fire({
+                            title: 'success!',
+                            text: 'Add success!',
+                            type: 'success',
+                            confirmButtonText: 'OK'
+                        });
+                    },
+                    error: function (errormessage) {
+                        //console.log(errormessage.responseText);
+                    }
+                });
+            },
+            remark(id) {
+                $.post("/ChartPeriod/Remark", { dataid: id }, function (data) {
+                    var result = data.model;
+                    var userid = $('#user').data('userid');
+                    var users = [],username,fullname;
+                    var arrays = data.users;
+                    $.each(arrays, function (i,item) {
+                        users.push({
+                            username: item.Username,
+                            fullname:item.FullName
+                        })
+                    })
+                    console.log(users)
+                    $('#Tag').suggest('@@', {
+                        data: users,
+                        map: function (user) {
+                            return {
+                                value: user.username,
+                                text: '<strong>'+user.username + '  </strong> <small>' + user.fullname + '</small>'
+                            }
+                        }
+
+                    })
+                    $('#Auditor').suggest('@@', {
+                        data: users,
+                        map: function (user) {
+                            return {
+                                value: user.username,
+                                text: '<strong>'+user.username + '  </strong> <small>' + user.fullname + '</small>'
+                            }
+                        }
+
+                    })
+
+                    $('#comment').suggest('@@', {
+                        data: users,
+                        map: function (user) {
+                            return {
+                                value: user.username+'\f',
+                                text: '<strong>' + user.username + '  </strong> <small>' + user.fullname + '</small>'
+                            }
+                        }
+
+                    })
+
+                    //$("#remark").val(result.Remark);
+                    $(".lastRemark").text(id);
+
+                    //$("#textarea-remark").toggle(500);
+                    if (result.Period === "W") {
+                        if (result.Remark !== null) {
+                            $("#lastRemark").val(result.Remark);
+                            $("#remark").val("Week " + result.Week + " : " + result.Remark);
+                            $('.lastRemarkLabel').text("Week " + result.Week + " : ");
+                        }
+                    }
+                    if (result.Period === "M") {
+                        if (result.Remark !== null) {
+                            $("#lastRemark").val(result.Remark);
+                            $("#remark").val("Month " + result.Month + " : " + result.Remark);
+                            $('.lastRemarkLabel').text("Month " + result.Month + " : ");
+                        }
+                    }
+                    if (result.Period === "Q") {
+                        $("#lastRemark").val(result.Remark);
+                        $("#remark").val("Quarter " + result.Quater + " : " + result.Remark);
+                        $('.lastRemarkLabel').text("Quarter " + result.Quater + " : ");
+
+                    }
+                    if (result.Period === "Y") {
+                        $("#lastRemark").val(result.Remark);
+                        $("#remark").val("Year " + result.Year + " : " + result.Remark);
+                        $('.lastRemarkLabel').text("Year " + result.Year + " : ");
+
+                    }
+                });
+            },
+            updateRemark() {
+                var remark = $('#lastRemark').val();
+                var dataid = Number($('.lastRemark').text());
+                $.post("/ChartPeriod/updateRemark", { dataid: dataid, remark: remark }, function (result) {
+                    Swal.fire({
+                        title: 'Success!',
+                        text: 'Add successfully!',
+                        type: 'success',
+                        confirmButtonText: 'OK'
+                    });
+                });
+            },
+            addCommentHistory(userid, dataid) {
+                $.post("/ChartPeriod/addCommentHistory", { userid: userid, dataid: dataid }, function (result) {
+                    console.log("data add comment" + result);
+
+                });
+            },
+            loadDataProvide(changePageSize) {
+                var obj = "@models.kpilevelcode,@models.period";
+                $.ajax({
+                    url: "/ChartPeriod/LoadDataProvide/",
+                    data: {
+                        obj: obj,
+                        page: chartperiodlConfig.pageIndex,
+                        pageSize: chartperiodlConfig.pageSize
+                    },
+                    type: "GET",
+                    contentType: "application/json;charset=utf-8",
+                    dataType: "json",
+                    success: function (data) {
+                        var count = 1;
+                        var html = '';
+                        var template = $('#tblcomparechart-template').html();
+                        $.each(data.listCompare, function (i, item) {
+                            html += Mustache.render(template, {
+                                No: count,
+                                KPILevelCode: item.KPILevelCode,
+                                LevelNumber: item.LevelNumber,
+                                Area: item.Area,
+                                Tooltip: item.StatusPublic == true ? "" : 'data-toggle="tooltip" title="The publicity is private, not comparable!"',
+                                StatusPublicAttr: item.StatusPublic == true ? "" : "disabled",
+                                Status: item.Status == true ? '<span class="label label-success">visible</span>' : '<span class="label bg-danger">not visible</span>',
+                                StatusPublic: item.StatusPublic == true ? '<span class="label label-success">Public</span>' : '<span class="label bg-danger">Private</span>'
+
+                            });
+                            count++;
+                        });
+                        $('#tblcomparechart').html(html);
+                        chartperiodController.paging(data.total, function () {
+                            chartperiodController.loadDataProvide();
+                        }, changePageSize);
+                        chartperiodController.registerEvent();
+
+                        ///Lấy tất cả KPILevelCode và period khi click ghép lại thành chuỗi cách nhau bởi dấu (-) để gửi lên server.
+                        var old = "";
+                        $('#comparechart .compare').unbind('click').change(function (e) {
+                            var code = $(this).val();
+                            if (old.indexOf($(this).val()) == -1) {
+                                old += code + '-';
+                                $('.arrcompare').text(old);
+                            }
+                        });
+                        //Gửi chuỗi ở trên lên server
+                        $('#btnCompare-kpilevel').off('click').on('click', function () {
+
+                            var value = $('.arrcompare').text().toString();
+                            var obj = value.substring(value.length - 1, 0);
+                            var kpilevelcode = getUrlParameter('kpilevelcode');
+                            var period = getUrlParameter('period');
+                            obj = obj + '-' + kpilevelcode + ',' + period;
+                            window.location.href = "/Compare/?obj=" + obj + ";@models.Standard,@models.Unit";
+                        })
+                    },
+                    error: function (errormessage) {
+                        //console.log(errormessage.responseText);
+                    }
+                });
+            },
+            paging: function (totalRow, callback, changePageSize) {
+                var totalPage = Math.ceil(totalRow / chartperiodlConfig.pageSize);
+
+                //Unbind pagination if it existed or click change pagesize
+                if ($('#pagination a').length === 0 || changePageSize === true) {
+                    $('#pagination').empty();
+                    $('#pagination').removeData("twbs-pagination");
+                    $('#pagination').unbind("page");
+                }
+
+                $('#pagination').twbsPagination({
+                    totalPages: totalPage === 0 ? 1 : totalPage,
+                    first: "First",
+                    next: "Next",
+                    last: "Last",
+                    prev: "Previous",
+                    visiblePages: 10,
+                    onPageClick: function (event, page) {
+                        chartperiodlConfig.pageIndex = page;
+                        setTimeout(callback, 500);
+                    }
+                });
+            },
+            loadDataComment() {
+                $.ajax({
+                    url: '/ChartPeriod/LoadDataComment',
+                    //url: '/ChartPeriod/GetAllComments',
+                    type: "GET",
+                    data: {
+                        dataid: Number($(".dataid").text()),
+                        userid: Number($("#user").data('userid'))
+                    },
+                    dataType: "json",
+                    success: function (res) {
+                        var data = res.data;
+                        console.log("Lay ra tat ca comment");
+                        console.log(res);
+                        var total = res.total;
+
+                        $('.total-comments').text(total);
+                        var html = '';
+                        $.each(data, function (i, item) {
+
+                            var nowDate = new Date(parseInt(item.CommentedDate.substr(6)));
+                            var date = new Date(nowDate);
+                            var result = (date.getMonth() + 1) + '/' + date.getDate() + '/' + date.getFullYear();
+                            html += ' <li class="media">';
+                            html += '<a href="#" class="pull-left">';
+                            html += '    <img src="/Scripts/plugins/jquery-comments/user-icon.png" alt="" class="img-circle">';
+                            html += '</a>';
+                            html += '<div class="media-body">';
+                            html += '<span class="text-muted pull-right">';
+                            html += '    <small class="text-muted">' + JSONDateWithTime(item.CommentedDate) + '</small>';
+                            html += '</span>';
+                            html += '<strong class="text-success">' + item.FullName + '</strong>';
+                            if (item.Read) {
+                                html += '<span class="label bg-green"> new</span>';
+                            }
+                            if (item.Task) {
+                                html += '<p><a href="#modal-group-comment-data2" data-toggle="modal" data-commentid="' + item.CommentID + '" data-dismiss="modal" class="btn btn-xs btn-danger text-bold btnTask"><i class="fa fa-tags"></i> Task</a> </p>';
+                            }
+                            else {
+                                html += '<p><a href="#modal-group-comment-data2" data-toggle="modal" title="There are no task." data-commentid="' + item.CommentID + '" data-dismiss="modal" class="btn btn-xs btn-success text-bold btnTask tooltip-ui"><i class="fa fa-tags"></i> Task</a> </p>';
+                            }
+                            html += '<p>';
+                            html += item.CommentMsg;
+                            html += '</p>';
+                            html += '</div>';
+                            html += '</li >';
+                        });
+                        $('#media-list').empty();
+                        $('#media-list').append(html);
+                        chartperiodController.registerEvent();
+                    },
+                    error: function (err) {
+                    }
+                });
+            },
+            addNotification() {
+                 var phrases = new Array();
+                //Dung de tham khao
+                //$('.Description').each(function(){
+                //    var phrase = '';
+                //    $(this).find('li').each(function(){
+                //        var current = $(this);
+                //        if(current.children().length > 0) {return true;}
+                //        phrase += $(this).text();
+                //    });
+                //    phrases.push(phrase);
+                //});
+                $('.Description').each(function () {
+                    $(this).find('li').each(function () {
+                        var current = $(this);
+                        if (current.children().length > 0) { return true; }
+                        phrases.push($(this).text().trim());
+                    });
+
+                });
+                var Description = phrases.join(';');
+
+                var Tag = $('#Tag').val().trim();
+                if (Tag !== null || Tag !== "" || Tag !== undefined)
+                    Tag = Tag.replace(/\@@/g, '').replace(/\ /g, ',');
+                var notification = {
+                    ID: 0,
+                    UserID: $('#user').data('userid'),
+                    KPIName: "@models.kpiname",
+                    Period: "@models.period",
+                    Seen: false,
+                    Link: window.location.href,
+                    Tag: Tag,
+                    Content: Description,
+                    Title: $('.ActionPlanChart').text(),
+                    CreateTime: new Date()
+                    };
+
+                $.post('AddNotification', {notification:notification})
+                    .done(function (response) {
+                       //to do something
+                    });
+            },
+            addNotificationComment() {
+              var CommentMsg = $('#comment').val();
+
+                var Tag = [],obj;
+                if (CommentMsg !== "") {
+                    obj = CommentMsg.match(/@@.+\f/g);
+                    if (obj === undefined || obj === null) {
+                        obj = "";
+                    }
+                    if (obj.toString().indexOf("@@") === -1) {
+                        Tag = CommentMsg;
+                    } else {
+                          var arr = obj.toString().split(' ');
+                        for (let item of arr) {
+                            Tag.push(item.replace('@@', ' ').trim());
+                        }
+                        Tag = Tag.join();
+                    }
+
+                }
+
+
+                var notification = {
+                    ID: 0,
+                    UserID: $('#user').data('userid'),
+                    KPIName: "@models.kpiname",
+                    Period: "@models.period",
+                    Seen: false,
+                    Link: window.location.href,
+                    Tag: Tag,
+                    Title: $('.RemarkChart').text(),
+                    Content: CommentMsg,
+                    CreateTime:chartperiodController.dateNow()
+                    };
+
+                $.post('AddNotification', {notification:notification})
+                    .done(function (response) {
+                       //to do something
+                    });
+            },
+            dateNow() {
+            var date = new Date();
+            var day = date.getDate();       // yields date
+            var month = date.getMonth() + 1;    // yields month (add one as '.getMonth()' is zero indexed)
+            var year = date.getFullYear();  // yields year
+            var hour = date.getHours();     // yields hours
+            var minute = date.getMinutes(); // yields minutes
+            var second = date.getSeconds(); // yields seconds
+
+            // After this construct a string with the above results as below
+            var time = day + "/" + month + "/" + year + " " + hour + ':' + minute + ':' + second;
+            return time;
+            },
+            isInt(n){
+                return Number(n) === n && n % 1 === 0;
+            },
+            isFloat(n){
+                return Number(n) === n && n % 1 !== 0;
+            }
+}
+    </script>
+}
+<section id="chartperiod" class="animatedParent">
+    <div class="row">
+        <div class="col-md-12">
+
+            @*<div class="skype-button bubble" data-animation="true" data-can-collapse="true" data-can-close="true" data-contact-id="phamtiensy8696_1" ></div>*@
+        </div>
+        <div class="col-md-12">
+            <!-- LINE CHART -->
+            <div class="box box-widget">
+                <div class="box-header with-border">
+                    @if (models.period == "W")
+                    {
+                        <h3 class="box-title" style="font-weight:bold">KPI Chart - @models.kpiname - Weekly</h3>
+                    }
+                    else if (models.period == "M")
+                    {
+                        <h3 class="box-title" style="font-weight:bold">KPI Chart - @models.kpiname - Monthly</h3>
+
+                    }
+                    else if (models.period == "Q")
+                    {
+                        <h3 class="box-title" style="font-weight:bold">KPI Chart - @models.kpiname - Quarterly</h3>
+
+                    }
+                    else if (models.period == "Y")
+                    {
+                        <h3 class="box-title" style="font-weight:bold">KPI Chart - @models.kpiname - Yearly</h3>
+
+                    }
+                    @*@if (@Session["UserName"] != null)
+                        {
+                            <span style="display:none" class="userid">@Session["UserID"].ToString()</span>
+
+                        }*@
+
+                    @*<div class="box-tools pull-right">
+                            <button type="button" class="btn btn-box-tool" data-widget="collapse">
+                                <i class="fa fa-minus"></i>
+                            </button>
+                            <button type="button" class="btn btn-box-tool"><i class="fa fa-times"></i></button>
+
+                        </div>*@
+
+                </div>
+                <div class="box-body">
+                    <button type="button" data-toggle="modal" data-target="#modal-group" class="btn btn-danger margin btnLike pull-right" id="btnCompare"><i class="fa fa-adjust"></i> Compare</button>
+                    @if (models.statusfavorite == false)
+                    {
+                        <button type="button" class="btn margin btnLike bg-navy pull-right" id="btnLike"><i class="fa fa-heart"></i> Add Favourite</button>
+                    }
+                    else
+                    {
+                        <button type="button" class="btn btn-default  margin btnLike pull-right disabled" disabled id="btnLike"><i class="fa fa-heart"></i> Added Favourite</button>
+                    }
+                    @*<button class="btn margin pull-right btn-skype" style="background-color:#fff;border:1px solid #d2d6de;color:#000">*@
+                    <button class="btn margin btn-primary pull-right btn-skype">
+
+                        @*<a href="skype:phamtiensy8696_1">
+                                Skype
+                            </a>*@
+                        <i class="fa fa-skype"></i>
+                        Skype
+                    </button>
+
+                    <div class="form-inline" style="display:none" id="searchMonth">
+                        <label class="my-1 mr-2" for="startMonth">Year</label>
+                        <select class="custom-select form-control year my-1 mr-sm-2" id="monthOfYear">
+                            <option value="0" selected>Choose...</option>
+                            @{
+                                for (int i = 1999; i <= 2099; i++)
+                                {
+                                    <option value="@i">Year @i</option>
+                                }
+                            }
+                        </select>
+                        <label class="my-1 mr-2" for="startMonth">Start</label>
+                        <select class="custom-select form-control my-1 mr-sm-2" id="startMonth">
+                            <option value="0" selected>Choose...</option>
+                            <option value="1">Jan</option>
+                            <option value="2">Feb</option>
+                            <option value="3">Mar</option>
+                            <option value="4">Apr</option>
+                            <option value="5">May</option>
+                            <option value="6">Jun</option>
+                            <option value="7">Jul</option>
+                            <option value="8">Aug</option>
+                            <option value="9">Sep</option>
+                            <option value="10">Oct</option>
+                            <option value="11">Nov</option>
+                            <option value="12">Dec</option>
+                        </select>
+                        <label class="my-1 mr-2" for="endMonth">End</label>
+                        <select class="custom-select form-control my-1 mr-sm-2" id="endMonth">
+                            <option value="0" selected>Choose...</option>
+                            <option value="1">Jan</option>
+                            <option value="2">Feb</option>
+                            <option value="3">Mar</option>
+                            <option value="4">Apr</option>
+                            <option value="5">May</option>
+                            <option value="6">Jun</option>
+                            <option value="7">Jul</option>
+                            <option value="8">Aug</option>
+                            <option value="9">Sep</option>
+                            <option value="10">Oct</option>
+                            <option value="11">Nov</option>
+                            <option value="12">Dec</option>
+                        </select>
+                        <button type="button" class="btn bg-teal margin btnClearSearch"><i class="fa fa-remove"></i> Reset search</button>
+
+                    </div>
+
+                    @* week *@
+                    <div class="form-inline" style="display:none" id="searchWeek">
+                        <label class="my-1 mr-2" for="startMonth">Year</label>
+                        <select class="custom-select form-control year my-1 mr-sm-2" id="weekOfYear">
+                            <option value="0" selected>Choose...</option>
+                            @{
+                                for (int i = 1999; i <= 2099; i++)
+                                {
+                                    <option value="@i">Year @i</option>
+                                }
+                            }
+                        </select>
+                        <label class="my-1 mr-2" for="startWeek">Week Start</label>
+                        <select class="custom-select form-control my-1 mr-sm-2" id="startWeek">
+                            <option value="0" selected>Choose...</option>
+                            @{
+                                for (int i = 1; i <= 52; i++)
+                                {
+                                    <option value="@i">Week @i</option>
+                                }
+                            }
+                        </select>
+                        <label class="my-1 mr-2" for="endWeek">Week End</label>
+                        <select class="custom-select form-control my-1 mr-sm-2" id="endWeek">
+                            <option value="0" selected>Choose...</option>
+                            @{
+                                for (int i = 1; i <= 52; i++)
+                                {
+                                    <option value="@i">Week @i</option>
+                                }
+                            }
+                        </select>
+                        <button type="button" class="btn bg-teal margin btnClearSearch"><i class="fa fa-remove"></i> Reset search</button>
+
+                    </div>
+                    @* Quarter *@
+                    <div class="form-inline" style="display:none" id="searchQuarter">
+                        <label class="my-1 mr-2" for="startMonth">Year</label>
+                        <select class="custom-select form-control year my-1 mr-sm-2" id="quarterOfYear">
+                            <option value="0" selected>Choose...</option>
+                            @{
+                                for (int i = 1999; i <= 2099; i++)
+                                {
+                                    <option value="@i">Year @i</option>
+                                }
+                            }
+                        </select>
+                        <label class="my-1 mr-2" for="startMonth">Start</label>
+                        <select class="custom-select form-control my-1 mr-sm-2" id="startQuarter">
+                            <option value="0" selected>Choose...</option>
+                            @{
+                                for (int i = 1; i <= 4; i++)
+                                {
+                                    <option value="@i">Quarter @i</option>
+                                }
+                            }
+                        </select>
+                        <label class="my-1 mr-2" for="endMonth">End</label>
+                        <select class="custom-select form-control my-1 mr-sm-2" id="endQuarter">
+                            <option value="0" selected>Choose...</option>
+                            @{
+                                for (int i = 1; i <= 4; i++)
+                                {
+                                    <option value="@i">Quarter @i</option>
+                                }
+                            }
+                        </select>
+                        <button type="button" class="btn bg-teal margin btnClearSearch"><i class="fa fa-remove"></i> Reset search</button>
+
+                    </div>
+                    @* Year *@
+                    <div class="form-inline" style="display:none" id="searchYear">
+                        <label class="my-1 mr-2" for="YearOfYear">Year</label>
+                        <select class="custom-select form-control my-1 mr-sm-2 YearOfYear" id="YearOfYear">
+                            <option value="0" selected>Choose...</option>
+                            @{
+                                for (int i = 1990; i <= 2050; i++)
+                                {
+                                    <option value="@i">Year @i</option>
+                                }
+                            }
+                        </select>
+                        <label class="my-1 mr-2" for="startMonth">Start</label>
+                        <select class="custom-select form-control my-1 mr-sm-2" id="startYear">
+                            <option value="0" selected>Choose...</option>
+                            @{
+                                for (int i = 1990; i <= 2050; i++)
+                                {
+                                    <option value="@i">Year @i</option>
+                                }
+                            }
+                        </select>
+                        <label class="my-1 mr-2" for="endMonth">End</label>
+                        <select class="custom-select form-control my-1 mr-sm-2" id="endYear">
+                            <option value="0" selected>Choose...</option>
+                            @{
+                                for (int i = 1990; i <= 2050; i++)
+                                {
+                                    <option value="@i">Year @i</option>
+                                }
+                            }
+                        </select>
+                        <button type="button" class="btn bg-teal margin btnClearSearch"><i class="fa fa-remove"></i> Reset search</button>
+                    </div>
+
+
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="form-inline">
+                                @*<div style="font-weight:bold">Chart Configuration: </div> <br />*@
+                                <label class="my-1 mr-2" for="startMonth">Step</label>
+                                <input type="number" class="form-control" min="0" step="0" id="stepChart" style="width:70px" />
+                                <label class="my-1 mr-2" for="endMonth">Min</label>
+                                <input type="number" class="form-control" min="0" step="0" id="minChart" style="width:70px" />
+                                @*<button type="button" id="saveChart" class="btn bg-blue-active margin"><i class="fa fa-save"></i> Save</button>*@
+                                <button type="button" class="btn btn-sm bg-aqua-gradient margin btnHiddenData"> Hide Data</button>
+                                <button type="button" class="btn btn-sm bg-black-active margin btnShowData"> Show Data</button>
+                            </div>
+                        </div>
+                        <div class="col-md-8">
+                            <button type="button" class="btn btn-sm bg-black margin">Manager: <strong>@models.OwnerManagerment</strong></button>
+                            <button type="button" class="btn btn-sm bg-black margin">Owner: <strong>@models.Owner</strong></button>
+                            <button type="button" class="btn btn-sm bg-black margin">Updater: <strong>@models.PIC</strong> </button>
+                            <button type="button" class="btn btn-sm bg-black margin">Sponsor: <strong>@models.Sponsor</strong></button>
+                            <button type="button" class="btn btn-sm bg-black margin">Participant: <strong>@models.Participant</strong> </button>
+                        </div>
+                    </div>
+
+                    <div class="chart">
+                        @*<canvas id="lineChart" style="height:250px"></canvas>*@
+                        <canvas id="lineChart" style="height:500px"></canvas>
+
+                    </div>
+                </div>
+                <div class="box-footer">
+
+                    <p class="text-bold" style="font-size:16px;color:green;display:none" id="fromDateEndDate">
+                        <span class="fromDayOfWeek"></span>
+                        <span class="endDayOfWeek"></span>
+                    </p>
+                    <p class="text-bold" style="font-size:16px;color:green;display:none" id="fromDateEndDateM">
+                        <span class="fromDayOfMonth"></span>
+                        <span class="endDayOfMonth"></span>
+                    </p>
+                    <p class="text-bold" style="font-size:16px;color:green;display:none" id="fromDateEndDateQ">
+                        <span class="fromDayOfQuarter"></span>
+                        <span class="endDayOfQuarter"></span>
+                    </p>
+                </div>
+            </div>
+
+        </div>
+        <div class="col-md-12">
+            <div class="box box-widget">
+                <div class="box-header with-border">
+                    @if (models.period == "W")
+                    {
+                        <h3 class="box-title" style="font-weight:bold">Data  - @models.kpiname - Weekly</h3>
+                    }
+                    else if (models.period == "M")
+                    {
+                        <h3 class="box-title" style="font-weight:bold">Data - @models.kpiname - Monthly</h3>
+
+                    }
+                    else if (models.period == "Q")
+                    {
+                        <h3 class="box-title" style="font-weight:bold">Data - @models.kpiname - Quarterly</h3>
+
+                    }
+                    else if (models.period == "Y")
+                    {
+                        <h3 class="box-title" style="font-weight:bold">Data - @models.kpiname - Yearly</h3>
+
+                    }
+
+                </div>
+                <!-- /.box-header -->
+                <div class="box-body">
+                    <div class="table-responsive">
+                        <table class="table table-bordered" style="margin-bottom:20px;" id="tblDataChart">
+                            <tbody>
+                                <tr></tr>
+                                <tr></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                @*<div class="box-footer" id="textarea-remark">
+                        <div class="form-group">
+                            <span class="lastRemark" style="display:none"></span>
+                            <label for="lastRemark" class="lastRemarkLabel"></label>
+                            <textarea data-dataid="" style="font-weight:bold;color:#0094ff" class="form-control" id="lastRemark"></textarea>
+
+                        </div>
+                    </div>*@
+            </div>
+        </div>
+    </div>
+
+    @RenderPage("_Modal.cshtml")
+</section>
+@*<a data-config="commands=*;size=14;status=off;theme=logo;language=en;bgcolor=#2a92f3" id="skaip-buttons" href="http://www.skaip.org/">Skype</a>
+    <script src="//apps.skaip.org/buttons/widget/core.min.js" defer="defer"></script>*@

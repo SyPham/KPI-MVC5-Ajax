@@ -1,0 +1,500 @@
+﻿@using MvcBreadCrumbs;
+@{
+    ViewBag.Title = "Category KPILevel";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@Html.Raw(BreadCrumb.Display())
+@section Scripts{
+    <script>
+        var CLIPBOARD = null;
+        var glyph_opts = {
+            preset: "bootstrap3",
+            map: {
+            }
+        };
+        $.ui.fancytree.debugLevel = 3; // silence debug output
+
+        function logEvent(event, data, msg) {
+            //        var args = $.isArray(args) ? args.join(", ") :
+            msg = msg ? ": " + msg : "";
+            $.ui.fancytree.info("Event('" + event.type + "', node=" + data.node + ")" + msg);
+        }
+        $(function () {
+            $('#box').fadeOut();
+            categoryKPILevelAdmin.init();
+
+            $("#treetable").fancytree({
+                extensions: ["glyph", "table"],
+                checkbox: false,
+                selectMode: 2,
+                dnd5: {
+                    preventVoidMoves: true,
+                    preventRecursion: true,
+                    autoExpandMS: 400,
+                    dragStart: function (node, data) {
+                        return true;
+                    },
+                    dragEnter: function (node, data) {
+                        // return ["before", "after"];
+                        return true;
+                    },
+                    dragDrop: function (node, data) {
+                        data.otherNode.moveTo(node, data.hitMode);
+                    }
+                },
+                glyph: glyph_opts,
+                source: { url: "/AdminKPILevel/GetListTree", debugDelay: 1000 },
+                table: {
+                    indentation: 20,
+                    nodeColumnIdx: 1,
+                    //checkboxColumnIdx: 0
+                },
+                gridnav: {
+                    autofocusInput: false,
+                    handleCursorKeys: true
+                },
+                focus: function (event, data) {
+
+                    logEvent(event, data, ", targetType=" + data.targetType);
+                    var node = data.node,
+                        $tdList = $(node.tr).find(">td");
+                    var level = Number($tdList.eq(0).text());
+                    var name = $tdList.eq(1).text();
+
+                    $('#boxCategory .kpi-name h3').text('Category list - ' + name);
+                    $('#boxCategory .levelID').val(data.node.key);
+                    $('#box .catid').val("");
+                    $('#box .kpi-name h3').text("KPI");
+                    $('#box').fadeOut();
+                    $('#box .periodAll').hide();
+                    categoryKPILevelAdmin.getAllCategories(true, level,data.node.key)
+                    categoryKPILevelAdmin.getAllKPILevelByCategory(true, 0)
+                },
+                lazyLoad: function (event, data) {
+                    data.result = { url: "/GetListTree", debugDelay: 1000 };
+                },
+                renderColumns: function (event, data) {
+                    var node = data.node,
+                        $tdList = $(node.tr).find(">td");
+
+                    // (Index #0 is rendered by fancytree by adding the checkbox)
+                    // Set column #1 info from node data:
+                    // (Index #2 is rendered by fancytree)
+                    // Set column #3 info from node data:
+
+                    $tdList.eq(0).addClass('text-bold').text(node.data.levelnumber);
+                    $tdList.eq(1).find('span.fancytree-icon').removeClass('fancytree-icon').addClass('fa fa-book')
+                    $tdList.eq(1).addClass('text-bold');
+                    $tdList.eq(1).addClass('text-bold');
+                    // Static markup (more efficiently defined as html row template):
+                    // $tdList.eq(3).html("<input type='input' value='" + "" + "'>");
+                    // ...
+                }
+            });
+
+            $('.fancy-collapse').off('click').on('click', function () {
+                $("#treetable").fancytree("getTree").expandAll(false);
+            });
+            $('.fancy-expand').off('click').on('click', function () {
+                $("#treetable").fancytree("getTree").expandAll();
+            });
+
+        });
+
+        var config = {
+            pageSize: 10,
+            pageIndex: 1
+        };
+        var categoryKPILevelAdmin = {
+            init: function () {
+                categoryKPILevelAdmin.registerEvent();
+                console.log("init")
+            },
+            registerEvent: function () {
+                $('#boxCategory .btnCategory').off('click').on('click', function () {
+                    var catid = Number($(this).data('id'));
+                    var name = $(this).find('span.name').text();
+                    $('#box h3').text(name + ' - KPI')
+                    $('#box .catid').val(catid);
+                     $('#box').fadeIn();
+                    $('#box .periodAll').show();
+                    categoryKPILevelAdmin.getAllKPILevelByCategory(true, catid);
+                })
+                $('#boxCategory .btnCategory').addClass('category2')
+                $('#tblCategory tr').off('click').on('click', function () {
+                    var catName = $(this).find('td:eq(1)').text();
+                    $('#boxKPILevel .kpi-name h3').text("KPI Level - " + catName);
+                    var catID = $(this).data('id');
+                   
+                    $('#boxKPILevel .catid').val(catID)
+                    categoryKPILevelAdmin.getAllKPIlevels();
+                });
+
+                $('#tbluser tr td:nth-child(2) input').change(function () {
+                    var id = $(this).parent().parent('td:nth-child(2)').children('div').children('span.level').data('id');
+                    var levelid = Number($('#box .kpi-name .code').text());
+                    if (levelid === 0) {
+                       warning('Please choose team!');
+                    }
+                    else {
+                        categoryKPILevelAdmin.updateUser(id, levelid);
+                        categoryKPILevelAdmin.loadTree();
+                    }
+                });
+                $('.kpilevelID').off('change').on('change', function () {
+                    var entity = {
+                        KPILevelID: $(this).closest('tr').data('id'),
+                        CategoryID: Number($('#boxKPILevel .catid').val()),
+                    };
+                    categoryKPILevelAdmin.addCategoryLevel(entity)
+                });
+
+                var date = new Date();
+                $('#tblkpilevel .week').off('click').on('click', function (e) {
+
+                    //e.preventDefault();
+
+                    let year = date.getFullYear();
+                    var kpilevelcode = $(this).data('kpilevelcode');
+                    var period = $(this).data('period');
+                    var currentWeek = categoryKPILevelAdmin.getDateOfWeekInYear(date);
+                    var catid = Number($('#box .catid').val());
+                    window.location.href = "/ChartPeriod/?kpilevelcode=" + kpilevelcode + "&catid=" + catid + "&period=" + period + "&year=" + year + "&start=1&end=" + currentWeek;
+                })
+                $('#tblkpilevel .month').off('click').on('click', function (e) {
+                    //e.preventDefault();
+                    var kpilevelcode = $(this).data('kpilevelcode');
+                    var period = $(this).data('period');
+                    let year = date.getFullYear();
+
+                    var currentMonth = date.getMonth();
+                    var catid = Number($('#box .catid').val());
+                    window.location.href = "/ChartPeriod/?kpilevelcode=" + kpilevelcode + "&catid=" + catid + "&period=" + period + "&year=" + year + "&start=1&end=" + currentMonth ;
+
+                })
+                $('#tblkpilevel .quarter').off('click').on('click', function (e) {
+                    //e.preventDefault();
+                    var kpilevelcode = $(this).data('kpilevelcode');
+                    var period = $(this).data('period');
+                    let year = date.getFullYear();
+                    let currentQuarter = getCurrentQuarter(date);
+                    var catid = Number($('#box .catid').val());
+
+                    window.location.href = "/ChartPeriod/?kpilevelcode=" + kpilevelcode + "&catid=" + catid + "&period=" + period + "&year=" + year + "&start=1&end=" + currentQuarter ;
+
+                })
+                $('#tblkpilevel .year').off('click').on('click', function (e) {
+                    //e.preventDefault();
+                    var kpilevelcode = $(this).data('kpilevelcode');
+                    var period = $(this).data('period');
+                    let year = date.getFullYear();
+                    var catid = Number($('#box .catid').val());
+                    window.location.href = "/ChartPeriod/?kpilevelcode=" + kpilevelcode + "&catid=" + catid + "&period=" + period + "&year=" + year + "&start=" + year + "&end=" + year ;
+
+                })
+
+                $('#box .periodAll .weeklyperiod').off('click').on('click', function (e) {
+                    var period = $(this).data('period');
+                    var catid = Number($('#box .catid').val());
+                    categoryKPILevelAdmin.getAllDataByCategory(catid, period);
+                });
+
+                $('#box .periodAll .monthlyperiod').off('click').on('click', function (e) {
+                    var period = $(this).data('period');
+                    var catid = Number($('#box .catid').val());
+                    categoryKPILevelAdmin.getAllDataByCategory(catid, period);
+
+                });
+
+                $('#box .periodAll .quarterlyperiod').off('click').on('click', function (e) {
+                    var period = $(this).data('period');
+                    var catid = Number($('#box .catid').val());
+                    categoryKPILevelAdmin.getAllDataByCategory(catid, period);
+
+                });
+
+                $('#box .periodAll .yearlyperiod').off('click').on('click', function (e) {
+                    var period = $(this).data('period');
+                    var catid = Number($('#box .catid').val());
+                    categoryKPILevelAdmin.getAllDataByCategory(catid, period);
+
+                });
+
+
+
+            },
+            getCurrentQuarter(d) {
+                d = d || new Date();
+                var m = Math.floor(d.getMonth() / 3) + 2;
+                return m > 4 ? m - 4 : m;
+            },
+            getDateOfWeekInYear(dt) {
+                var tdt = new Date(dt.valueOf());
+                var dayn = (dt.getDay() + 6) % 7;
+                tdt.setDate(tdt.getDate() - dayn + 3);
+                var firstThursday = tdt.valueOf();
+                tdt.setMonth(0, 1);
+                if (tdt.getDay() !== 4) {
+                    tdt.setMonth(0, 1 + ((4 - tdt.getDay()) + 7) % 7);
+                }
+                return 1 + Math.ceil((firstThursday - tdt) / 604800000);
+            },
+            getAllDataByCategory: function (catid, period) {
+
+                var date = new Date();
+                var year = date.getFullYear();
+                var week = getDateOfWeekInYear(date);
+                var month = date.getMonth();
+                var quarter = getCurrentQuarter(date);
+                var startYear = year - 5;
+                //window.location.href = "/Dataset/?catid=" + catid + "&period=" + period
+                if (period.toLowerCase() === "w")
+                    window.location.href = `/dataset/${catid}/W/1/${week}/${year}`;
+                if (period.toLowerCase() === "m")
+                    window.location.href = `/dataset/${catid}/M/1/${month}/${year}`;
+                if (period.toLowerCase() === "q")
+                    window.location.href = `/dataset/${catid}/Q/1/${quarter}/${year}`;
+                if (period.toLowerCase() === "y")
+                    window.location.href = `/dataset/${catid}/Y/${startYear}/${year}/${year}`;
+            },
+            updateUser: function (id, levelid) {
+                var mObj = {
+                    id: id,
+                    levelid: levelid,
+                };
+
+                $.ajax({
+                    url: "/AddUserToLevel/AddUserToLevel",
+                    data: JSON.stringify(mObj),
+                    type: "POST",
+                    contentType: "application/json;charset=utf-8",
+                    dataType: "json",
+                    success: function (result) {
+
+                        if (result) {
+
+                            Swal.fire({
+                                title: 'Success!',
+                                text: 'Update successfully!',
+                                type: 'success'
+                            });
+
+                        }
+                    },
+                    error: function (errormessage) {
+                        console.log(errormessage.responseText);
+                    }
+                });
+            },
+            addCategoryLevel: function (entity) {
+                var entity = {
+                    KPILevelID: entity.KPILevelID,
+                    CategoryID: entity.CategoryID,
+                };
+                $.ajax({
+                    url: "/CategoryKPILevelAdmin/Add",
+                    data: JSON.stringify(entity),
+                    type: "POST",
+                    contentType: "application/json;charset=utf-8",
+                    dataType: "json",
+                    success: function (result) {
+                        console.log(result)
+                        if (result > 0) {
+                            success('Update successfully!');
+                        }
+                    },
+                    error: function (errormessage) {
+                        console.log(errormessage.responseText);
+                    }
+                });
+            },
+            loadTree: function () {
+                $.ui.fancytree.getTree("#treetable").reload().done();
+            },
+            getAllKPILevelByCategory: function (changePageSize, category) {
+                $.ajax({
+                    url: '/CategoryKPILevel/getAllKPILevelByCategory',
+                    type: "GET",
+                    data: {
+                        category: category,
+                        page: config.pageIndex,
+                        pageSize: config.pageSize
+                    },
+                    dataType: "json",
+                    success: function (response) {
+                        console.log(response);
+                        if (response.status) {
+                            var count = 1;
+                            var data = response.data;
+                            var html = '';
+                            var template = $('#tblkpilevel-template').html();
+                            $.each(data, function (i, item) {
+                                html += Mustache.render(template, {
+                                    No: count,
+                                    KPIName: item.KPIName,
+                                    KPILevelCode: item.KPILevelCode,
+
+                                    //neu co check week thi kiem tra tiep neu co du lieu thi khong disabled
+                                    WeeklyCheckedAttr: item.Checked === true? (item.WeeklyChecked === true ? (item.StatusUploadDataW === true ? "" : (item.StatusEmptyDataW === true ? "" : "")) : "disabled"): "disabled",
+                                    MonthlyCheckedAttr: item.Checked === true? (item.MonthlyChecked === true ? (item.StatusUploadDataM === true ? "" : (item.StatusEmptyDataM === true ? "" : "")) : "disabled"): "disabled",
+                                    QuarterlyCheckedAttr: item.Checked === true? (item.QuarterlyChecked === true ? (item.StatusUploadDataQ === true ? "" : (item.StatusEmptyDataQ === true ? "" : "")) : "disabled"): "disabled",
+                                    YearlyCheckedAttr: item.Checked === true? (item.YearlyChecked === true ? (item.StatusUploadDataY === true ? "" : (item.StatusEmptyDataY === true ? "" : "")) : "disabled"): "disabled",
+
+                                    //Neu duoc check va upload dung thoi han thi xanh
+
+                                    WeeklyChecked: item.Checked === true? (item.WeeklyChecked === true ? (item.StatusUploadDataW === true ? "btn-success" : (item.StatusEmptyDataW === true ? "btn-warning" : "btn-success")) : "bg-navy"): "bg-navy",
+                                    MonthlyChecked: item.Checked === true?(item.MonthlyChecked === true ? (item.StatusUploadDataM === true ? "btn-success" : (item.StatusEmptyDataM === true ? "btn-warning" : "btn-success")) : "bg-navy"): "bg-navy",
+                                    QuarterlyChecked: item.Checked === true?(item.QuarterlyChecked === true ? (item.StatusUploadDataQ === true ? "btn-success" : (item.StatusEmptyDataQ === true ? "btn-warning" : "btn-success")) : "bg-navy"): "bg-navy",
+                                    YearlyChecked: item.Checked === true?(item.YearlyChecked === true ? (item.StatusUploadDataY === true ? "btn-success" : (item.StatusEmptyDataY === true ? "btn-warning" : "btn-success")) : "bg-navy"): "bg-navy",
+                                });
+                                count++;
+                            });
+                            $('#tblkpilevel').html(html);
+                            categoryKPILevelAdmin.pagingKPILevel(response.total, function () {
+                                categoryKPILevelAdmin.getAllKPILevelByCategory("", category);
+                            }, changePageSize);
+                            categoryKPILevelAdmin.registerEvent();
+                        }
+                    },
+                    error: function (err) {
+                        console.log(err);
+                    }
+                });
+            },
+            pagingKPILevel: function (totalRow, callback, changePageSize) {
+                var totalPage = Math.ceil(totalRow / config.pageSize);
+
+                //Unbind pagination if it existed or click change pagesize
+                if ($('#paginationKPILevelTop a,#paginationKPILevelBottom a').length === 0 || changePageSize === true) {
+                    $('#paginationKPILevelTop,#paginationKPILevelBottom').empty();
+                    $('#paginationKPILevelTop,#paginationKPILevelBottom').removeData("twbs-pagination");
+                    $('#paginationKPILevelTop,#paginationKPILevelBottom').unbind("page");
+                }
+
+                $('#paginationKPILevelTop, #paginationKPILevelBottom').twbsPagination({
+                    totalPages: totalPage === 0 ? 1 : totalPage,
+                    first: "First",
+                    next: "Next",
+                    last: "Last",
+                    prev: "Previous",
+                    visiblePages: 10,
+                    onPageClick: function (event, page) {
+                        config.pageIndex = page;
+                        setTimeout(callback, 500);
+                    }
+                });
+            },
+            getAllCategories: function (changePageSize, level,ocID) {
+                console.log("getAllCategories")
+                $.ajax({
+                    url: '/CategoryKPILevel/GetAllCategories',
+                    type: "GET",
+                    data: {
+                        ocID:ocID,
+                        level: level,
+                        page: config.pageIndex,
+                        pageSize: config.pageSize
+                    },
+                    dataType: "json",
+                    success: function (response) {
+                        console.log(response)
+                        if (response.status) {
+                            if (response.data.length === 0) {
+                                warning("Not available!")
+                            }
+                            var data = response.data;
+                            var html = '';
+                            var template = $('#btnCategory-template').html();
+                            $.each(data, function (i, item) {
+                                html += Mustache.render(template, {
+                                    ID: item.ID,
+                                    Name: item.Name,
+                                    Total: item.Total > 1 ? item.Total + " items" : item.Total + " item"
+                                });
+                            });
+                            $('#btnCategory').html(html);
+                            categoryKPILevelAdmin.pagingCategoryKPILevel(response.total, function () {
+                                categoryKPILevelAdmin.getAllCategories("", level,ocID);
+                            }, changePageSize);
+                            categoryKPILevelAdmin.registerEvent();
+                        }
+                    },
+                    error: function (err) {
+                        console.log(err);
+                    }
+                });
+            },
+            pagingCategoryKPILevel: function (totalRow, callback, changePageSize) {
+                var totalPage = Math.ceil(totalRow / config.pageSize);
+
+                //Unbind pagination if it existed or click change pagesize
+                if ($('#paginationCategoryKPILevel a').length === 0 || changePageSize === true) {
+                    $('#paginationCategoryKPILevel').empty();
+                    $('#paginationCategoryKPILevel').removeData("twbs-pagination");
+                    $('#paginationCategoryKPILevel').unbind("page");
+                }
+
+                $('#paginationCategoryKPILevel').twbsPagination({
+                    totalPages: totalPage === 0 ? 1 : totalPage,
+                    first: "First",
+                    next: "Next",
+                    last: "Last",
+                    prev: "Previous",
+                    visiblePages: 10,
+                    onPageClick: function (event, page) {
+                        config.pageIndex = page;
+                        setTimeout(callback, 500);
+                    }
+                });
+            }
+        }
+    </script>
+}
+
+<div class="row">
+    <div class="col-md-4">
+        <div class="box box-widget">
+            <div class="box-header">
+                <span style="font-size:18px;font-weight:bold">Organization Chart</span>
+                <div class="pull-right box-tools">
+                    <!-- button with a dropdown -->
+                    <button type="button" class="btn btn-warning btn-sm button-nocolor fancy-collapse">
+                        <i class="fa fa-compress"></i> Collapse
+                    </button>
+                    <button type="button" class="btn btn-sm fancy-expand button-nocolor" style="background-color:#0a659c;color:#ffffff">
+                        <i class="fa fa-expand"></i> Expand
+                    </button>
+                </div>
+            </div>
+            <div class="box-body">
+                <table id="treetable" class="table table-condensed table-hover table-striped fancytree-fade-expander fancytree-colorize-selected">
+                    <colgroup>
+                        <col width="30px"></col>
+                        <col width="*"></col>
+                    </colgroup>
+                    <thead>
+                        <tr>
+                            <th>Level Number</th>
+                            <th class="text-right">Name</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td></td>
+                            <td></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-8">
+        @RenderPage("_ListKPILevel.cshtml")
+        @RenderPage("_Modal.cshtml")
+    </div>
+
+</div>
+
+
+

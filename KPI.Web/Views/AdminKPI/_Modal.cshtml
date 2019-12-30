@@ -1,0 +1,108 @@
+﻿<div class="modal fade" id="modal-group" style="display: none">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-green">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+                <h4 class="modal-title"><i class="fa fa-plus-square"></i> Add KPI </h4>
+            </div>
+            <div class="modal-body">
+                <div>
+                    <div class="box-body" id="addKPI">
+                        <div class="form-group" style="display:none">
+                            <label for="Name">ID </label>
+
+                            <input type="text" class="form-control ID" placeholder="ID" disabled>
+
+                        </div>
+                        <div class="form-group">
+                            <div class="parent-search">
+                                <label for="Name">Name <span style="color:red"> (*)</span> </label>
+                                <input type="text" class="form-control Name search" autocomplete="off" id="search" placeholder="Enter Name">
+                                <div class="search-box">
+                                    <ul>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        @*<div class="form-group">
+                            <label for="Code">Level <span style="color:red"> (*)</span> </label>
+                            <input type="text" class="form-control LevelID" placeholder="Enter Level">
+                        </div>*@
+                        @*<div class="form-group">
+                                <label for="Category">Category </label>
+                                <select id="Category" class="form-control Category"></select>
+                            </div>*@
+                        <div class="form-group">
+                            <label for="Unit">Unit <span style="color:red"> (*)</span> </label>
+                            <select id="Unit" class="form-control Unit"></select>
+                        </div>
+                        <div class="form-group">
+                            <small style="color:red;font-weight:bold;text-align:center;display:block">(*) Require fields not to be blank.</small>
+                        </div>
+                    </div>
+                    <!-- /.box-body -->
+
+                    <div class="box-footer">
+                        <button id="btnAdd" class="btn btn-primary">Add</button>
+                        <button type="button" class="btn btn-default pull-right" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+@* update *@
+<div class="modal fade" id="modal-group2" style="display: none">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-green">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+                <h4 class="modal-title"><i class="fa fa-minus-square-o"></i> Update KPI </h4>
+            </div>
+            <div class="modal-body">
+                <div>
+                    <div class="box-body" id="updateKpi">
+                        <div class="form-group" style="display:none">
+                            <label for="Name">ID </label>
+                            <input type="text" class="form-control ID" id="ID" placeholder="ID" disabled>
+                        </div>
+                        <div class="form-group">
+                            <label for="Name">Name </label>
+                            <input type="text" class="form-control Name" autocomplete="off" id="Name" placeholder="Enter Name">
+                        </div>
+                        @*<div class="form-group">
+                            <label for="Level">Level </label>
+                            <input type="text" class="form-control LevelID" placeholder="Enter Level">
+                        </div>*@
+                        @*<div class="form-group">
+                                <label for="Category">Category </label>
+                                <select id="Category" class="form-control Category"></select>
+                            </div>*@
+                        <div class="form-group">
+                            <label for="Unit">Unit </label>
+                            <select id="Unit" class="form-control Unit"></select>
+                        </div>
+                    </div>
+                    <!-- /.box-body -->
+
+                    <div class="box-footer">
+
+                        <button type="button" class="btn btn-primary" id="btnSaveUpdateModal">@KPI.Web.Lang.LangIndex.Save_Label</button>
+                        <button type="button" class="btn btn-default pull-right" data-dismiss="modal">@KPI.Web.Lang.LangIndex.Close_Label</button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>

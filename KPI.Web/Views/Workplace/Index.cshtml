@@ -1,0 +1,637 @@
+﻿@using MvcBreadCrumbs
+
+@{
+    ViewBag.Title = "Workplace";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@Html.Raw(BreadCrumb.Display())
+<div class="row" style="display:none">
+    <div class="col-md-12">
+        <div class="box box-widget">
+            <div class="box-header with-border">
+                <button type="button" data-toggle="modal" data-target="#modal-group" class="btn pull-right btn-microsoft btn-upload"><i class="fa fa-upload"></i> Upload File</button>
+                <h3 class="box-title font-weight-bold">KPI</h3>
+            </div>
+            <!-- /.box-header -->
+            <div class="box-body table-responsive no-padding">
+                <table class="table table-hover table-bordered" id="tableWorkplace">
+                    <thead>
+                        <tr>
+                            <th style="width: 10px">#</th>
+                            <th>KPI Name</th>
+                            <th class="text-center"> State Upload Week </th>
+                            <th class="text-center"> State Upload Month </th>
+                            <th class="text-center"> State Upload Quarter </th>
+                            <th class="text-center"> State Upload Year </th>
+                        </tr>
+                    </thead>
+                    <tbody class="tbody">
+                    </tbody>
+                </table>
+                <script id='tableWorkplace-template' type="text/template">
+                    <tr {{{Color}}}>
+                        <td>{{No}}</td>
+                        <td>
+                            <strong>{{KPIName}}</strong>
+                        </td>
+                        <td>{{{StateW}}}</td>
+                        <td>{{{StateM}}}</td>
+                        <td>{{{StateQ}}}</td>
+                        <td>{{{StateY}}}</td>
+                    </tr>
+                </script>
+            </div>
+            <!-- /.box-body -->
+            <div class="box-footer clearfix">
+                <p class="pull-left total">
+
+                </p>
+                <ul id="paginationWorkplace" class="pagination pagination-sm no-margin pull-right">
+                    <li><a href="#">«</a></li>
+                    <li><a href="#">1</a></li>
+                    <li><a href="#">2</a></li>
+                    <li><a href="#">3</a></li>
+                    <li><a href="#">»</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+</div>
+<div class="row">
+    <div class="col-md-12">
+        @RenderPage("_ActionPlan.cshtml")
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-12">
+        @RenderPage("_ListKPIUpload.cshtml")
+    </div>
+</div>
+<div class="row">
+
+    <div class="col-md-4">
+        <div class="box box-widget">
+            <div class="box-header">
+                <span style="font-size:18px;font-weight:bold">Organization Chart</span>
+
+                <div class="pull-right box-tools">
+                    <!-- button with a dropdown -->
+                    <button type="button" class="btn btn-warning btn-sm fancy-collapse">
+                        <i class="fa fa-compress"></i> Collapse
+                    </button>
+                    <button type="button" class="btn btn-info btn-sm fancy-expand">
+                        <i class="fa fa-expand"></i> Expand
+                    </button>
+                </div>
+            </div>
+            <div class="box-body">
+                <table id="treetable" class="table table-condensed table-hover table-striped fancytree-fade-expander fancytree-colorize-selected">
+                    <colgroup>
+                        <col width="30px"></col>
+                        <col width="*"></col>
+                    </colgroup>
+                    <thead>
+                        <tr>
+                            <th>Level Number</th>
+                            <th class="text-right">Name</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="text-center"></td>
+                            <td></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+    </div>
+    <div class="col-md-8">
+        @RenderPage("_ListKPILevel.cshtml")
+        @*@RenderPage("_Modal.cshtml")*@
+    </div>
+
+</div>
+@RenderPage("_Modal.cshtml")
+@section Scripts{
+    <script>
+        var CLIPBOARD = null;
+        var glyph_opts = {
+            preset: "bootstrap3",
+            map: {
+            }
+        };
+        $.ui.fancytree.debugLevel = 3; // silence debug output
+
+        function logEvent(event, data, msg) {
+            //        var args = $.isArray(args) ? args.join(", ") :
+            msg = msg ? ": " + msg : "";
+            $.ui.fancytree.info("Event('" + event.type + "', node=" + data.node + ")" + msg);
+        }
+        $(document).ready(function () {
+
+            $("#treetable").fancytree({
+                extensions: ["glyph", "table"],
+                checkbox: false,
+                selectMode: 2,
+                dnd5: {
+                    preventVoidMoves: true,
+                    preventRecursion: true,
+                    autoExpandMS: 400,
+                    dragStart: function (node, data) {
+                        return true;
+                    },
+                    dragEnter: function (node, data) {
+                        // return ["before", "after"];
+                        return true;
+                    },
+                    dragDrop: function (node, data) {
+                        data.otherNode.moveTo(node, data.hitMode);
+                    }
+                },
+                glyph: glyph_opts,
+                source: { url: "/KPI/GetListTreeClient/" + $('#user').data('userid'), debugDelay: 1000 },
+                table: {
+                    indentation: 20,
+                    nodeColumnIdx: 1,
+                    //checkboxColumnIdx: 0
+                },
+                gridnav: {
+                    autofocusInput: false,
+                    handleCursorKeys: true
+                },
+                focus: function (event, data) {
+
+                    //logEvent(event, data, ", targetType=" + data.targetType);
+
+                    $('#box .kpi-name h3').text('Performance - ' + data.node.title);
+                    $('#box .kpi-name .code').text(data.node.key);
+                    //$('#tbluser tr td:nth-child(2)').data('teamid',data.node.title);
+                    var levelid = data.node.key;
+                    console.log("Id of level is " + levelid);
+                    workplaceController.TrackKPI("", levelid);
+
+                    $('html, body').animate({
+                        scrollTop: $("#box").offset().top
+                    }, 500)
+                    // return false to prevent default behavior (i.e. activation, ...)
+                    //return false;
+                },
+                lazyLoad: function (event, data) {
+                    data.result = { url: "/KPI/GetListTreeClient/" + $('#user').data('userid'), debugDelay: 1000 };
+                },
+                renderColumns: function (event, data) {
+                    var node = data.node,
+                        $tdList = $(node.tr).find(">td");
+
+                    // (Index #0 is rendered by fancytree by adding the checkbox)
+                    // Set column #1 info from node data:
+                    // (Index #2 is rendered by fancytree)
+                    // Set column #3 info from node data:
+
+                    $tdList.eq(0).addClass('text-bold').text(node.data.levelnumber);
+                    $tdList.eq(1).find('span.fancytree-icon').removeClass('fancytree-icon').addClass('fa fa-book')
+                    $tdList.eq(1).addClass('text-bold');
+                    $tdList.eq(1).addClass('text-bold');
+                    // Static markup (more efficiently defined as html row template):
+                    // $tdList.eq(3).html("<input type='input' value='" + "" + "'>");
+                    // ...
+                }
+            });
+
+            $('.fancy-collapse').off('click').on('click', function () {
+                $("#treetable").fancytree("getTree").expandAll(false);
+            });
+            $('.fancy-expand').off('click').on('click', function () {
+                $("#treetable").fancytree("getTree").expandAll();
+            });
+
+        });
+        var config = {
+            pageSize: 6,
+            pageIndex: 1
+        }
+        var workplaceConfig = {
+            pageSize: 6,
+            pageIndex: 1
+        }
+        var workplaceTrackConfig = {
+            pageSize: 6,
+            pageIndex: 1
+        }
+        var workplaceController = {
+            init() {
+                workplaceController.loadData();
+                workplaceController.registerEvent();
+            },
+            registerEvent() {
+                $('#boxActionPlan .role').off('change').on('change', function (e) {
+                    workplaceController.loadActionPlan();
+                });
+                $('#boxActionPlan .task').unbind().on('change', function (e) {
+                    if ($(this).val() === 'Upd') {
+                        $('#tblKPIUpload').show();
+                        workplaceController.listKPIUpload();
+                    } else {
+                        $('#tblKPIUpload').hide();
+                    }
+
+                });
+
+                $('#box input').off('keypress').on('keypress', function (e) {
+                    if (e.which === 13) {
+                        var code = $(this).val();
+                        var teamid = Number($('#box .kpi-name .code').text());
+                        workplaceController.LoadDataUser(true, code, "");
+                    }
+                });
+
+                //-----------------------------------------------------------------------------------------------------------------
+                ////show list kpilevel
+                //$('#box select').off('change').on('change', function (e) {
+                //    var code = $(this).parent().children('.code').text();
+                //    workplaceController.LoadDataUser(true, code);
+                //});
+
+                $('#tbluser tr td:nth-child(2) input').change(function () {
+                    var id = $(this).parent().parent('td:nth-child(2)').children('div').children('span.level').data('id');
+                    var teamid = Number($('#box .kpi-name .code').text());
+                    if (teamid === 0) {
+                       error( 'Please choose team!');
+                    }
+                    else {
+                        workplaceController.updateUser(id, teamid);
+                        workplaceController.loadTree();
+                    }
+
+                });
+            },
+            loadActionPlan(changePageSize) {
+                var role = $('#boxActionPlan .role').val();
+                $.get('/Workplace/loadActionPlan',
+                    {
+                        role: role,
+                        page: config.pageIndex,
+                        pageSize: config.pageSize
+                    },
+                    function (res) {
+                        console.log("actionPlan")
+                        console.log(res)
+
+                        if (res.status) {
+                            var data = res.data;
+                            var total = res.total;
+                            var page = res.page;
+                            var count;
+                            var pageSize = res.pageSize;
+                            console.log(data);
+                            var html = '';
+                            var template = $('#tblActionPlan-template').html();
+                            if (page === 1) count = page;
+                            else count = (page - 1) * pageSize + 1;
+                            $.each(data, function (i, item) {
+                                html += Mustache.render(template, {
+                                    Color: count % 2 !== 0 ? "class='info'" : "",
+                                    No: count,
+                                    KPIName: item.KPIName,
+                                    TaskName: item.TaskName,
+                                    Descriptions: item.Description,
+                                    DueDate: item.DueDate,
+                                    PIC: item.PIC,
+                                    UpdateSheduleDate: item.UpdateSheduleDate.length === 0 ? "#N/A" : item.UpdateSheduleDate,
+                                    ActualFinishDate: item.ActualFinishDate.length === 0 ? "#N/A" : item.ActualFinishDate,
+                                    Status: item.Status == true ? "<span class='badge bg-green'>Finished</span>" : "<span class='badge bg-red'>Not Finished</span>",
+                                    Approval: item.Approved == true ? "<span class='badge bg-green'>Approved</span>" : "<span class='badge bg-red'>Not Approved</span> ",
+                                });
+                                count++;
+                            });
+                            $('#tblActionPlan').empty();
+                            $('#tblActionPlan').html(html);
+
+                            workplaceController.actionPlanPaging(total, function () {
+                                workplaceController.loadActionPlan(true);
+                            }, changePageSize);
+                            workplaceController.registerEvent();
+                        } else {
+
+                        }
+                    })
+            },
+            actionPlanPaging(totalRow, callback, changePageSize) {
+                var totalPage = Math.ceil(totalRow / config.pageSize);
+
+                //Unbind pagination if it existed or click change pagesize
+                if ($('paginationActionPlan a').length === 0 || changePageSize === true) {
+                    $('paginationActionPlan').empty();
+                    $('paginationActionPlan').removeData("twbs-pagination");
+                    $('paginationActionPlan').unbind("page");
+                }
+
+                $('#paginationActionPlan').twbsPagination({
+                    totalPages: totalPage === 0 ? 1 : totalPage,
+                    first: "First",
+                    next: "Next",
+                    last: "Last",
+                    prev: "Previous",
+                    visiblePages: 10,
+                    onPageClick: function (event, page) {
+                        config.pageIndex = page;
+                        setTimeout(callback, 500);
+                    }
+                });
+            },
+            listKPIUpload(changePageSize) {
+
+                $.ajax({
+                    data: {
+                        page: config.pageIndex,
+                        pageSize: config.pageSize
+                    },
+                    type: 'GET',
+                    dataType: 'json',
+                    url: '/Workplace/ListKPIUpload',
+                    beforeSend: function () {
+                        $('#main-loading-delay').show();
+                    }
+                }).done(function (res) {
+                    // If successful
+                    if (res.status) {
+                        if (!res.isUpdater) {
+                            warning( "You are not an updater!");
+                        }
+                        console.log("listKPIUpload")
+                        console.log(res)
+                        var ontime = `<span class='badge bg-green'>on time</span>`;
+                        var late = `<span class='badge bg-red'>late</span>`;
+                        var NA = `<span class='badge bg-gray'>#N/A</span>`;
+                        var data = res.data;
+                        var total = res.total;
+
+
+                        var page = res.page;
+                        var count;
+                        var pageSize = res.pageSize;
+                        var html = '';
+                        var template = $('#tblKPIUpload-template').html();
+                        if (page === 1) count = page;
+                        else count = (page - 1) * pageSize + 1;
+                        $.each(data, function (i, item) {
+                            html += Mustache.render(template, {
+                                Color: count % 2 !== 0 ? "class='info'" : "",
+                                No: count,
+                                KPIName: item.KPIName,
+                                StateW: item.StateDataW == true ? (item.StateW == true ? ontime : late) : NA,
+                                StateM: item.StateDataM == true ? (item.StateM == true ? ontime : late) : NA,
+                                StateQ: item.StateDataQ == true ? (item.StateQ == true ? ontime : late) : NA,
+                                StateY: item.StateDataY == true ? (item.StateY == true ? ontime : late) : NA,
+                            });
+                            count++;
+                        });
+                        $('#tblKPIUpload').empty();
+                        $('#tblKPIUpload').html(html);
+
+                        workplaceController.listKPIUploadPaging(total, function () {
+                            workplaceController.listKPIUpload();
+                        }, changePageSize);
+                        workplaceController.registerEvent();
+                    }
+                    else {
+                    }
+                }).fail(function (jqXHR, textStatus, errorThrown) {
+                    $('#main-loading-delay').hide();
+                    // If fail
+                    console.log(textStatus + ': ' + errorThrown);
+                }).always(function () {
+                    $('#main-loading-delay').hide();
+                });
+
+            },
+            listKPIUploadPaging(totalRow, callback, changePageSize) {
+                var totalPage = Math.ceil(totalRow / config.pageSize);
+
+                //Unbind pagination if it existed or click change pagesize
+                if ($('paginationKPIUpload a').length === 0 || changePageSize === true) {
+                    $('paginationKPIUpload').empty();
+                    $('paginationKPIUpload').removeData("twbs-pagination");
+                    $('paginationKPIUpload').unbind("page");
+                }
+
+                $('#paginationKPIUpload').twbsPagination({
+                    totalPages: totalPage === 0 ? 1 : totalPage,
+                    first: "First",
+                    next: "Next",
+                    last: "Last",
+                    prev: "Previous",
+                    visiblePages: 10,
+                    onPageClick: function (event, page) {
+                        config.pageIndex = page;
+                        setTimeout(callback, 500);
+                    }
+                });
+            },
+            TrackKPI(changePageSize, levelid) {
+                $.get('/Workplace/KPIRelated',
+                    {
+                        levelid: levelid,
+                        page: config.pageIndex,
+                        pageSize: config.pageSize
+                    },
+                    function (res) {
+                        if (res.status) {
+                            var data = res.model;
+                            var total = res.total;
+                            var page = res.page;
+                            var count;
+                            var pageSize = res.pageSize;
+                            console.log(data);
+                            var html = '';
+                            var template = $('#tbluser-template').html();
+                            if (page === 1) count = 1; else count = pageSize + 1;
+                            $.each(data, function (i, item) {
+                                html += Mustache.render(template, {
+                                    No: count,
+                                    KPIName: item.KPIName,
+                                    StateW: item.StateDataW == true ? (item.StateW == true ? '<span class="badge bg-green">on time</span>' : '<span class="badge bg-red">late</span>') : '<span class="badge bg-gray">N/A</span>',
+                                    StateM: item.StateDataM == true ? (item.StateM == true ? '<span class="badge bg-green">on time</span>' : '<span class="badge bg-red">late</span>') : '<span class="badge bg-gray">N/A</span>',
+                                    StateQ: item.StateDataQ == true ? (item.StateQ == true ? '<span class="badge bg-green">on time</span>' : '<span class="badge bg-red">late</span>') : '<span class="badge bg-gray">N/A</span>',
+                                    StateY: item.StateDataY == true ? (item.StateY == true ? '<span class="badge bg-green">on time</span>' : '<span class="badge bg-red">late</span>') : '<span class="badge bg-gray">N/A</span>',
+                                });
+                                count++;
+                            });
+                            $('#tbluser').html(html);
+                            workplaceController.TrackKPIPaging(total, function () {
+                                workplaceController.TrackKPI("", levelid);
+                            }, changePageSize);
+                            workplaceController.registerEvent();
+                        } else {
+
+                        }
+                    })
+            },
+            TrackKPIPaging(totalRow, callback, changePageSize) {
+                var totalPage = Math.ceil(totalRow / config.pageSize);
+
+                //Unbind pagination if it existed or click change pagesize
+                if ($('#paginationKPILevel a').length === 0 || changePageSize === true) {
+                    $('#paginationKPILevel').empty();
+                    $('#paginationKPILevel').removeData("twbs-pagination");
+                    $('#paginationKPILevel').unbind("page");
+                }
+
+                $('#paginationKPILevel').twbsPagination({
+                    totalPages: totalPage === 0 ? 1 : totalPage,
+                    first: "First",
+                    next: "Next",
+                    last: "Last",
+                    prev: "Previous",
+                    visiblePages: 10,
+                    onPageClick: function (event, page) {
+                        config.pageIndex = page;
+                        setTimeout(callback, 500);
+                    }
+                });
+            },
+            loadTree: function () {
+                $.ui.fancytree.getTree("#treetable").reload().done();
+            },
+            loadData(changePageSize) {
+                var userid = $('#user').data('userid');
+                $.get("/Workplace/UpLoadKPILevel",
+                    {
+                        userid: userid,
+                        page: workplaceConfig.pageIndex,
+                        pageSize: workplaceConfig.pageSize
+                    },
+                    function (data, status) {
+                        var KPIUpLoads = data.KPIUpLoads;
+                        var total = data.total;
+                        var page = data.page;
+                        var pageSize = data.pageSize;
+
+                        $('.total').text("Total record : " + total);
+                        var html = '';
+                        var count = 1;
+                        if (page === 1) count = 1; else count = pageSize + 1;
+
+
+                        var template = $('#tableWorkplace-template').html();
+                        $.each(KPIUpLoads, function (i, item) {
+                            html += Mustache.render(template, {
+                                No: count,
+                                KPIName: item.KPIName,
+                                //StateW: item.StateW == true ? '<span class="badge bg-green">on time</span>' : '<span class="badge bg-red">late</span>',
+                                //StateM: item.StateM == true ? '<span class="badge bg-green">on time</span>' : '<span class="badge bg-red">late</span>',
+                                //StateQ: item.StateQ == true ? '<span class="badge bg-green">on time</span>' : '<span class="badge bg-red">late</span>',
+                                //StateY: item.StateY == true ? '<span class="badge bg-green">on time</span>' : '<span class="badge bg-red">late</span>',
+
+                                StateW: item.StateDataW == true ? (item.StateW == true ? '<span class="badge bg-green">on time</span>' : '<span class="badge bg-red">late</span>') : '<span class="badge bg-gray">N/A</span>',
+                                StateM: item.StateDataM == true ? (item.StateM == true ? '<span class="badge bg-green">on time</span>' : '<span class="badge bg-red">late</span>') : '<span class="badge bg-gray">N/A</span>',
+                                StateQ: item.StateDataQ == true ? (item.StateQ == true ? '<span class="badge bg-green">on time</span>' : '<span class="badge bg-red">late</span>') : '<span class="badge bg-gray">N/A</span>',
+                                StateY: item.StateDataY == true ? (item.StateY == true ? '<span class="badge bg-green">on time</span>' : '<span class="badge bg-red">late</span>') : '<span class="badge bg-gray">N/A</span>',
+                            });
+                            count++;
+                        });
+                        $('.tbody').empty();
+                        $('.tbody').html(html);
+                        workplaceController.pagingWorkplace(total, function () {
+                            workplaceController.loadData();
+                        }, changePageSize);
+                        workplaceController.registerEvent();
+                    });
+            },
+            pagingWorkplace: function (totalRow, callback, changePageSize) {
+                var totalPage = Math.ceil(totalRow / workplaceConfig.pageSize);
+
+                //Unbind pagination if it existed or click change pagesize
+                if ($('#paginationWorkplace a').length === 0 || changePageSize === true) {
+                    $('#paginationWorkplace').empty();
+                    $('#paginationWorkplace').removeData("twbs-pagination");
+                    $('#paginationWorkplace').unbind("page");
+                }
+
+                $('#paginationWorkplace').twbsPagination({
+                    totalPages: totalPage === 0 ? 1 : totalPage,
+                    first: "First",
+                    next: "Next",
+                    last: "Last",
+                    prev: "Previous",
+                    visiblePages: 10,
+                    onPageClick: function (event, page) {
+                        workplaceConfig.pageIndex = page;
+                        setTimeout(callback, 500);
+                    }
+                });
+            },
+
+        }
+        workplaceController.init();
+
+        $('#Upload .download').click(function () {
+            console.log("click download");
+            var userid = $('#user').data('userid');
+            $.ajax({
+                type: "POST",
+                url: "/Workplace/ExcelExport",
+                data: { userid: userid },
+                beforeSend: function () {
+                    $("#main-loading-delay").show();
+                }
+            }).done(function (res) {
+                 $("#main-loading-delay").hide();
+                window.location = '/Workplace/Download';
+            }).fail(function () {
+                 $("#main-loading-delay").hide();
+                success('Download successfully!');
+            });
+        });
+
+        $('table tr').addClass("text-center");
+        $('table th').addClass("text-center");
+        $('table tr td:last-child').css("width", "60px");
+
+        $('table tr td button').on('click', function () {
+            $(this).next().click();
+        });
+
+        $('table tr td i').click(function () {
+            $(this).toggleClass('text-red');
+        });
+
+        $("form#upload").submit(function (e) {
+            e.preventDefault();
+            console.log("Import data");
+            var formData = new FormData(this);
+            var upload = function () {
+                $.ajax({
+                    url: "/Workplace/Import",
+                    type: 'POST',
+                    data: formData,
+                    dataType: 'json',
+                    beforeSend: function () {
+                        $("#main-loading-delay").show();
+                    },
+                    processData: false,  // tell jQuery not to process the data
+                    contentType: false,  // tell jQuery not to set contentType
+                }).done(function (res) {
+                    if (res) {
+                        $('#main-loading-delay').hide();
+                        success('Upload successfully!');
+
+                    } else {
+                        $('#main-loading-delay').hide();
+                        error('Upload failed!');
+                    }
+                }).fail(function (jqXHR, textStatus, errorThrown) {
+                        $('#main-loading-delay').hide();
+                    console.log(textStatus + ' ' + errorThrown)
+                }).always(function () {
+                    $("#modal-group").modal('hide');
+                });
+            }
+            upload();
+        });
+
+    </script>
+}

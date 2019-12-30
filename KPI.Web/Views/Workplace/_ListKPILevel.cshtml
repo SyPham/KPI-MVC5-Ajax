@@ -1,0 +1,49 @@
+﻿<div class="box box-widget" id="box">
+    <div class="box-header with-border kpi-name">
+       <h3 class="box-title pull-left font-weight-bold">Performance </h3>
+        <span class="id" style="display:none"></span> 
+        <span class="code" style="display:none"></span>
+        <span class="level" style="display:none"></span>
+        <input class="form-control pull-right" autocomplete="off" placeholder="search here..." style="width:50%" />
+
+    </div>
+    <div class="box-body">
+
+        <div class="box-body">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>No.</th>
+                        <th>KPI Name</th>
+                        <th>State Upload Week</th>
+                        <th>State Upload Month</th>
+                        <th>State Upload Quarter</th>
+                        <th>State Upload Year</th>
+                    </tr>
+                </thead>
+                <tbody class="tbody-tbluser" id="tbluser">
+                </tbody>
+            </table>
+            <script id='tbluser-template' type="text/template">
+                <tr>
+                    <td>{{No}}</td>
+                    <td class="text-center">{{{KPIName}}}</td>
+                    <td class="text-center">{{{StateW}}}</td>
+                    <td class="text-center">{{{StateM}}}</td>
+                    <td class="text-center">{{{StateQ}}}</td>
+                    <td class="text-center">{{{StateY}}}</td>
+                </tr>
+            </script>
+        </div>
+        <!-- /.box-body -->
+        <div class="box-footer clearfix">
+            <ul id="paginationKPILevel" class="pagination pagination-sm no-margin pull-right">
+                <li><a href="#">«</a></li>
+                <li><a href="#">1</a></li>
+                <li><a href="#">2</a></li>
+                <li><a href="#">3</a></li>
+                <li><a href="#">»</a></li>
+            </ul>
+        </div>
+    </div>
+</div>

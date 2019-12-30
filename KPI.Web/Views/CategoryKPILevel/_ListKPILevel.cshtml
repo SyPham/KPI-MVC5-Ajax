@@ -1,0 +1,87 @@
+﻿<div class="box box-widget" id="boxCategory">
+    <div class="box-header with-border kpi-name">
+        <h3 class="box-title pull-left">Category lists </h3> <span class="id" style="display:none"></span> <span class="code" style="display:none"></span><span class="level" style="display:none"></span>
+        <input type="text" class="form-control levelID" style="display:none" />
+        
+    </div>
+    <div class="box-body pb-3" id="btnCategory" style="max-height:200px;overflow-y:scroll;overflow-y:hidden">
+
+
+        <!-- /.box-body -->
+    </div>
+    @*<div class="box-footer clearfix" >
+
+    </div>*@
+    <script id='btnCategory-template' type="text/html">
+        <button class="btn mb-3 btnCategory button" data-id="{{ID}}"><span class="name">{{Name}}</span> ({{Total}})</button>
+    </script>
+</div>
+<div class="box box-widget" id="box">
+    <div class="box-header with-border kpi-name">
+        <h3 class="box-title pull-left">KPI </h3> <span class="id" style="display:none"></span> <span class="code" style="display:none"></span><span class="level" style="display:none"></span>
+        <input type="text" class="form-control catid" value="" style="display:none" />
+        <div class="box-tools">
+            <h4 class="" tooltip-position="left" data-c-tooltip="The gray button's not avaiable, The green button's update data ontime, The yellow button's update data overdue.">
+                <i class="icon fa fa-info-circle"></i>
+
+            </h4>
+        </div>
+    </div>
+    <div class="box-body">
+       
+        <div class="text-center periodAll" style="display:none">
+
+            <a class="btn button-nocolor btn-bitbucket weeklyperiod" data-period="W"><i class="fa fa-eye"></i>&#160;View all by weekly</a>
+            <a class="btn button-nocolor btn-bitbucket monthlyperiod" data-period="m"><i class="fa fa-eye"></i>&#160;View all by monthly</a>
+            <a class="btn button-nocolor btn-bitbucket quarterlyperiod" data-period="q"><i class="fa fa-eye"></i>&#160;View all by quarterly</a>
+            <a class="btn button-nocolor btn-bitbucket yearlyperiod" data-period="y"><i class="fa fa-eye"></i>&#160;View all by yearly</a>
+
+        </div>
+    </div>
+    <div class="box-body">
+        <ul id="paginationKPILevelTop" class="pagination pagination-sm no-margin pull-right paginationKPILevel">
+            <li><a href="#">«</a></li>
+            <li><a href="#">1</a></li>
+            <li><a href="#">2</a></li>
+            <li><a href="#">3</a></li>
+            <li><a href="#">»</a></li>
+        </ul>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>No.</th>
+                    <th>KPI Organization Chart</th>
+                    <th>Period</th>
+                </tr>
+            </thead>
+            <tbody class="tbody" id="tblkpilevel"></tbody>
+        </table>
+        <script id='tblkpilevel-template' type="text/template">
+            <tr>
+                <td>{{No}}</td>
+                <td tooltip-position="top" data-c-tooltip="{{KPIName}}">
+                    <div class="textOverflow">
+                        {{KPIName}}
+                    </div>
+                </td>
+                <td>
+                    <button data-kpilevelcode="{{KPILevelCode}}" data-period="W" {{WeeklyCheckedAttr}} class="btn btn-sm button-nocolor {{WeeklyChecked}} week"><i class="fa fa-bar-chart" aria-hidden="true"></i> Weekly</button>
+                    <button data-kpilevelcode="{{KPILevelCode}}" data-period="M" {{MonthlyCheckedAttr}} class="btn btn-sm button-nocolor {{MonthlyChecked}} month"><i class="fa fa-bar-chart" aria-hidden="true"></i> Monthly</button>
+                    <button data-kpilevelcode="{{KPILevelCode}}" data-period="Q" {{QuarterlyCheckedAttr}} class="btn btn-sm button-nocolor {{QuarterlyChecked}} quarter"><i class="fa fa-bar-chart" aria-hidden="true"></i> Quarterly</button>
+                    <button data-kpilevelcode="{{KPILevelCode}}" data-period="Y" {{YearlyCheckedAttr}} class="btn btn-sm button-nocolor {{YearlyChecked}} year"><i class="fa fa-bar-chart" aria-hidden="true"></i> Yearly</button>
+                </td>
+            </tr>
+        </script>
+
+        <!-- /.box-body -->
+    </div>
+    <div class="box-footer clearfix">
+        <ul id="paginationKPILevelBottom" class="pagination pagination-sm no-margin pull-right paginationKPILevel">
+            <li><a href="#">«</a></li>
+            <li><a href="#">1</a></li>
+            <li><a href="#">2</a></li>
+            <li><a href="#">3</a></li>
+            <li><a href="#">»</a></li>
+        </ul>
+    </div>
+</div>

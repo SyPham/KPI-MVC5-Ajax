@@ -1,0 +1,60 @@
+﻿@using MvcBreadCrumbs;
+@{
+    ViewBag.Title = "My Favourite";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@Html.Raw(BreadCrumb.Display())
+<div class="box">
+    <div class="box-header with-border">
+        <h3 class="box-title">KPI List</h3>
+    </div>
+    <!-- /.box-header -->
+    <div class="box-body table-responsive no-padding">
+        <table class="table table-hover table-bordered">
+            <thead>
+                <tr>
+                    <th class="text-center" style="width: 5%">#</th>
+                    <th class="text-center">KPI Name</th>
+                    @*<th>Update Status</th>
+        <th>Remark</th>*@
+                    <th class="text-center">Dept head</th>
+                    <th class="text-center">Team</th>
+                    <th class="text-center">Level</th>
+                    <th class="text-center">Delete</th>
+                </tr>
+            </thead>
+            <tbody class="tbody" id="tblfavourite">
+            </tbody>
+        </table>
+        <script id="tblfavourite-template" type="x-tmpl-mustache">
+            <tr>
+                <td class="text-center">{{No}}</td>
+                <td class="text-center"><a style="color:black" href="/ChartPeriod/?kpilevelcode={{KPILevelCode}}&period={{Period}}&start=0,&end=0">{{KPIName}}</a> <i class="fa fa-heart text-red"></i></td>
+                @*<td class="code">{{Status}}</td>
+        <td>{{Remark}}</td>*@
+                <td class="text-center">{{{User}}}</td>
+                <td class="text-center">{{Team}}</td>
+                <td class="text-center">{{Level}}</td>
+                <td class="text-center">
+                    <a class="btn btn-xs btn-danger del" data-id="{{ID}}">
+                        <i class="fa fa-remove"></i> delete
+                    </a>
+                </td>
+            </tr>
+        </script>
+    </div>
+    <!-- /.box-body -->
+    <div class="box-footer clearfix">
+        <ul class="pagination pagination-sm no-margin pull-right" id="pagination">
+            <li><a href="#">«</a></li>
+            <li><a href="#">1</a></li>
+            <li><a href="#">2</a></li>
+            <li><a href="#">3</a></li>
+            <li><a href="#">»</a></li>
+        </ul>
+    </div>
+</div>
+@section Scripts{
+<script src="~/Scripts/controllers/favourtiteController.js"></script>}
+
+

@@ -1,0 +1,65 @@
+﻿@{
+    var listActionPlan = (List<KPI.Model.ViewModel.ActionPlanTagVM>)ViewBag.ActionPlan;
+}
+<div class="box box-widget" id="boxActionPlan">
+    <div class="box-header with-border kpi-name">
+        <h3 class="box-title pull-left font-weight-bold " style="margin-right: 10px;">Action Plan&#32;&#32;</h3>
+        <div class="form-group" >
+            <select id="role" class="form-control role" style="width:200px">
+                <option value="">N/A</option>
+                <option value="Man">Manager</option>
+                <option value="Own">Owners</option>
+                <option value="Upd">Updater</option>
+                <option value="Spo">Sponsor</option>
+                <option value="Par">Participant</option>
+            </select>
+        </div>
+    </div>
+    <div class="box-body">
+
+        <div class="box-body">
+            <table class="table table-condensed table-bordered">
+                <thead>
+                    <tr>
+                        <th style="width: 10px">No.</th>
+                        <th>KPI name</th>
+                        <th>Task name</th>
+                        <th>PIC</th>
+                        <th>Descriptions</th>
+                        <th>Due date</th>
+                        <th>Update shedule date</th>
+                        <th>Actual finish date</th>
+                        <th>Status</th>
+                        <th class="Approval" style="width: 100px">Approve</th>
+                    </tr>
+                </thead>
+                <tbody class="tblActionPlan" id="tblActionPlan">
+                </tbody>
+            </table>
+            <script id='tblActionPlan-template' type="text/template">
+                <tr {{{Color}}}>
+                    <td>{{No}}</td>
+                    <td class="text-center">{{{KPIName}}}</td>
+                    <td class="text-center">{{{TaskName}}}</td>
+                    <td class="text-center">{{{PIC}}}</td>
+                    <td class="text-center">{{{Descriptions}}}</td>
+                    <td class="text-center">{{{DueDate}}}</td>
+                    <td class="text-center">{{{UpdateSheduleDate}}}</td>
+                    <td class="text-center">{{{ActualFinishDate}}}</td>
+                    <td class="text-center">{{{Status}}}</td>
+                    <td class="text-center">{{{Approval}}}</td>
+                </tr>
+            </script>
+        </div>
+        <!-- /.box-body -->
+        <div class="box-footer clearfix">
+            <ul id="paginationActionPlan" class="pagination pagination-sm no-margin pull-right">
+                <li><a href="#">«</a></li>
+                <li><a href="#">1</a></li>
+                <li><a href="#">2</a></li>
+                <li><a href="#">3</a></li>
+                <li><a href="#">»</a></li>
+            </ul>
+        </div>
+    </div>
+</div>

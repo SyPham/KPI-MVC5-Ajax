@@ -1,0 +1,302 @@
+﻿@using MvcBreadCrumbs;
+@using KPI.Model.helpers;
+@model KPI.Model.ViewModel.DataCompareVM
+@{
+
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var chartVM2s = (List<KPI.Model.ViewModel.ChartVM2>)ViewBag.ChartVM2s;
+    var period = string.Empty;
+    var kpiname = string.Empty;
+    var standard = new double();
+    var periodText = string.Empty;
+    var unit = string.Empty;
+    if (chartVM2s != null)
+    {
+
+        period = (string)chartVM2s[0].period.ToSafetyString();
+        kpiname = (string)chartVM2s[0].kpiname.ToSafetyString();
+        standard = (double)ViewBag.Standard;
+        unit = (string)ViewBag.Unit;
+        periodText = (string)ViewBag.PeriodText;
+    }
+
+
+}
+
+@Html.Raw(BreadCrumb.Display())
+@section Scripts{
+    <script>
+
+        var chartVM2s = @Html.Raw(Json.Encode(chartVM2s));
+        var unit = @Html.Raw(Json.Encode(unit));
+        var stand = @standard;
+        $(function () {
+
+           
+         var labelString;
+            var densityCanvas = document.getElementById("lineChart");
+            Chart.defaults.global.defaultFontFamily = "Lato";
+            Chart.defaults.global.defaultFontSize = 12;
+
+                var COLOREDS = [
+                            '#bd3e85',
+                            '#182657',
+                            '#43528a',
+                            '#d59b2d',
+                            '#8d541d',
+                            '#eec3d0',
+                            '#ffe1ba'
+                        ];
+
+              var listdatasets=[],labels,standards;
+            if (unit !== "Percentage") {
+                 labels = chartVM2s[0].labels;
+                 var targets = {
+                            label: "Target",
+                            backgroundColor: COLOREDS[0],
+                            borderColor: COLOREDS[0],
+                            data:  chartVM2s[0].targets,
+                            datalabels: {
+                                align: 'center',
+                                anchor: 'center'
+                            }
+                        }
+                listdatasets.push(targets);
+
+                for (var item = 0; item < chartVM2s.length; item++) {
+                    itemList = {
+                            label: chartVM2s[item].label,
+                            spanGaps: false, //data=undefined thi k draw line
+                            backgroundColor: COLOREDS[(item+1)],
+                            borderColor: COLOREDS[(item+1)],
+                            data: chartVM2s[item].datasets,
+                            datalabels: {
+                                align: 'center',
+                                anchor: 'center'
+                            }
+                    };
+                      listdatasets.push(itemList);
+                }
+            }
+            else {
+                 labels = chartVM2s[0].labels;
+                var standardLists = [];
+
+                    for (let i in chartVM2s[0].datasets) {
+                        standardLists.push(@standard);
+                    }
+                       var  standard = {
+                            label:"Target",
+                            backgroundColor: COLOREDS[0],
+                            borderColor: COLOREDS[0],
+                            data: standardLists,
+                            datalabels: {
+                                align: 'center',
+                                anchor: 'center'
+                            }
+                     }
+              
+                listdatasets.push(standard);
+                for (var item = 0; item < chartVM2s.length; item++) {
+                    itemList = {
+                            label: chartVM2s[item].label,
+                            spanGaps: false, //data=undefined thi k draw line
+                            backgroundColor: COLOREDS[(item+1)],
+                            borderColor: COLOREDS[(item+1)],
+                            data: chartVM2s[item].datasets,
+                            datalabels: {
+                                align: 'center',
+                                anchor: 'center'
+                            }
+                    };
+                      listdatasets.push(itemList);
+                }
+                //for (let item of chartVM2s) {
+
+                //        var i = item
+                //        itemList = {
+                //            label: item.label,
+                //            spanGaps: false, //data=undefined thi k draw line
+                //            backgroundColor: COLOREDS[i],
+                //            borderColor: COLOREDS[i],
+                //            data: item.datasets,
+                //            datalabels: {
+                //                align: 'center',
+                //                anchor: 'center'
+                //            }
+                //        };
+
+                //    listdatasets.push(itemList);
+                //}
+            }
+
+
+
+
+
+            var compareData = {
+                        labels: labels,
+                        datasets: listdatasets
+                    };
+            var chartOptions = {
+                 plugins: {
+                        datalabels: {
+                            backgroundColor: function (context) {
+                                return context.dataset.backgroundColor;
+                            },
+                            borderRadius: 4,
+                            color: 'white',
+                            font: {
+                                weight: 'bold'
+                            },
+                         formatter: function(value, context) {
+                                return value;
+                            },
+                         display: function (context) {
+                                
+                             return context.dataset.label !== "Target"; // display labels with an odd index
+                            }
+                        }
+                },
+                    title: {
+                    display: true,
+                        text: "KPI Compare Chart - @kpiname - @periodText",
+                        fontSize: 16,
+                        fontColor: 'black'
+                    },
+                elements: {
+                point:{
+                        radius: 0
+                    },
+                line: {
+                    tension: 0.2
+                }
+            },
+                scales: {
+                    yAxes: [{
+                      gridLines: {
+                        tickMarkLength: 8,
+                        //color:["#f4f4f4","#d81b60"]
+                    },
+                    ticks: {
+                        beginAtZero: true,
+                        padding: 10,
+                        fontSize: 14,
+                        //max: 100
+                    },
+                        scaleLabel: {
+                             display: true,
+                             labelString: '@unit',
+                            fontSize: 16,
+                          fontStyle:'inherit'
+                          }
+                    }],
+                    xAxes: [{
+                        gridLines: {
+                        display: true,
+                        drawBorder: false,
+                        tickMarkLength: 10
+                    },
+                    ticks: {
+                        fontSize: 14,
+                        stepSize:5
+                    }
+                    ,
+                     scaleLabel: {
+                        display: true,
+                         labelString: "@periodText",
+                         fontSize: 16,
+                          fontStyle:'inherit'
+                      }
+                    }]
+
+                }
+            };
+            var lineChart = new Chart(densityCanvas, {
+                type: 'line',
+                data: compareData,
+                options: chartOptions
+            });
+        });
+    </script>
+}
+<section id="chartperiod">
+    <div class="row">
+        <div class="col-md-12">
+            <!-- LINE CHART -->
+            <div class="box box-widget">
+                <div class="box-header with-border">
+                    <h3 class="box-title" style="font-weight:bold">KPI Compare Chart  - @kpiname - @periodText</h3>
+
+                    <div class="box-tools pull-right">
+                        <button type="button" class="btn btn-box-tool" data-widget="collapse">
+                            <i class="fa fa-minus"></i>
+                        </button>
+                        <button type="button" class="btn btn-box-tool"><i class="fa fa-times"></i></button>
+
+                    </div>
+                </div>
+                <div class="box-body">
+                    @if (@unit != "Numeric")
+                    {
+                        <button type="button" class="btn margin pull-right" style="background-color:#09a99f;color:#fff"><i class="fa fa-star"></i> <span>Target : </span><span class="standard text-bold" style="">@standard</span></button>
+
+                    }
+
+                    else
+                    {
+                        <button type="button" class="btn margin pull-right" style="background-color:#09a99f;color:#fff"><i class="fa fa-star"></i> <span>Target : </span><span class="standard text-bold" style="">@chartVM2s[0].targets[0]</span></button>
+
+                    }
+
+                    <div class="chart">
+                        <canvas id="lineChart" style="height:250px"></canvas>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <div class="col-md-12" style="display:none">
+            <div class="col-md-12">
+                <div class="box box-widget">
+                    <div class="box-header with-border">
+                        @if (period == "W")
+                        {
+                            <h3 class="box-title" style="font-weight:bold">Data  - @kpiname - Weekly</h3>
+                        }
+                        else if (period == "M")
+                        {
+                            <h3 class="box-title" style="font-weight:bold">Data - @kpiname - Monthly</h3>
+
+                        }
+                        else if (period == "Q")
+                        {
+                            <h3 class="box-title" style="font-weight:bold">Data - @kpiname - Quarterly</h3>
+
+                        }
+                        else if (period == "Y")
+                        {
+                            <h3 class="box-title" style="font-weight:bold">Data - @kpiname - Yearly</h3>
+
+                        }
+
+                    </div>
+                    <!-- /.box-header -->
+                    <div class="box-body">
+                        <div class="table-responsive">
+                            <table class="table table-bordered" style="margin-bottom:20px;" id="tblkpi">
+                                <tbody>
+                                    <tr></tr>
+                                    <tr></tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</section>
