@@ -25,6 +25,12 @@ namespace KPI.Web
             bundles.Add(new StyleBundle("~/Content/css").Include(
                       "~/Content/bootstrap.css",
                       "~/Content/site.css"));
+
+            bundles.Add(new ScriptBundle("~/bundles/angular").Include(
+                     "~/Scripts/libs/runtime*",
+                     "~/Scripts/libs/polyfills*",
+                     "~/Scripts/libs/vendor*",
+                     "~/Scripts/libs/main*"));
         }
     }
 }
